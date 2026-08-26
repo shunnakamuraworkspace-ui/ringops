@@ -10,11 +10,26 @@ const badge: Record<BoxerPreview["status"], string> = {
   "受付停止": "bg-slate-100 text-slate-500 ring-slate-500/20",
 };
 
-export function BoxerDirectory({ boxers, industryMode }: { boxers: BoxerPreview[]; industryMode: boolean }) {
-  const [q,setQ]=useState(""); const [division,setDivision]=useState("すべて"); const [klass,setKlass]=useState("すべて");
-  const [stance,setStance]=useState("すべて"); const [status,setStatus]=useState("相談可"); const [rounds,setRounds]=useState("すべて");
-  const [ranking,setRanking]=useState("すべて"); const [nextBout,setNextBout]=useState("すべて"); const [month,setMonth]=useState("");
-  const [minWeight,setMinWeight]=useState(""); const [maxWeight,setMaxWeight]=useState("");
+type Props = {
+  boxers: BoxerPreview[];
+  industryMode: boolean;
+  initialDivision?: string;
+  initialClass?: string;
+  initialRounds?: string;
+};
+
+export function BoxerDirectory({ boxers, industryMode, initialDivision, initialClass, initialRounds }: Props) {
+  const [q,setQ]=useState("");
+  const [division,setDivision]=useState(initialDivision && divisions.includes(initialDivision) ? initialDivision : "すべて");
+  const [klass,setKlass]=useState(initialClass && ["A級","B級","C級"].includes(initialClass) ? initialClass : "すべて");
+  const [stance,setStance]=useState("すべて");
+  const [status,setStatus]=useState("相談可");
+  const [rounds,setRounds]=useState(initialRounds && ["4","6","8","10","12","4R","6R","8R","10R","12R"].includes(initialRounds) ? initialRounds.replace("R","") : "すべて");
+  const [ranking,setRanking]=useState("すべて");
+  const [nextBout,setNextBout]=useState("すべて");
+  const [month,setMonth]=useState("");
+  const [minWeight,setMinWeight]=useState("");
+  const [maxWeight,setMaxWeight]=useState("");
 
   const filtered=useMemo(()=>boxers.filter(b=>{
     const text=q.trim().toLowerCase();
@@ -24,7 +39,8 @@ export function BoxerDirectory({ boxers, industryMode }: { boxers: BoxerPreview[
     if (!industryMode) return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && rankingOk && nextOk;
     const statusOk=status==="すべて"||(status==="相談可"?b.status!=="受付停止":b.status===status);
     const monthOk=!month||(!b.availableMonth?false:b.availableMonth<=month);
-    const minW=minWeight?Number(minWeight):null; const maxW=maxWeight?Number(maxWeight):null;
+    const minW=minWeight?Number(minWeight):null;
+    const maxW=maxWeight?Number(maxWeight):null;
     const weightOk=(minW===null||b.maxWeight>=minW)&&(maxW===null||b.minWeight<=maxW);
     return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && (rounds==="すべて"||b.rounds.includes(Number(rounds))) && statusOk && rankingOk && nextOk && monthOk && weightOk;
   }),[boxers,q,division,klass,stance,status,rounds,ranking,nextBout,month,minWeight,maxWeight,industryMode]);
@@ -44,6 +60,7 @@ export function BoxerDirectory({ boxers, industryMode }: { boxers: BoxerPreview[
         <Select label="次戦" value={nextBout} onChange={setNextBout} values={["すべて","次戦あり","次戦未定"]} />
         {industryMode && <><Select label="受付状況" value={status} onChange={setStatus} values={["相談可","受付中","条件次第","受付停止","すべて"]} /><Select label="希望R" value={rounds} onChange={setRounds} values={["すべて","4","6","8","10","12"]} /><Field label="試合可能月"><input className="input" type="month" value={month} onChange={e=>setMonth(e.target.value)} /></Field><Field label="契約ウェイト下限"><input className="input" inputMode="decimal" value={minWeight} onChange={e=>setMinWeight(e.target.value)} placeholder="例 53" /></Field><Field label="契約ウェイト上限"><input className="input" inputMode="decimal" value={maxWeight} onChange={e=>setMaxWeight(e.target.value)} placeholder="例 55" /></Field></>}
       </div>
+      {(initialDivision||initialClass||initialRounds)&&<div className="mt-3 border-l-2 border-slate-900 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600">対戦相手募集の条件を引き継いでいます。</div>}
       <div className="mt-4 flex items-center justify-between border-t border-slate-100 pt-3"><p className="text-xs font-bold text-slate-500">条件変更は結果へ即反映</p><button className="text-xs font-black text-slate-700 underline underline-offset-4" onClick={reset}>条件をリセット</button></div>
     </div></section>
 
