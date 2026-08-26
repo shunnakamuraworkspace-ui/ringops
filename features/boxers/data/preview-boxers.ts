@@ -20,6 +20,7 @@ export const boxerPreviewData: BoxerPreview[] = [
 
 export const divisions = [
   "アトム級",
+  "ミニフライ級",
   "ミニマム級",
   "ライトフライ級",
   "フライ級",

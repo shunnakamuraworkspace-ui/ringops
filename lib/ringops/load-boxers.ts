@@ -4,6 +4,7 @@ import { boxerPreviewData, type BoxerPreview, type Ranking } from "@/features/bo
 
 const divisions: Record<string, string> = {
   atom: "アトム級",
+  mini_fly: "ミニフライ級",
   minimum: "ミニマム級",
   light_fly: "ライトフライ級",
   fly: "フライ級",
