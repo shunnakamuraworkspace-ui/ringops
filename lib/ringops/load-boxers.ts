@@ -12,47 +12,108 @@ const divisions: Record<string, string> = {
 const prefectures: Record<string, string> = { "11": "埼玉県", "13": "東京都", "14": "神奈川県" };
 const statusLabels = { accepting: "受付中", conditional: "条件次第", paused: "受付停止" } as const;
 
-type LoadResult = { boxers: BoxerPreview[]; databaseConnected: boolean; industryMode: boolean };
+type LoadResult = {
+  boxers: BoxerPreview[];
+  databaseConnected: boolean;
+  industryMode: boolean;
+  loadError: string | null;
+};
 
 export async function loadBoxers(): Promise<LoadResult> {
-  if (!isSupabaseConfigured) return { boxers: boxerPreviewData, databaseConnected: false, industryMode: true };
+  if (!isSupabaseConfigured) {
+    return {
+      boxers: boxerPreviewData,
+      databaseConnected: false,
+      industryMode: true,
+      loadError: null,
+    };
+  }
 
   const supabase = await createClient();
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   let industryMode = false;
+
   if (user) {
-    const { data: memberships } = await supabase.schema("ringops").from("organization_memberships")
-      .select("organization_id").eq("user_id", user.id).eq("status", "active").limit(1);
+    const { data: memberships, error: membershipError } = await supabase
+      .schema("ringops")
+      .from("organization_memberships")
+      .select("organization_id")
+      .eq("user_id", user.id)
+      .eq("status", "active")
+      .limit(1);
+
+    if (membershipError) {
+      return {
+        boxers: [],
+        databaseConnected: true,
+        industryMode: false,
+        loadError: "業界アカウント情報を読み込めませんでした。",
+      };
+    }
+
     industryMode = Boolean(memberships?.length);
   }
 
-  const { data: boxerRows, error } = await supabase.schema("ringops").from("boxers")
+  const { data: boxerRows, error: boxerError } = await supabase
+    .schema("ringops")
+    .from("boxers")
     .select("id,organization_id,name,name_kana,nationality,country_code,prefecture_code,birth_date,height_cm,reach_cm,division_code,boxer_class,stance,total_bouts,wins,losses,draws,ko_wins,last_bout_date,next_bout_date,next_venue_name")
-    .eq("is_public", true).order("name_kana");
+    .eq("is_public", true)
+    .order("name_kana");
 
-  if (error || !boxerRows?.length) return { boxers: boxerPreviewData, databaseConnected: false, industryMode: true };
+  if (boxerError) {
+    return {
+      boxers: [],
+      databaseConnected: true,
+      industryMode,
+      loadError: "選手データを読み込めませんでした。時間をおいて再度お試しください。",
+    };
+  }
+
+  if (!boxerRows?.length) {
+    return {
+      boxers: [],
+      databaseConnected: true,
+      industryMode,
+      loadError: null,
+    };
+  }
 
   const boxerIds = boxerRows.map((row) => row.id);
   const organizationIds = [...new Set(boxerRows.map((row) => row.organization_id))];
-  const [{ data: organizations }, { data: rankingRows }, statusResult] = await Promise.all([
+  const [organizationResult, rankingResult, statusResult] = await Promise.all([
     supabase.schema("ringops").from("organizations").select("id,display_name").in("id", organizationIds),
     supabase.schema("ringops").from("rankings").select("boxer_id,ranking_body,rank,champion_status,ranking_date").in("boxer_id", boxerIds).order("ranking_date", { ascending: false }),
     industryMode
       ? supabase.schema("ringops").from("boxer_match_statuses").select("boxer_id,status,available_from,min_contract_weight_kg,max_contract_weight_kg,desired_rounds,travel_condition,verified_at").in("boxer_id", boxerIds)
-      : Promise.resolve({ data: [] as Array<Record<string, unknown>> }),
+      : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),
   ]);
 
-  const orgMap = new Map((organizations ?? []).map((item) => [item.id, item.display_name]));
+  if (organizationResult.error || rankingResult.error || statusResult.error) {
+    return {
+      boxers: [],
+      databaseConnected: true,
+      industryMode,
+      loadError: "選手関連データの読み込みに失敗しました。管理者へお問い合わせください。",
+    };
+  }
+
+  const orgMap = new Map((organizationResult.data ?? []).map((item) => [item.id, item.display_name]));
   const statusMap = new Map((statusResult.data ?? []).map((item: any) => [item.boxer_id, item]));
   const rankingMap = new Map<string, Ranking[]>();
   const seenRankingBody = new Set<string>();
-  for (const row of rankingRows ?? []) {
+
+  for (const row of rankingResult.data ?? []) {
     const key = `${row.boxer_id}:${row.ranking_body}`;
     if (seenRankingBody.has(key)) continue;
     seenRankingBody.add(key);
     const list = rankingMap.get(row.boxer_id) ?? [];
-    list.push({ body: row.ranking_body, rank: row.rank, title: row.champion_status !== "none" ? row.champion_status : undefined });
+    list.push({
+      body: row.ranking_body,
+      rank: row.rank,
+      title: row.champion_status !== "none" ? row.champion_status : undefined,
+    });
     rankingMap.set(row.boxer_id, list);
   }
 
@@ -91,20 +152,32 @@ export async function loadBoxers(): Promise<LoadResult> {
     };
   });
 
-  return { boxers, databaseConnected: true, industryMode };
+  return {
+    boxers,
+    databaseConnected: true,
+    industryMode,
+    loadError: null,
+  };
 }
 
 export async function loadBoxer(id: string) {
   const result = await loadBoxers();
-  return { ...result, boxer: result.boxers.find((item) => item.id === id) ?? null };
+  return {
+    ...result,
+    boxer: result.boxers.find((item) => item.id === id) ?? null,
+  };
 }
 
-function formatDate(value: string | null) { return value ? value.replaceAll("-", ".") : "—"; }
+function formatDate(value: string | null) {
+  return value ? value.replaceAll("-", ".") : "—";
+}
+
 function formatAvailable(value?: string | null) {
   if (!value) return "要確認";
   const [year, month] = value.split("-");
   return `${year}年${Number(month)}月以降`;
 }
+
 function relativeDate(value?: string | null) {
   if (!value) return "未確認";
   const diff = Math.max(0, Math.floor((Date.now() - new Date(value).getTime()) / 86400000));
