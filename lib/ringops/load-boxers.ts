@@ -3,13 +3,37 @@ import { isSupabaseConfigured } from "@/lib/supabase/config";
 import { boxerPreviewData, type BoxerPreview, type Ranking } from "@/features/boxers/data/preview-boxers";
 
 const divisions: Record<string, string> = {
-  minimum: "ミニマム級", light_fly: "ライトフライ級", fly: "フライ級", super_fly: "スーパーフライ級",
-  bantam: "バンタム級", super_bantam: "スーパーバンタム級", feather: "フェザー級", super_feather: "スーパーフェザー級",
-  light: "ライト級", super_light: "スーパーライト級", welter: "ウェルター級", super_welter: "スーパーウェルター級",
-  middle: "ミドル級", super_middle: "スーパーミドル級", light_heavy: "ライトヘビー級", cruiser: "クルーザー級", heavy: "ヘビー級",
+  atom: "アトム級",
+  minimum: "ミニマム級",
+  light_fly: "ライトフライ級",
+  fly: "フライ級",
+  super_fly: "スーパーフライ級",
+  bantam: "バンタム級",
+  super_bantam: "スーパーバンタム級",
+  feather: "フェザー級",
+  super_feather: "スーパーフェザー級",
+  light: "ライト級",
+  super_light: "スーパーライト級",
+  welter: "ウェルター級",
+  super_welter: "スーパーウェルター級",
+  middle: "ミドル級",
+  super_middle: "スーパーミドル級",
+  light_heavy: "ライトヘビー級",
+  cruiser: "クルーザー級",
+  heavy: "ヘビー級",
 };
 
-const prefectures: Record<string, string> = { "11": "埼玉県", "13": "東京都", "14": "神奈川県" };
+const prefectures: Record<string, string> = {
+  "01": "北海道", "02": "青森県", "03": "岩手県", "04": "宮城県", "05": "秋田県", "06": "山形県", "07": "福島県",
+  "08": "茨城県", "09": "栃木県", "10": "群馬県", "11": "埼玉県", "12": "千葉県", "13": "東京都", "14": "神奈川県",
+  "15": "新潟県", "16": "富山県", "17": "石川県", "18": "福井県", "19": "山梨県", "20": "長野県",
+  "21": "岐阜県", "22": "静岡県", "23": "愛知県", "24": "三重県",
+  "25": "滋賀県", "26": "京都府", "27": "大阪府", "28": "兵庫県", "29": "奈良県", "30": "和歌山県",
+  "31": "鳥取県", "32": "島根県", "33": "岡山県", "34": "広島県", "35": "山口県",
+  "36": "徳島県", "37": "香川県", "38": "愛媛県", "39": "高知県",
+  "40": "福岡県", "41": "佐賀県", "42": "長崎県", "43": "熊本県", "44": "大分県", "45": "宮崎県", "46": "鹿児島県", "47": "沖縄県",
+};
+
 const statusLabels = { accepting: "受付中", conditional: "条件次第", paused: "受付停止" } as const;
 
 type LoadResult = {
@@ -58,7 +82,7 @@ export async function loadBoxers(): Promise<LoadResult> {
   const { data: boxerRows, error: boxerError } = await supabase
     .schema("ringops")
     .from("boxers")
-    .select("id,organization_id,name,name_kana,nationality,country_code,prefecture_code,birth_date,height_cm,reach_cm,division_code,boxer_class,stance,total_bouts,wins,losses,draws,ko_wins,last_bout_date,next_bout_date,next_venue_name")
+    .select("id,organization_id,name,name_kana,nationality,country_code,residence_country_code,domestic_or_international,prefecture_code,birth_date,height_cm,reach_cm,division_code,boxer_class,stance,total_bouts,wins,losses,draws,ko_wins,last_bout_date,next_bout_date,next_venue_name")
     .eq("is_public", true)
     .order("name_kana");
 
@@ -119,13 +143,18 @@ export async function loadBoxers(): Promise<LoadResult> {
 
   const boxers: BoxerPreview[] = boxerRows.map((row) => {
     const status: any = statusMap.get(row.id);
+    const domesticOrInternational: BoxerPreview["domesticOrInternational"] =
+      row.domestic_or_international === "international" ? "海外" : "国内";
+
     return {
       id: row.id,
       name: row.name,
       kana: row.name_kana,
       gym: orgMap.get(row.organization_id) ?? "所属ジム",
-      prefecture: prefectures[row.prefecture_code ?? ""] ?? "—",
+      prefecture: prefectures[row.prefecture_code ?? ""] ?? (domesticOrInternational === "海外" ? "海外" : "—"),
       nationality: row.nationality ?? row.country_code ?? "—",
+      countryCode: row.country_code ?? undefined,
+      domesticOrInternational,
       division: divisions[row.division_code] ?? row.division_code,
       boxerClass: `${row.boxer_class}級` as BoxerPreview["boxerClass"],
       stance: row.stance === "southpaw" ? "左" : "右",
