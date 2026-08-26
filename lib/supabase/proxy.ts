@@ -7,6 +7,7 @@ import {
 } from "./config";
 
 const protectedRoutePrefixes = [
+  "/candidates",
   "/open-matches",
   "/matchmaking",
   "/events",
