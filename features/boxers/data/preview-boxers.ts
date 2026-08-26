@@ -17,4 +17,23 @@ export const boxerPreviewData: BoxerPreview[] = [
   { id:"20000000-0000-4000-8000-000000000005", name:"中村 拓海", kana:"なかむら たくみ", gym:"西東京ボクシングジム", prefecture:"東京都", nationality:"日本", division:"スーパーフェザー級", boxerClass:"A級", stance:"右", totalBouts:16, wins:12, losses:3, draws:1, koWins:7, rankings:[{body:"WBO Asia Pacific",rank:9},{body:"OPBF",rank:13}], lastBout:"2026.08.02", nextBout:null, nextVenue:null, status:"受付中", available:"2026年12月以降", availableMonth:"2026-12", rounds:[8,10], minWeight:58.5, maxWeight:59.5, travel:"国内可", verified:"昨日", heightCm:174, reachCm:177, birthDate:"1996-03-27" }
 ];
 
-export const divisions = ["ミニマム級","ライトフライ級","フライ級","スーパーフライ級","バンタム級","スーパーバンタム級","フェザー級","スーパーフェザー級","ライト級","スーパーライト級","ウェルター級","スーパーウェルター級","ミドル級","スーパーミドル級","ライトヘビー級","クルーザー級","ヘビー級"];
+export const divisions = [
+  "アトム級",
+  "ミニマム級",
+  "ライトフライ級",
+  "フライ級",
+  "スーパーフライ級",
+  "バンタム級",
+  "スーパーバンタム級",
+  "フェザー級",
+  "スーパーフェザー級",
+  "ライト級",
+  "スーパーライト級",
+  "ウェルター級",
+  "スーパーウェルター級",
+  "ミドル級",
+  "スーパーミドル級",
+  "ライトヘビー級",
+  "クルーザー級",
+  "ヘビー級",
+];
