@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 
 type CaseItem={
@@ -29,6 +30,7 @@ const editableOptions=["募集中","相談中","交渉中","ジム確認待ち",
 const rerecruitable=new Set(["相談中","交渉中","ジム確認待ち","内定"]);
 
 export function CaseBoard({ databaseConnected, industryMode }: { databaseConnected:boolean; industryMode:boolean }) {
+  const router=useRouter();
   const [items,setItems]=useState<CaseItem[]>(databaseConnected?[]:defaults);
   const [loading,setLoading]=useState(databaseConnected&&industryMode);
   const [error,setError]=useState("");
@@ -115,13 +117,13 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
           sourceCaseId:item.id,targetBoxerId,event:item.event,date:item.date,venue:item.venue,weight:item.weight,rounds:item.rounds,note:item.message,
         }));
         setItems(current=>current.map(value=>value.id===item.id?{...value,status:"中止"}:value));
-        window.location.href="/open-matches?fromCase=1";
+        router.push("/open-matches?fromCase=1");
         return;
       }
       const supabase=createClient();
       const {data,error:rpcError}=await supabase.schema("ringops").rpc("reopen_case_as_open_match",{p_case_id:item.id,p_target_boxer_id:targetBoxerId});
       if(rpcError)throw rpcError;
-      window.location.href=`/open-matches?reopened=${encodeURIComponent(String(data))}`;
+      router.push(`/open-matches?reopened=${encodeURIComponent(String(data))}`);
     }catch{
       setError("再募集を作成できませんでした。案件権限と対象選手を確認してください。");
     }finally{

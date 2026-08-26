@@ -49,7 +49,7 @@ export function CandidateList({
       try{
         if(!databaseConnected){
           const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
-          const mapped=ids.map((id,index)=>previewBoxers.find(boxer=>boxer.id===id)).filter(Boolean).map((boxer,index)=>({
+          const mapped=ids.map((id)=>previewBoxers.find(boxer=>boxer.id===id)).filter(Boolean).map((boxer,index)=>({
             listId:"preview",listName:"候補選手",boxerId:boxer!.id,name:boxer!.name,gym:boxer!.gym,division:boxer!.division,
             boxerClass:boxer!.boxerClass,stance:boxer!.stance,record:`${boxer!.totalBouts}戦 ${boxer!.wins}勝（${boxer!.koWins}KO）${boxer!.losses}敗${boxer!.draws?` ${boxer!.draws}分`:""}`,
             status:boxer!.status,verified:boxer!.verified,addedAt:new Date(Date.now()-index*60000).toISOString(),

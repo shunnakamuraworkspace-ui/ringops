@@ -114,7 +114,7 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
     if(!databaseConnected){
       const org=managedOrgs.find(value=>value.id===organizationId);
       const boxer=myBoxers.find(value=>value.id===targetBoxerId);
-      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
+      const item:Item={id:`demo-${items.length + 1}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
       setItems([item,...items]);setShowForm(false);resetForm();return;
     }
 
