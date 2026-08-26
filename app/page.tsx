@@ -2,7 +2,9 @@ import Link from "next/link";
 import { BoxerDirectory } from "@/features/boxers/components/boxer-directory";
 import { loadBoxers } from "@/lib/ringops/load-boxers";
 
-export default async function HomePage({searchParams}:{searchParams:Promise<{division?:string;class?:string;rounds?:string}>}) {
+type SearchParams={division?:string;class?:string;rounds?:string;stance?:string;minWeight?:string;maxWeight?:string;minBouts?:string;maxBouts?:string};
+
+export default async function HomePage({searchParams}:{searchParams:Promise<SearchParams>}) {
   const [params,{ boxers, databaseConnected, industryMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);
   const open = industryMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;
 
@@ -48,6 +50,11 @@ export default async function HomePage({searchParams}:{searchParams:Promise<{div
         initialDivision={params.division}
         initialClass={params.class}
         initialRounds={params.rounds}
+        initialStance={params.stance}
+        initialMinWeight={params.minWeight}
+        initialMaxWeight={params.maxWeight}
+        initialMinBouts={params.minBouts}
+        initialMaxBouts={params.maxBouts}
       />
     </>}
   </>;
