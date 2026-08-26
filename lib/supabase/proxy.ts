@@ -11,6 +11,7 @@ const protectedRoutePrefixes = [
   "/matchmaking",
   "/events",
   "/messages",
+  "/notifications",
   "/gym",
   "/onboarding",
 ];
