@@ -1,35 +1,205 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { divisions } from "@/features/boxers/data/preview-boxers";
 
-type Item={id:string;targetBoxer:string;organization:string;date:string;venue:string;division:string;weight:string;rounds:number;klass:string;stance:string;deadline:string;note:string};
+type Item={
+  id:string; organizationId:string; targetBoxerId:string|null; targetBoxer:string; organization:string;
+  date:string; venue:string; division:string; minWeight:number|null; maxWeight:number|null; rounds:number;
+  klass:string; stance:string; minBouts:number|null; maxBouts:number|null; region:string; travel:string;
+  deadline:string; note:string;
+};
+type ManagedOrg={id:string;name:string;type:string};
+type MyBoxer={id:string;name:string;organizationId:string};
+
 const divisionCodes:Record<string,string>={"ミニマム級":"minimum","ライトフライ級":"light_fly","フライ級":"fly","スーパーフライ級":"super_fly","バンタム級":"bantam","スーパーバンタム級":"super_bantam","フェザー級":"feather","スーパーフェザー級":"super_feather","ライト級":"light","スーパーライト級":"super_light","ウェルター級":"welter","スーパーウェルター級":"super_welter","ミドル級":"middle","スーパーミドル級":"super_middle","ライトヘビー級":"light_heavy","クルーザー級":"cruiser","ヘビー級":"heavy"};
 const codeToDivision=Object.fromEntries(Object.entries(divisionCodes).map(([label,code])=>[code,label]));
 const stanceToDb:Record<string,string|undefined>={"指定なし":undefined,"右":"orthodox","左":"southpaw"};
 const classToDb:Record<string,string|undefined>={"指定なし":undefined,"A級":"A","B級":"B","C級":"C"};
-const demo:Item[]=[{id:"demo-1",targetBoxer:"山田 直樹",organization:"青空ボクシングジム",date:"2026-11-20",venue:"後楽園ホール",division:"スーパーバンタム級",weight:"55.0kg",rounds:6,klass:"B級",stance:"指定なし",deadline:"2026-09-30",note:"戦績5〜10戦程度を希望。"},{id:"demo-2",targetBoxer:"高橋 悠真",organization:"北辰ボクシングジム",date:"2026-10-24",venue:"後楽園ホール",division:"ライト級",weight:"61.0kg",rounds:4,klass:"C級",stance:"指定なし",deadline:"2026-09-10",note:"初期キャリアの選手を希望。"}];
+
+const demo:Item[]=[
+  {id:"demo-1",organizationId:"preview-gym",targetBoxerId:"20000000-0000-4000-8000-000000000001",targetBoxer:"山田 直樹",organization:"青空ボクシングジム",date:"2026-11-20",venue:"後楽園ホール",division:"スーパーバンタム級",minWeight:54.8,maxWeight:55.2,rounds:6,klass:"B級",stance:"指定なし",minBouts:5,maxBouts:10,region:"国内",travel:"東京へ遠征可",deadline:"2026-09-30",note:"戦績5〜10戦程度を希望。"},
+  {id:"demo-2",organizationId:"preview-promoter",targetBoxerId:null,targetBoxer:"対戦枠",organization:"東京プロモーション",date:"2026-10-24",venue:"後楽園ホール",division:"ライト級",minWeight:60.8,maxWeight:61.2,rounds:4,klass:"C級",stance:"指定なし",minBouts:null,maxBouts:5,region:"関東優先",travel:"要相談",deadline:"2026-09-10",note:"初期キャリアの選手を希望。"},
+];
+const previewOrgs:ManagedOrg[]=[{id:"preview-gym",name:"青空ボクシングジム",type:"gym"},{id:"preview-promoter",name:"東京プロモーション",type:"promoter"}];
+const previewBoxers:MyBoxer[]=[{id:"20000000-0000-4000-8000-000000000001",name:"山田 直樹",organizationId:"preview-gym"}];
 
 export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){
-  const [items,setItems]=useState<Item[]>(databaseConnected?[]:demo); const [loading,setLoading]=useState(databaseConnected); const [showForm,setShowForm]=useState(false); const [error,setError]=useState("");
-  const [division,setDivision]=useState("スーパーバンタム級"); const [date,setDate]=useState(""); const [venue,setVenue]=useState(""); const [weight,setWeight]=useState(""); const [rounds,setRounds]=useState("6"); const [klass,setKlass]=useState("B級"); const [stance,setStance]=useState("指定なし"); const [deadline,setDeadline]=useState(""); const [note,setNote]=useState("");
+  const [items,setItems]=useState<Item[]>(databaseConnected?[]:demo);
+  const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(databaseConnected?[]:previewOrgs);
+  const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(databaseConnected?[]:previewBoxers);
+  const [loading,setLoading]=useState(databaseConnected);
+  const [showForm,setShowForm]=useState(false);
+  const [error,setError]=useState("");
+  const [busyId,setBusyId]=useState("");
+
+  const [organizationId,setOrganizationId]=useState(databaseConnected?"":"preview-gym");
+  const [targetBoxerId,setTargetBoxerId]=useState("");
+  const [division,setDivision]=useState("スーパーバンタム級");
+  const [date,setDate]=useState("");
+  const [venue,setVenue]=useState("");
+  const [minWeight,setMinWeight]=useState("");
+  const [maxWeight,setMaxWeight]=useState("");
+  const [rounds,setRounds]=useState("6");
+  const [klass,setKlass]=useState("B級");
+  const [stance,setStance]=useState("指定なし");
+  const [minBouts,setMinBouts]=useState("");
+  const [maxBouts,setMaxBouts]=useState("");
+  const [region,setRegion]=useState("");
+  const [travel,setTravel]=useState("");
+  const [deadline,setDeadline]=useState("");
+  const [note,setNote]=useState("");
 
   useEffect(()=>{
-    if(!databaseConnected){return;} if(!industryMode){setLoading(false);return;}
-    let active=true;(async()=>{try{const supabase=createClient();const {data,error:loadError}=await supabase.schema("ringops").from("open_matches").select("id,event_date,venue_name,division_code,contract_weight_min_kg,contract_weight_max_kg,rounds,preferred_class,preferred_stance,deadline,comment,target_boxer_id,organization_id").eq("status","open").order("deadline");if(loadError)throw loadError;const boxerIds=[...new Set((data??[]).map((r:any)=>r.target_boxer_id).filter(Boolean))];const orgIds=[...new Set((data??[]).map((r:any)=>r.organization_id).filter(Boolean))];const [{data:boxers},{data:orgs}]=await Promise.all([boxerIds.length?supabase.schema("ringops").from("boxers").select("id,name").in("id",boxerIds):Promise.resolve({data:[]}),orgIds.length?supabase.schema("ringops").from("organizations").select("id,display_name").in("id",orgIds):Promise.resolve({data:[]})]);const boxerMap=new Map((boxers??[]).map((b:any)=>[b.id,b.name]));const orgMap=new Map((orgs??[]).map((o:any)=>[o.id,o.display_name]));const mapped=(data??[]).map((r:any)=>({id:r.id,targetBoxer:boxerMap.get(r.target_boxer_id)??"対戦枠",organization:orgMap.get(r.organization_id)??"業界組織",date:r.event_date??"",venue:r.venue_name??"—",division:codeToDivision[r.division_code]??r.division_code,weight:r.contract_weight_min_kg===r.contract_weight_max_kg?`${r.contract_weight_min_kg}kg`:`${r.contract_weight_min_kg??"—"}〜${r.contract_weight_max_kg??"—"}kg`,rounds:r.rounds,klass:r.preferred_class?`${r.preferred_class}級`:"指定なし",stance:r.preferred_stance==="southpaw"?"左":r.preferred_stance==="orthodox"?"右":"指定なし",deadline:r.deadline??"",note:r.comment??""}));if(active)setItems(mapped);}catch{if(active)setError("募集情報を読み込めませんでした。") }finally{if(active)setLoading(false)}})();return()=>{active=false};
+    if(!databaseConnected)return;
+    if(!industryMode){setLoading(false);return;}
+    let active=true;
+    (async()=>{
+      try{
+        const supabase=createClient();
+        const {data:userData}=await supabase.auth.getUser();
+        if(!userData.user)throw new Error();
+
+        const [{data:openRows,error:openError},{data:memberships,error:membershipError}]=await Promise.all([
+          supabase.schema("ringops").from("open_matches").select("id,event_date,venue_name,division_code,contract_weight_min_kg,contract_weight_max_kg,rounds,preferred_class,preferred_stance,min_bouts,max_bouts,region_condition,travel_condition,deadline,comment,target_boxer_id,organization_id").eq("status","open").order("deadline"),
+          supabase.schema("ringops").from("organization_memberships").select("organization_id,role").eq("user_id",userData.user.id).eq("status","active").in("role",["owner","admin","matchmaker"]),
+        ]);
+        if(openError||membershipError)throw openError||membershipError;
+
+        const managedIds=[...new Set((memberships??[]).map(row=>row.organization_id))];
+        const openOrgIds=(openRows??[]).map(row=>row.organization_id);
+        const orgIds=[...new Set([...managedIds,...openOrgIds])];
+        const boxerIds=[...new Set((openRows??[]).map(row=>row.target_boxer_id).filter(Boolean))];
+
+        const [orgResult,targetBoxerResult,myBoxerResult]=await Promise.all([
+          orgIds.length?supabase.schema("ringops").from("organizations").select("id,display_name,organization_type").in("id",orgIds):Promise.resolve({data:[],error:null}),
+          boxerIds.length?supabase.schema("ringops").from("boxers").select("id,name,organization_id").in("id",boxerIds):Promise.resolve({data:[],error:null}),
+          managedIds.length?supabase.schema("ringops").from("boxers").select("id,name,organization_id").in("organization_id",managedIds).eq("is_public",true).order("name_kana"):Promise.resolve({data:[],error:null}),
+        ]);
+        if(orgResult.error||targetBoxerResult.error||myBoxerResult.error)throw orgResult.error||targetBoxerResult.error||myBoxerResult.error;
+
+        const orgMap=new Map((orgResult.data??[]).map(org=>[org.id,org]));
+        const boxerMap=new Map((targetBoxerResult.data??[]).map(boxer=>[boxer.id,boxer.name]));
+        const mapped:Item[]=(openRows??[]).map(row=>({
+          id:row.id,organizationId:row.organization_id,targetBoxerId:row.target_boxer_id,targetBoxer:boxerMap.get(row.target_boxer_id)??"対戦枠",
+          organization:orgMap.get(row.organization_id)?.display_name??"業界組織",date:row.event_date??"",venue:row.venue_name??"—",
+          division:codeToDivision[row.division_code]??row.division_code,minWeight:row.contract_weight_min_kg==null?null:Number(row.contract_weight_min_kg),maxWeight:row.contract_weight_max_kg==null?null:Number(row.contract_weight_max_kg),
+          rounds:row.rounds,klass:row.preferred_class?`${row.preferred_class}級`:"指定なし",stance:row.preferred_stance==="southpaw"?"左":row.preferred_stance==="orthodox"?"右":"指定なし",
+          minBouts:row.min_bouts,maxBouts:row.max_bouts,region:row.region_condition??"",travel:row.travel_condition??"",deadline:row.deadline??"",note:row.comment??"",
+        }));
+        const ownOrgs:ManagedOrg[]=managedIds.map(id=>orgMap.get(id)).filter(Boolean).map(org=>({id:org!.id,name:org!.display_name,type:org!.organization_type}));
+        const ownBoxers:MyBoxer[]=(myBoxerResult.data??[]).map(boxer=>({id:boxer.id,name:boxer.name,organizationId:boxer.organization_id}));
+        if(active){setItems(mapped);setManagedOrgs(ownOrgs);setMyBoxers(ownBoxers);setOrganizationId(current=>current||ownOrgs[0]?.id||"");}
+      }catch{
+        if(active)setError("募集情報を読み込めませんでした。");
+      }finally{
+        if(active)setLoading(false);
+      }
+    })();
+    return()=>{active=false};
   },[databaseConnected,industryMode]);
 
-  async function create(e:React.FormEvent){e.preventDefault();setError("");if(!databaseConnected){const item:Item={id:`demo-${Date.now()}`,targetBoxer:"対象選手未指定",organization:"自組織",date,venue,division,weight:`${weight}kg`,rounds:Number(rounds),klass,stance,deadline,note};setItems([item,...items]);setShowForm(false);return;}try{const supabase=createClient();const {data:userData}=await supabase.auth.getUser();const user=userData.user;if(!user)throw new Error();const {data:membership}=await supabase.schema("ringops").from("organization_memberships").select("organization_id,role").eq("user_id",user.id).eq("status","active").in("role",["owner","admin","matchmaker"]).limit(1).single();if(!membership)throw new Error();const parsed=Number(weight);const {error:insertError}=await supabase.schema("ringops").from("open_matches").insert({organization_id:membership.organization_id,event_date:date||null,venue_name:venue||null,division_code:divisionCodes[division],contract_weight_min_kg:parsed||null,contract_weight_max_kg:parsed||null,rounds:Number(rounds),preferred_class:classToDb[klass]??null,preferred_stance:stanceToDb[stance]??null,deadline:deadline||null,comment:note||null,status:"open",created_by:user.id});if(insertError)throw insertError;location.reload();}catch{setError("募集を登録できませんでした。組織権限を確認してください。");}}
+  const targetOptions=useMemo(()=>myBoxers.filter(boxer=>boxer.organizationId===organizationId),[myBoxers,organizationId]);
+  const managedIds=useMemo(()=>new Set(managedOrgs.map(org=>org.id)),[managedOrgs]);
+
+  async function create(e:React.FormEvent){
+    e.preventDefault();setError("");
+    if(!organizationId){setError("投稿する組織を選択してください。");return;}
+    const minW=minWeight?Number(minWeight):null;const maxW=maxWeight?Number(maxWeight):null;
+    if(minW!==null&&maxW!==null&&maxW<minW){setError("契約ウェイトの上限は下限以上にしてください。");return;}
+    if(minBouts&&maxBouts&&Number(maxBouts)<Number(minBouts)){setError("戦数上限は下限以上にしてください。");return;}
+
+    if(!databaseConnected){
+      const org=managedOrgs.find(value=>value.id===organizationId);
+      const boxer=myBoxers.find(value=>value.id===targetBoxerId);
+      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
+      setItems([item,...items]);setShowForm(false);resetForm();return;
+    }
+
+    try{
+      const supabase=createClient();
+      const {data:userData}=await supabase.auth.getUser();
+      const user=userData.user;if(!user)throw new Error();
+      const {error:insertError}=await supabase.schema("ringops").from("open_matches").insert({
+        organization_id:organizationId,target_boxer_id:targetBoxerId||null,event_date:date||null,venue_name:venue||null,division_code:divisionCodes[division],
+        contract_weight_min_kg:minW,contract_weight_max_kg:maxW,rounds:Number(rounds),preferred_class:classToDb[klass]??null,preferred_stance:stanceToDb[stance]??null,
+        min_bouts:minBouts?Number(minBouts):null,max_bouts:maxBouts?Number(maxBouts):null,region_condition:region||null,travel_condition:travel||null,
+        deadline:deadline||null,comment:note||null,status:"open",created_by:user.id,
+      });
+      if(insertError)throw insertError;
+      location.reload();
+    }catch{
+      setError("募集を登録できませんでした。組織権限を確認してください。");
+    }
+  }
+
+  async function changeStatus(id:string,status:"paused"|"closed"){
+    setBusyId(id);setError("");
+    try{
+      if(databaseConnected){
+        const supabase=createClient();
+        const {error:updateError}=await supabase.schema("ringops").from("open_matches").update({status}).eq("id",id);
+        if(updateError)throw updateError;
+      }
+      setItems(current=>current.filter(item=>item.id!==id));
+    }catch{
+      setError("募集状態を変更できませんでした。");
+    }finally{
+      setBusyId("");
+    }
+  }
+
+  function resetForm(){
+    setTargetBoxerId("");setDate("");setVenue("");setMinWeight("");setMaxWeight("");setMinBouts("");setMaxBouts("");setRegion("");setTravel("");setDeadline("");setNote("");
+  }
 
   if(loading)return <div className="border-y-2 border-slate-950 bg-white py-12 text-center text-sm font-bold text-slate-500">募集情報を読み込んでいます…</div>;
+  if(databaseConnected&&!industryMode)return <div className="border-y-2 border-slate-950 bg-white py-12 text-center text-sm font-bold text-slate-500">業界アカウントでログインすると対戦相手募集を確認できます。</div>;
+
   return <>
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><p className="text-xs font-bold text-slate-500">募集中 {items.length}件</p>{industryMode&&<button className="h-10 bg-slate-950 px-4 text-xs font-black text-white" onClick={()=>setShowForm(!showForm)}>{showForm?"閉じる":"対戦相手募集を作成"}</button>}</div>
     {error&&<div className="mb-4 border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-800">{error}</div>}
-    {showForm&&<form className="mb-6 border-y-2 border-slate-950 bg-white p-5" onSubmit={create}><div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4"><Select label="階級" value={division} onChange={setDivision} values={divisions}/><Field label="興行日"><input className="input" type="date" required value={date} onChange={e=>setDate(e.target.value)}/></Field><Field label="会場"><input className="input" required value={venue} onChange={e=>setVenue(e.target.value)} placeholder="後楽園ホール"/></Field><Field label="契約ウェイト kg"><input className="input" type="number" step="0.01" required value={weight} onChange={e=>setWeight(e.target.value)}/></Field><Select label="R" value={rounds} onChange={setRounds} values={["4","6","8","10","12"]}/><Select label="希望クラス" value={klass} onChange={setKlass} values={["指定なし","A級","B級","C級"]}/><Select label="構え" value={stance} onChange={setStance} values={["指定なし","右","左"]}/><Field label="募集期限"><input className="input" type="date" value={deadline} onChange={e=>setDeadline(e.target.value)}/></Field></div><Field label="条件・コメント"><textarea className="mt-1 min-h-24 w-full border border-slate-300 p-3 text-sm" value={note} onChange={e=>setNote(e.target.value)}/></Field><div className="mt-4 text-right"><button className="h-11 bg-slate-950 px-5 text-xs font-black text-white">募集を公開</button></div></form>}
-    <div className="border-y-2 border-slate-950 bg-white">{items.map(item=><article className="grid gap-4 border-b border-slate-200 px-5 py-5 last:border-0 lg:grid-cols-[1.45fr_1fr_.8fr_.8fr_1fr] lg:items-center" key={item.id}><div><b>{item.targetBoxer}</b><p className="mt-1 text-xs font-bold text-slate-500">{item.organization}</p><p className="mt-1 text-xs text-slate-400">{item.date}｜{item.venue}</p></div><div><b className="text-sm">{item.division}</b><p className="mt-1 text-xs text-slate-500">{item.weight}</p></div><b>{item.klass} / {item.rounds}R</b><div><p className="text-[11px] text-slate-400">募集期限</p><b>{item.deadline||"未設定"}</b></div><Link className="flex h-10 items-center justify-center border border-slate-950 px-3 text-xs font-black hover:bg-slate-950 hover:text-white" href={`/?division=${encodeURIComponent(item.division)}&class=${encodeURIComponent(item.klass)}&rounds=${item.rounds}`}>この条件で選手を探す</Link>{item.note&&<p className="text-xs leading-5 text-slate-500 lg:col-span-5">{item.note}</p>}</article>)}{!items.length&&<div className="py-12 text-center text-sm font-bold text-slate-500">現在募集中の案件はありません。</div>}</div>
+
+    {showForm&&<form className="mb-6 border-y-2 border-slate-950 bg-white p-5" onSubmit={create}>
+      <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+        <Select label="投稿組織" value={organizationId} onChange={value=>{setOrganizationId(value);setTargetBoxerId("");}} values={managedOrgs.map(org=>({value:org.id,label:org.name}))}/>
+        <Select label="対象選手（任意）" value={targetBoxerId} onChange={setTargetBoxerId} values={[{value:"",label:"対戦枠として募集"},...targetOptions.map(boxer=>({value:boxer.id,label:boxer.name}))]}/>
+        <Select label="階級" value={division} onChange={setDivision} values={divisions.map(value=>({value,label:value}))}/>
+        <Select label="R" value={rounds} onChange={setRounds} values={["4","6","8","10","12"].map(value=>({value,label:`${value}R`}))}/>
+        <Field label="興行日"><input className="input" type="date" required value={date} onChange={e=>setDate(e.target.value)}/></Field>
+        <Field label="会場"><input className="input" required value={venue} onChange={e=>setVenue(e.target.value)} placeholder="後楽園ホール"/></Field>
+        <Field label="契約ウェイト 下限 kg"><input className="input" type="number" step="0.01" value={minWeight} onChange={e=>setMinWeight(e.target.value)} placeholder="54.8"/></Field>
+        <Field label="契約ウェイト 上限 kg"><input className="input" type="number" step="0.01" value={maxWeight} onChange={e=>setMaxWeight(e.target.value)} placeholder="55.2"/></Field>
+        <Select label="希望クラス" value={klass} onChange={setKlass} values={["指定なし","A級","B級","C級"].map(value=>({value,label:value}))}/>
+        <Select label="構え" value={stance} onChange={setStance} values={["指定なし","右","左"].map(value=>({value,label:value}))}/>
+        <Field label="戦数 下限"><input className="input" type="number" min="0" value={minBouts} onChange={e=>setMinBouts(e.target.value)} placeholder="5"/></Field>
+        <Field label="戦数 上限"><input className="input" type="number" min="0" value={maxBouts} onChange={e=>setMaxBouts(e.target.value)} placeholder="10"/></Field>
+        <Field label="地域条件"><input className="input" value={region} onChange={e=>setRegion(e.target.value)} placeholder="例：関東優先"/></Field>
+        <Field label="遠征条件"><input className="input" value={travel} onChange={e=>setTravel(e.target.value)} placeholder="例：東京へ遠征可"/></Field>
+        <Field label="募集期限"><input className="input" type="date" required value={deadline} onChange={e=>setDeadline(e.target.value)}/></Field>
+      </div>
+      <Field label="条件・コメント"><textarea className="mt-1 min-h-24 w-full border border-slate-300 p-3 text-sm outline-none focus:border-slate-950" value={note} onChange={e=>setNote(e.target.value)} maxLength={1500}/></Field>
+      <div className="mt-4 flex justify-end"><button className="h-11 bg-slate-950 px-5 text-xs font-black text-white">募集を公開</button></div>
+    </form>}
+
+    <div className="border-y-2 border-slate-950 bg-white">
+      {items.map(item=><article className="grid gap-4 border-b border-slate-200 px-5 py-5 last:border-0 lg:grid-cols-[1.45fr_1fr_.9fr_.8fr_1.15fr] lg:items-center" key={item.id}>
+        <div><b>{item.targetBoxer}</b><p className="mt-1 text-xs font-bold text-slate-500">{item.organization}</p><p className="mt-1 text-xs text-slate-400">{item.date}｜{item.venue}</p></div>
+        <div><b className="text-sm">{item.division}</b><p className="mt-1 text-xs text-slate-500">{weightLabel(item.minWeight,item.maxWeight)}</p></div>
+        <div><b>{item.klass} / {item.rounds}R</b><p className="mt-1 text-xs text-slate-500">構え {item.stance}｜戦数 {rangeLabel(item.minBouts,item.maxBouts)}</p></div>
+        <div><p className="text-[11px] text-slate-400">募集期限</p><b>{item.deadline||"未設定"}</b></div>
+        <div className="flex flex-col gap-2"><Link className="flex h-10 items-center justify-center border border-slate-950 px-3 text-xs font-black hover:bg-slate-950 hover:text-white" href={searchHref(item)}>この条件で選手を探す</Link>{managedIds.has(item.organizationId)&&<div className="flex gap-2"><button className="h-8 flex-1 border border-slate-300 text-[10px] font-bold text-slate-600" disabled={busyId===item.id} onClick={()=>changeStatus(item.id,"paused")}>一時停止</button><button className="h-8 flex-1 text-[10px] font-bold text-slate-500 underline" disabled={busyId===item.id} onClick={()=>changeStatus(item.id,"closed")}>募集終了</button></div>}</div>
+        {(item.region||item.travel||item.note)&&<div className="border-t border-slate-100 pt-3 text-xs leading-5 text-slate-500 lg:col-span-5"><p>{[item.region,item.travel].filter(Boolean).join("｜")}</p>{item.note&&<p className="mt-1">{item.note}</p>}</div>}
+      </article>)}
+      {!items.length&&<div className="py-12 text-center text-sm font-bold text-slate-500">現在募集中の案件はありません。</div>}
+    </div>
   </>;
 }
+
+function searchHref(item:Item){const params=new URLSearchParams();params.set("division",item.division);params.set("rounds",String(item.rounds));if(item.klass!=="指定なし")params.set("class",item.klass);if(item.stance!=="指定なし")params.set("stance",item.stance);if(item.minWeight!==null)params.set("minWeight",String(item.minWeight));if(item.maxWeight!==null)params.set("maxWeight",String(item.maxWeight));if(item.minBouts!==null)params.set("minBouts",String(item.minBouts));if(item.maxBouts!==null)params.set("maxBouts",String(item.maxBouts));return`/?${params.toString()}`;}
+function weightLabel(min:number|null,max:number|null){if(min===null&&max===null)return"指定なし";if(min!==null&&max!==null&&min===max)return`${min}kg`;return`${min??"—"}〜${max??"—"}kg`;}
+function rangeLabel(min:number|null,max:number|null){if(min===null&&max===null)return"指定なし";return`${min??"—"}〜${max??"—"}戦`;}
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="block"><span className="mb-1.5 block text-[11px] font-black text-slate-500">{label}</span>{children}</label>}
-function Select({label,value,onChange,values}:{label:string;value:string;onChange:(v:string)=>void;values:string[]}){return <Field label={label}><select className="input" value={value} onChange={e=>onChange(e.target.value)}>{values.map(v=><option key={v} value={v}>{/^\d+$/.test(v)?`${v}R`:v}</option>)}</select></Field>}
+function Select({label,value,onChange,values}:{label:string;value:string;onChange:(v:string)=>void;values:{value:string;label:string}[]}){return <Field label={label}><select className="input" value={value} onChange={e=>onChange(e.target.value)}>{values.map(option=><option key={`${option.value}:${option.label}`} value={option.value}>{option.label}</option>)}</select></Field>}
