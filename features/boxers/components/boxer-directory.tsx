@@ -19,10 +19,18 @@ type SearchFilters = {
   status: string;
   rounds: string;
   ranking: string;
+  rankMax: string;
   nextBout: string;
   month: string;
   minWeight: string;
   maxWeight: string;
+  minBouts: string;
+  maxBouts: string;
+  minWins: string;
+  minKoWins: string;
+  undefeated: string;
+  lastBoutAge: string;
+  travel: string;
 };
 
 type SavedSearch = {
@@ -48,10 +56,18 @@ const defaultFilters: SearchFilters = {
   status: "相談可",
   rounds: "すべて",
   ranking: "すべて",
+  rankMax: "",
   nextBout: "すべて",
   month: "",
   minWeight: "",
   maxWeight: "",
+  minBouts: "",
+  maxBouts: "",
+  minWins: "",
+  minKoWins: "",
+  undefeated: "すべて",
+  lastBoutAge: "すべて",
+  travel: "すべて",
 };
 
 export function BoxerDirectory({
@@ -69,58 +85,89 @@ export function BoxerDirectory({
   const [status,setStatus]=useState("相談可");
   const [rounds,setRounds]=useState(initialRounds && ["4","6","8","10","12","4R","6R","8R","10R","12R"].includes(initialRounds) ? initialRounds.replace("R","") : "すべて");
   const [ranking,setRanking]=useState("すべて");
+  const [rankMax,setRankMax]=useState("");
   const [nextBout,setNextBout]=useState("すべて");
   const [month,setMonth]=useState("");
   const [minWeight,setMinWeight]=useState("");
   const [maxWeight,setMaxWeight]=useState("");
+  const [minBouts,setMinBouts]=useState("");
+  const [maxBouts,setMaxBouts]=useState("");
+  const [minWins,setMinWins]=useState("");
+  const [minKoWins,setMinKoWins]=useState("");
+  const [undefeated,setUndefeated]=useState("すべて");
+  const [lastBoutAge,setLastBoutAge]=useState("すべて");
+  const [travel,setTravel]=useState("すべて");
 
   const currentFilters: SearchFilters = {
-    q, division, klass, stance, status, rounds, ranking, nextBout, month, minWeight, maxWeight,
+    q, division, klass, stance, status, rounds, ranking, rankMax, nextBout, month,
+    minWeight, maxWeight, minBouts, maxBouts, minWins, minKoWins, undefeated,
+    lastBoutAge, travel,
   };
 
   const filtered=useMemo(()=>boxers.filter(b=>{
     const text=q.trim().toLowerCase();
     const queryOk=!text||[b.name,b.kana,b.gym,b.prefecture,b.nationality].some(v=>v.toLowerCase().includes(text));
-    const rankingOk=ranking==="すべて"||(ranking==="ランカー"?b.rankings.length>0:b.rankings.some(r=>r.body===ranking));
+    const rankLimit=rankMax?Number(rankMax):null;
+    const rankingOk=ranking==="すべて"
+      || (ranking==="ランカー"?b.rankings.length>0:b.rankings.some(r=>r.body===ranking&&(rankLimit===null||(r.rank!==null&&r.rank<=rankLimit))));
     const nextOk=nextBout==="すべて"||(nextBout==="次戦あり"?Boolean(b.nextBout):!b.nextBout);
-    if (!industryMode) return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && rankingOk && nextOk;
+    const minB=minBouts?Number(minBouts):null;
+    const maxB=maxBouts?Number(maxBouts):null;
+    const minWn=minWins?Number(minWins):null;
+    const minKo=minKoWins?Number(minKoWins):null;
+    const recordOk=(minB===null||b.totalBouts>=minB)&&(maxB===null||b.totalBouts<=maxB)&&(minWn===null||b.wins>=minWn)&&(minKo===null||b.koWins>=minKo)&&(undefeated==="すべて"||b.losses===0);
+    const lastBoutOk=matchesLastBoutAge(b.lastBout,lastBoutAge);
+    if (!industryMode) return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && rankingOk && nextOk && recordOk && lastBoutOk;
     const statusOk=status==="すべて"||(status==="相談可"?b.status!=="受付停止":b.status===status);
     const monthOk=!month||(!b.availableMonth?false:b.availableMonth<=month);
     const minW=minWeight?Number(minWeight):null;
     const maxW=maxWeight?Number(maxWeight):null;
     const weightOk=(minW===null||b.maxWeight>=minW)&&(maxW===null||b.minWeight<=maxW);
-    return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && (rounds==="すべて"||b.rounds.includes(Number(rounds))) && statusOk && rankingOk && nextOk && monthOk && weightOk;
-  }),[boxers,q,division,klass,stance,status,rounds,ranking,nextBout,month,minWeight,maxWeight,industryMode]);
+    const travelOk=travel==="すべて"||matchesTravel(b.travel,travel);
+    return queryOk && (division==="すべて"||b.division===division) && (klass==="すべて"||b.boxerClass===klass) && (stance==="すべて"||b.stance===stance) && (rounds==="すべて"||b.rounds.includes(Number(rounds))) && statusOk && rankingOk && nextOk && monthOk && weightOk && recordOk && lastBoutOk && travelOk;
+  }),[boxers,q,division,klass,stance,status,rounds,ranking,rankMax,nextBout,month,minWeight,maxWeight,minBouts,maxBouts,minWins,minKoWins,undefeated,lastBoutAge,travel,industryMode]);
 
   function applyFilters(filters: SearchFilters) {
-    setQ(filters.q ?? "");
-    setDivision(filters.division ?? "すべて");
-    setKlass(filters.klass ?? "すべて");
-    setStance(filters.stance ?? "すべて");
-    setStatus(filters.status ?? "相談可");
-    setRounds(filters.rounds ?? "すべて");
-    setRanking(filters.ranking ?? "すべて");
-    setNextBout(filters.nextBout ?? "すべて");
-    setMonth(filters.month ?? "");
-    setMinWeight(filters.minWeight ?? "");
-    setMaxWeight(filters.maxWeight ?? "");
+    const value={...defaultFilters,...filters};
+    setQ(value.q); setDivision(value.division); setKlass(value.klass); setStance(value.stance);
+    setStatus(value.status); setRounds(value.rounds); setRanking(value.ranking); setRankMax(value.rankMax);
+    setNextBout(value.nextBout); setMonth(value.month); setMinWeight(value.minWeight); setMaxWeight(value.maxWeight);
+    setMinBouts(value.minBouts); setMaxBouts(value.maxBouts); setMinWins(value.minWins); setMinKoWins(value.minKoWins);
+    setUndefeated(value.undefeated); setLastBoutAge(value.lastBoutAge); setTravel(value.travel);
   }
 
   const reset=()=>applyFilters(defaultFilters);
 
   return <>
     <section className="border-b border-slate-200 bg-white"><div className="mx-auto max-w-[1480px] px-4 py-5 lg:px-7">
-      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-5">
+      <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-6">
         <Field label="選手名・ジム・地域"><input className="input" value={q} onChange={e=>setQ(e.target.value)} placeholder="選手名、所属ジム、都道府県" /></Field>
         <Select label="階級" value={division} onChange={setDivision} values={["すべて",...divisions]} />
         <Select label="クラス" value={klass} onChange={setKlass} values={["すべて","A級","B級","C級"]} />
         <Select label="構え" value={stance} onChange={setStance} values={["すべて","右","左"]} />
         <Select label="ランキング" value={ranking} onChange={setRanking} values={["すべて","ランカー","日本","OPBF","WBO Asia Pacific","WBA","WBC","IBF","WBO"]} />
+        <Field label="ランキング上限"><input className="input" inputMode="numeric" min="1" type="number" value={rankMax} onChange={e=>setRankMax(e.target.value)} placeholder="例 15" disabled={ranking==="すべて"||ranking==="ランカー"}/></Field>
       </div>
-      <div className={`mt-3 grid gap-3 border-t border-slate-100 pt-3 md:grid-cols-2 ${industryMode?"xl:grid-cols-6":"xl:grid-cols-1"}`}>
+
+      <div className="mt-3 grid gap-3 border-t border-slate-100 pt-3 md:grid-cols-2 xl:grid-cols-7">
         <Select label="次戦" value={nextBout} onChange={setNextBout} values={["すべて","次戦あり","次戦未定"]} />
-        {industryMode && <><Select label="受付状況" value={status} onChange={setStatus} values={["相談可","受付中","条件次第","受付停止","すべて"]} /><Select label="希望R" value={rounds} onChange={setRounds} values={["すべて","4","6","8","10","12"]} /><Field label="試合可能月"><input className="input" type="month" value={month} onChange={e=>setMonth(e.target.value)} /></Field><Field label="契約ウェイト下限"><input className="input" inputMode="decimal" value={minWeight} onChange={e=>setMinWeight(e.target.value)} placeholder="例 53" /></Field><Field label="契約ウェイト上限"><input className="input" inputMode="decimal" value={maxWeight} onChange={e=>setMaxWeight(e.target.value)} placeholder="例 55" /></Field></>}
+        <Field label="戦数 下限"><input className="input" inputMode="numeric" min="0" type="number" value={minBouts} onChange={e=>setMinBouts(e.target.value)} placeholder="例 5"/></Field>
+        <Field label="戦数 上限"><input className="input" inputMode="numeric" min="0" type="number" value={maxBouts} onChange={e=>setMaxBouts(e.target.value)} placeholder="例 12"/></Field>
+        <Field label="勝数 下限"><input className="input" inputMode="numeric" min="0" type="number" value={minWins} onChange={e=>setMinWins(e.target.value)} placeholder="例 4"/></Field>
+        <Field label="KO勝 下限"><input className="input" inputMode="numeric" min="0" type="number" value={minKoWins} onChange={e=>setMinKoWins(e.target.value)} placeholder="例 2"/></Field>
+        <Select label="無敗" value={undefeated} onChange={setUndefeated} values={["すべて","無敗のみ"]} />
+        <Select label="最終試合" value={lastBoutAge} onChange={setLastBoutAge} values={["すべて","90日以内","180日以内","365日以内","365日以上"]} />
       </div>
+
+      {industryMode && <div className="mt-3 grid gap-3 border-t border-slate-100 pt-3 md:grid-cols-2 xl:grid-cols-7">
+        <Select label="受付状況" value={status} onChange={setStatus} values={["相談可","受付中","条件次第","受付停止","すべて"]} />
+        <Select label="希望R" value={rounds} onChange={setRounds} values={["すべて","4","6","8","10","12"]} />
+        <Field label="試合可能月"><input className="input" type="month" value={month} onChange={e=>setMonth(e.target.value)} /></Field>
+        <Field label="契約ウェイト下限"><input className="input" inputMode="decimal" value={minWeight} onChange={e=>setMinWeight(e.target.value)} placeholder="例 53" /></Field>
+        <Field label="契約ウェイト上限"><input className="input" inputMode="decimal" value={maxWeight} onChange={e=>setMaxWeight(e.target.value)} placeholder="例 55" /></Field>
+        <Select label="遠征" value={travel} onChange={setTravel} values={["すべて","遠征可","要相談","地域限定"]} />
+      </div>}
+
       {(initialDivision||initialClass||initialRounds)&&<div className="mt-3 border-l-2 border-slate-900 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600">対戦相手募集の条件を引き継いでいます。</div>}
       <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
         <p className="text-xs font-bold text-slate-500">条件変更は結果へ即反映</p>
@@ -248,6 +295,25 @@ function SavedSearchControls({
     <button className="h-9 px-2 text-xs font-bold text-slate-500 underline disabled:opacity-30" type="button" disabled={!selected||busy} onClick={remove}>削除</button>
     {notice&&<span className="pb-2 text-[10px] font-bold text-slate-500">{notice}</span>}
   </div>;
+}
+
+function matchesLastBoutAge(value:string,condition:string){
+  if(condition==="すべて")return true;
+  const timestamp=new Date(`${value.replaceAll(".","-")}T00:00:00`).getTime();
+  if(Number.isNaN(timestamp))return false;
+  const days=Math.max(0,Math.floor((Date.now()-timestamp)/86400000));
+  if(condition==="90日以内")return days<=90;
+  if(condition==="180日以内")return days<=180;
+  if(condition==="365日以内")return days<=365;
+  if(condition==="365日以上")return days>=365;
+  return true;
+}
+
+function matchesTravel(value:string,condition:string){
+  if(condition==="遠征可")return value.includes("可")&&!value.includes("不可");
+  if(condition==="要相談")return value.includes("相談");
+  if(condition==="地域限定")return !value.includes("可")&&!value.includes("相談")&&value!=="—";
+  return true;
 }
 
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="block"><span className="mb-1.5 block text-[11px] font-black text-slate-500">{label}</span>{children}</label>}
