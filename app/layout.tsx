@@ -12,8 +12,8 @@ export const metadata: Metadata = {
 };
 
 const nav = [
-  ["選手名鑑", "/"], ["対戦相手募集", "/open-matches"], ["マッチメイク", "/matchmaking"],
-  ["興行", "/events"], ["連絡", "/messages"], ["ジム管理", "/gym"],
+  ["選手名鑑", "/"], ["候補", "/candidates"], ["対戦相手募集", "/open-matches"],
+  ["マッチメイク", "/matchmaking"], ["興行", "/events"], ["連絡", "/messages"], ["ジム管理", "/gym"],
 ] as const;
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
