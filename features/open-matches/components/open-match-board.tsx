@@ -14,7 +14,7 @@ type Item={
 type ManagedOrg={id:string;name:string;type:string};
 type MyBoxer={id:string;name:string;organizationId:string};
 
-const divisionCodes:Record<string,string>={"ミニマム級":"minimum","ライトフライ級":"light_fly","フライ級":"fly","スーパーフライ級":"super_fly","バンタム級":"bantam","スーパーバンタム級":"super_bantam","フェザー級":"feather","スーパーフェザー級":"super_feather","ライト級":"light","スーパーライト級":"super_light","ウェルター級":"welter","スーパーウェルター級":"super_welter","ミドル級":"middle","スーパーミドル級":"super_middle","ライトヘビー級":"light_heavy","クルーザー級":"cruiser","ヘビー級":"heavy"};
+const divisionCodes:Record<string,string>={"アトム級":"atom","ミニマム級":"minimum","ライトフライ級":"light_fly","フライ級":"fly","スーパーフライ級":"super_fly","バンタム級":"bantam","スーパーバンタム級":"super_bantam","フェザー級":"feather","スーパーフェザー級":"super_feather","ライト級":"light","スーパーライト級":"super_light","ウェルター級":"welter","スーパーウェルター級":"super_welter","ミドル級":"middle","スーパーミドル級":"super_middle","ライトヘビー級":"light_heavy","クルーザー級":"cruiser","ヘビー級":"heavy"};
 const codeToDivision=Object.fromEntries(Object.entries(divisionCodes).map(([label,code])=>[code,label]));
 const stanceToDb:Record<string,string|undefined>={"指定なし":undefined,"右":"orthodox","左":"southpaw"};
 const classToDb:Record<string,string|undefined>={"指定なし":undefined,"A級":"A","B級":"B","C級":"C"};

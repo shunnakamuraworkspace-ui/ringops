@@ -166,9 +166,8 @@ export function BoxerDirectory({
           value.toLowerCase().includes(text),
         );
 
-      const scopeOk =
-        scope === "すべて" ||
-        (scope === "国内" ? boxer.nationality === "日本" : boxer.nationality !== "日本");
+      const boxerScope = boxer.domesticOrInternational ?? (boxer.nationality === "日本" ? "国内" : "海外");
+      const scopeOk = scope === "すべて" || boxerScope === scope;
       const prefectureOk = prefecture === "すべて" || boxer.prefecture === prefecture;
       const nationalityOk = nationality === "すべて" || boxer.nationality === nationality;
 
