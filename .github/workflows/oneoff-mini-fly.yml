@@ -1,0 +1,52 @@
+name: One-off mini fly division patch
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/oneoff-mini-fly.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add women's mini fly division consistently
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          preview = Path("features/boxers/data/preview-boxers.ts")
+          text = preview.read_text()
+          old = '  "アトム級",\n  "ミニマム級",'
+          new = '  "アトム級",\n  "ミニフライ級",\n  "ミニマム級",'
+          if old not in text:
+              raise SystemExit("preview division target not found")
+          preview.write_text(text.replace(old, new))
+
+          loader = Path("lib/ringops/load-boxers.ts")
+          text = loader.read_text()
+          old = '  atom: "アトム級",\n  minimum: "ミニマム級",'
+          new = '  atom: "アトム級",\n  mini_fly: "ミニフライ級",\n  minimum: "ミニマム級",'
+          if old not in text:
+              raise SystemExit("loader division target not found")
+          loader.write_text(text.replace(old, new))
+
+          open_match = Path("features/open-matches/components/open-match-board.tsx")
+          text = open_match.read_text()
+          old = 'const divisionCodes:Record<string,string>={"アトム級":"atom","ミニマム級":"minimum"'
+          new = 'const divisionCodes:Record<string,string>={"アトム級":"atom","ミニフライ級":"mini_fly","ミニマム級":"minimum"'
+          if old not in text:
+              raise SystemExit("open match division target not found")
+          open_match.write_text(text.replace(old, new))
+          PY
+      - name: Commit patch
+        run: |
+          git config user.name "RINGOPS CI"
+          git config user.email "actions@users.noreply.github.com"
+          git add features/boxers/data/preview-boxers.ts lib/ringops/load-boxers.ts features/open-matches/components/open-match-board.tsx
+          git commit -m "fix: cover women's mini fly division across search and open matches"
+          git push
