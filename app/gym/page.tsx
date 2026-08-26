@@ -1,0 +1,2 @@
+import { StatusManager } from "@/features/gym/components/status-manager";
+export default function GymPage(){return <main><section className="border-b border-slate-200 bg-white"><div className="mx-auto max-w-[1240px] px-4 py-7"><h1 className="text-3xl font-black">ジム管理</h1><p className="mt-2 text-sm text-slate-500">現場でしか分からないMATCH STATUSだけを短時間で更新・確認します。</p></div></section><div className="mx-auto max-w-[1240px] px-4 py-7"><StatusManager/></div></main>}

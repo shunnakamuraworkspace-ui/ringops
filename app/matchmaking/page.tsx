@@ -1,0 +1,2 @@
+import { CaseBoard } from "@/features/matchmaking/components/case-board";
+export default function MatchmakingPage(){return <main><section className="border-b border-slate-200 bg-white"><div className="mx-auto max-w-[1240px] px-4 py-7"><h1 className="text-3xl font-black">マッチメイク案件</h1><p className="mt-2 text-sm text-slate-500">相談開始から決定までを案件単位で追います。ステータス変更はこのプレビューでも保存されます。</p></div></section><div className="mx-auto max-w-[1240px] px-4 py-7"><CaseBoard/></div></main>}
