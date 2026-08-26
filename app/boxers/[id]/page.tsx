@@ -4,7 +4,19 @@ import { loadBoxer } from "@/lib/ringops/load-boxers";
 
 export default async function BoxerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { boxer, industryMode, databaseConnected } = await loadBoxer(id);
+  const { boxer, industryMode, databaseConnected, loadError } = await loadBoxer(id);
+
+  if (loadError) {
+    return <main className="mx-auto max-w-[900px] px-4 py-10 lg:px-7">
+      <Link className="text-xs font-black text-slate-500 underline underline-offset-4" href="/">← 選手名鑑に戻る</Link>
+      <section className="mt-6 border-y-2 border-slate-950 bg-white px-5 py-10 text-center">
+        <h1 className="text-xl font-black">選手情報を読み込めません</h1>
+        <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500">{loadError}</p>
+        <Link className="mt-5 inline-flex h-10 items-center border border-slate-950 px-4 text-xs font-black" href={`/boxers/${id}`}>再読み込み</Link>
+      </section>
+    </main>;
+  }
+
   if (!boxer) notFound();
   const age = boxer.birthDate ? calculateAge(boxer.birthDate) : null;
 
@@ -31,7 +43,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
       </div>
       <aside className="space-y-6">
         {industryMode ? <Section title="マッチメイク情報"><div className="space-y-4"><Data label="受付状況" value={boxer.status}/><Data label="試合可能時期" value={boxer.available}/><Data label="契約可能ウェイト" value={boxer.minWeight&&boxer.maxWeight?`${boxer.minWeight}〜${boxer.maxWeight}kg`:"要確認"}/><Data label="希望ラウンド" value={boxer.rounds.length?boxer.rounds.map(r=>`${r}R`).join(" / "):"要確認"}/><Data label="遠征" value={boxer.travel}/><Data label="情報確認" value={`所属ジム確認：${boxer.verified}`}/></div><Link className="mt-6 flex h-12 items-center justify-center bg-slate-950 px-4 text-sm font-black text-white hover:bg-slate-800" href={`/matchmaking/new?boxer=${boxer.id}`}>所属ジムに相談する</Link></Section>
-        : <Section title="業界向け情報"><p className="text-sm leading-6 text-slate-600">MATCH STATUS、契約ウェイト、希望R、試合可能時期は業界アカウントで表示します。</p><Link className="mt-5 flex h-11 items-center justify-center border border-slate-950 text-sm font-black" href="/login">業界ログイン</Link></Section>}
+        : <Section title="業界向け情報"><p className="text-sm leading-6 text-slate-600">MATCH STATUS、契約ウェイト、希望R、試合可能時期は業界アカウントで表示します。</p><Link className="mt-5 flex h-11 items-center justify-center border border-slate-950 text-sm font-black" href={`/login?next=${encodeURIComponent(`/boxers/${boxer.id}`)}`}>業界ログイン</Link></Section>}
         {!databaseConnected && boxer.instagram && <Section title="SNS"><a className="text-sm font-black underline underline-offset-4" href={boxer.instagram} rel="noreferrer" target="_blank">Instagramを開く</a></Section>}
       </aside>
     </div>
