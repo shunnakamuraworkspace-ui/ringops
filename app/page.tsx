@@ -2,8 +2,8 @@ import Link from "next/link";
 import { BoxerDirectory } from "@/features/boxers/components/boxer-directory";
 import { loadBoxers } from "@/lib/ringops/load-boxers";
 
-export default async function HomePage() {
-  const { boxers, databaseConnected, industryMode } = await loadBoxers();
+export default async function HomePage({searchParams}:{searchParams:Promise<{division?:string;class?:string;rounds?:string}>}) {
+  const [params,{ boxers, databaseConnected, industryMode }] = await Promise.all([searchParams,loadBoxers()]);
   const open = industryMode ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;
 
   return <>
@@ -30,6 +30,6 @@ export default async function HomePage() {
           ? "業界ログイン中：MATCH STATUSと試合条件を含めて検索できます。"
           : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
     </div>
-    <BoxerDirectory boxers={boxers} industryMode={industryMode} />
+    <BoxerDirectory boxers={boxers} industryMode={industryMode} initialDivision={params.division} initialClass={params.class} initialRounds={params.rounds}/>
   </>;
 }
