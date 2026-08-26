@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { CandidateSaveButton } from "./candidate-save-button";
 import { divisions, type BoxerPreview } from "../data/preview-boxers";
 
 const badge: Record<BoxerPreview["status"], string> = {
@@ -46,6 +47,11 @@ type Props = {
   initialDivision?: string;
   initialClass?: string;
   initialRounds?: string;
+  initialStance?: string;
+  initialMinWeight?: string;
+  initialMaxWeight?: string;
+  initialMinBouts?: string;
+  initialMaxBouts?: string;
 };
 
 const defaultFilters: SearchFilters = {
@@ -77,21 +83,26 @@ export function BoxerDirectory({
   initialDivision,
   initialClass,
   initialRounds,
+  initialStance,
+  initialMinWeight,
+  initialMaxWeight,
+  initialMinBouts,
+  initialMaxBouts,
 }: Props) {
   const [q,setQ]=useState("");
   const [division,setDivision]=useState(initialDivision && divisions.includes(initialDivision) ? initialDivision : "すべて");
   const [klass,setKlass]=useState(initialClass && ["A級","B級","C級"].includes(initialClass) ? initialClass : "すべて");
-  const [stance,setStance]=useState("すべて");
+  const [stance,setStance]=useState(initialStance && ["右","左"].includes(initialStance) ? initialStance : "すべて");
   const [status,setStatus]=useState("相談可");
   const [rounds,setRounds]=useState(initialRounds && ["4","6","8","10","12","4R","6R","8R","10R","12R"].includes(initialRounds) ? initialRounds.replace("R","") : "すべて");
   const [ranking,setRanking]=useState("すべて");
   const [rankMax,setRankMax]=useState("");
   const [nextBout,setNextBout]=useState("すべて");
   const [month,setMonth]=useState("");
-  const [minWeight,setMinWeight]=useState("");
-  const [maxWeight,setMaxWeight]=useState("");
-  const [minBouts,setMinBouts]=useState("");
-  const [maxBouts,setMaxBouts]=useState("");
+  const [minWeight,setMinWeight]=useState(validNumberString(initialMinWeight));
+  const [maxWeight,setMaxWeight]=useState(validNumberString(initialMaxWeight));
+  const [minBouts,setMinBouts]=useState(validNumberString(initialMinBouts));
+  const [maxBouts,setMaxBouts]=useState(validNumberString(initialMaxBouts));
   const [minWins,setMinWins]=useState("");
   const [minKoWins,setMinKoWins]=useState("");
   const [undefeated,setUndefeated]=useState("すべて");
@@ -137,6 +148,7 @@ export function BoxerDirectory({
   }
 
   const reset=()=>applyFilters(defaultFilters);
+  const inherited=Boolean(initialDivision||initialClass||initialRounds||initialStance||initialMinWeight||initialMaxWeight||initialMinBouts||initialMaxBouts);
 
   return <>
     <section className="border-b border-slate-200 bg-white"><div className="mx-auto max-w-[1480px] px-4 py-5 lg:px-7">
@@ -168,7 +180,7 @@ export function BoxerDirectory({
         <Select label="遠征" value={travel} onChange={setTravel} values={["すべて","遠征可","要相談","地域限定"]} />
       </div>}
 
-      {(initialDivision||initialClass||initialRounds)&&<div className="mt-3 border-l-2 border-slate-900 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600">対戦相手募集の条件を引き継いでいます。</div>}
+      {inherited&&<div className="mt-3 border-l-2 border-slate-900 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-600">対戦相手募集の条件を引き継いでいます。条件を調整して候補を絞り込めます。</div>}
       <div className="mt-4 flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-3">
         <p className="text-xs font-bold text-slate-500">条件変更は結果へ即反映</p>
         <div className="flex flex-wrap items-end gap-3">
@@ -182,7 +194,7 @@ export function BoxerDirectory({
       <div className="overflow-hidden border-y-2 border-slate-900 bg-white">
         <div className={`hidden gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-[10px] font-black text-slate-500 lg:grid ${industryMode?"grid-cols-[2.1fr_1.3fr_.55fr_1.1fr_1.05fr_1.55fr]":"grid-cols-[2.2fr_1.4fr_.6fr_1.2fr]"}`}><span>選手</span><span>戦績・ランキング</span><span>構え</span><span>最終 / 次戦</span>{industryMode&&<><span>受付 / 更新</span><span>試合条件</span></>}</div>
         {filtered.map(b=><article className={`grid gap-4 border-b border-slate-200 px-4 py-5 last:border-0 hover:bg-slate-50/80 lg:items-center lg:px-5 ${industryMode?"lg:grid-cols-[2.1fr_1.3fr_.55fr_1.1fr_1.05fr_1.55fr]":"lg:grid-cols-[2.2fr_1.4fr_.6fr_1.2fr]"}`} key={b.id}>
-          <Link href={`/boxers/${b.id}`} className="flex items-center gap-4"><div className="flex size-14 shrink-0 items-center justify-center bg-slate-900 text-lg font-black text-white">{b.name.slice(0,1)}</div><div className="min-w-0"><div className="flex items-center gap-2"><h3 className="font-black hover:underline">{b.name}</h3><span className="border border-slate-300 px-1.5 py-0.5 text-[10px] font-black">{b.boxerClass}</span></div><p className="mt-1 truncate text-xs font-bold text-slate-600">{b.division}｜{b.gym}</p><p className="mt-1 text-[11px] text-slate-400">{b.prefecture}｜プロフィール →</p></div></Link>
+          <div><Link href={`/boxers/${b.id}`} className="flex items-center gap-4"><div className="flex size-14 shrink-0 items-center justify-center bg-slate-900 text-lg font-black text-white">{b.name.slice(0,1)}</div><div className="min-w-0"><div className="flex items-center gap-2"><h3 className="font-black hover:underline">{b.name}</h3><span className="border border-slate-300 px-1.5 py-0.5 text-[10px] font-black">{b.boxerClass}</span></div><p className="mt-1 truncate text-xs font-bold text-slate-600">{b.division}｜{b.gym}</p><p className="mt-1 text-[11px] text-slate-400">{b.prefecture}｜プロフィール →</p></div></Link>{industryMode&&<CandidateSaveButton boxerId={b.id} databaseConnected={databaseConnected} compact/>}</div>
           <div><p className="text-sm font-black">{b.totalBouts}戦 {b.wins}勝（{b.koWins}KO）{b.losses}敗{b.draws?` ${b.draws}分`:""}</p><p className="mt-1 text-xs font-black text-blue-800">{b.rankings.length?b.rankings.map(r=>`${r.body} ${r.rank??r.title}`).join(" / "):"ランキングなし"}</p></div>
           <div className="text-sm font-black">{b.stance}</div><div className="grid grid-cols-2 gap-2 text-xs lg:block"><p><span className="text-slate-400">最終 </span><b>{b.lastBout}</b></p><p className="lg:mt-1"><span className="text-slate-400">次戦 </span><b>{b.nextBout??"未定"}</b></p></div>
           {industryMode&&<><div><span className={`inline-flex px-2.5 py-1 text-xs font-black ring-1 ring-inset ${badge[b.status]}`}>{b.status}</span><p className="mt-2 text-[11px] font-bold text-slate-500">ジム確認：{b.verified}</p></div><div className="grid grid-cols-2 gap-x-3 gap-y-1 border-l-2 border-slate-900 pl-3 text-xs"><p><span className="text-slate-400">時期 </span><b>{b.available}</b></p><p><span className="text-slate-400">希望 </span><b>{b.rounds.map(v=>`${v}R`).join(" / ")||"—"}</b></p><p><span className="text-slate-400">契約 </span><b>{b.minWeight&&b.maxWeight?`${b.minWeight}〜${b.maxWeight}kg`:"—"}</b></p><p><span className="text-slate-400">遠征 </span><b>{b.travel}</b></p></div></>}
@@ -297,6 +309,7 @@ function SavedSearchControls({
   </div>;
 }
 
+function validNumberString(value?:string){if(!value)return"";return Number.isFinite(Number(value))?value:"";}
 function matchesLastBoutAge(value:string,condition:string){
   if(condition==="すべて")return true;
   const timestamp=new Date(`${value.replaceAll(".","-")}T00:00:00`).getTime();
@@ -308,13 +321,11 @@ function matchesLastBoutAge(value:string,condition:string){
   if(condition==="365日以上")return days>=365;
   return true;
 }
-
 function matchesTravel(value:string,condition:string){
   if(condition==="遠征可")return value.includes("可")&&!value.includes("不可");
   if(condition==="要相談")return value.includes("相談");
   if(condition==="地域限定")return !value.includes("可")&&!value.includes("相談")&&value!=="—";
   return true;
 }
-
 function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="block"><span className="mb-1.5 block text-[11px] font-black text-slate-500">{label}</span>{children}</label>}
 function Select({label,value,onChange,values}:{label:string;value:string;onChange:(v:string)=>void;values:string[]}){return <Field label={label}><select className="input" value={value} onChange={e=>onChange(e.target.value)}>{values.map(v=><option key={v} value={v}>{/^\d+$/.test(v)?`${v}R`:v}</option>)}</select></Field>}
