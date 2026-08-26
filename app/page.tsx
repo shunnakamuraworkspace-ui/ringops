@@ -30,6 +30,13 @@ export default async function HomePage({searchParams}:{searchParams:Promise<{div
           ? "業界ログイン中：MATCH STATUSと試合条件を含めて検索できます。"
           : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
     </div>
-    <BoxerDirectory boxers={boxers} industryMode={industryMode} initialDivision={params.division} initialClass={params.class} initialRounds={params.rounds}/>
+    <BoxerDirectory
+      boxers={boxers}
+      databaseConnected={databaseConnected}
+      industryMode={industryMode}
+      initialDivision={params.division}
+      initialClass={params.class}
+      initialRounds={params.rounds}
+    />
   </>;
 }
