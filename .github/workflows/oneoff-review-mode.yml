@@ -1,0 +1,91 @@
+name: One-off functional review mode
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-review-mode.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch public review flows
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p=Path(path); s=p.read_text()
+              if old not in s:
+                  raise SystemExit(f'pattern not found: {path}: {old[:80]!r}')
+              p.write_text(s.replace(old,new,1))
+
+          # Candidate list: use local storage when the DB exists but the viewer is not authenticated.
+          p=Path('features/boxers/components/candidate-list.tsx')
+          s=p.read_text()
+          s=s.replace('  const [selectedList,setSelectedList]=useState("すべて");', '  const [selectedList,setSelectedList]=useState("すべて");\n  const [localMode,setLocalMode]=useState(!databaseConnected);')
+          old='''        if(!databaseConnected){\n          const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];\n          const mapped=ids.map((id)=>previewBoxers.find(boxer=>boxer.id===id)).filter(Boolean).map((boxer,index)=>({\n            listId:"preview",listName:"候補選手",boxerId:boxer!.id,name:boxer!.name,gym:boxer!.gym,division:boxer!.division,\n            boxerClass:boxer!.boxerClass,stance:boxer!.stance,record:`${boxer!.totalBouts}戦 ${boxer!.wins}勝（${boxer!.koWins}KO）${boxer!.losses}敗${boxer!.draws?` ${boxer!.draws}分`:""}`,\n            status:boxer!.status,verified:boxer!.verified,addedAt:new Date(Date.now()-index*60000).toISOString(),\n          }));\n          if(active)setRows(mapped);\n          return;\n        }\n\n        const supabase=createClient();\n        const {data:userData}=await supabase.auth.getUser();\n        if(!userData.user)throw new Error("not authenticated");'''
+          new='''        const loadLocal=()=>{\n          const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];\n          const mapped=ids.map((id)=>previewBoxers.find(boxer=>boxer.id===id)).filter(Boolean).map((boxer,index)=>({\n            listId:"preview",listName:"候補選手",boxerId:boxer!.id,name:boxer!.name,gym:boxer!.gym,division:boxer!.division,\n            boxerClass:boxer!.boxerClass,stance:boxer!.stance,record:`${boxer!.totalBouts}戦 ${boxer!.wins}勝（${boxer!.koWins}KO）${boxer!.losses}敗${boxer!.draws?` ${boxer!.draws}分`:""}`,\n            status:boxer!.status,verified:boxer!.verified,addedAt:new Date(Date.now()-index*60000).toISOString(),\n          }));\n          if(active){setRows(mapped);setLocalMode(true);}\n        };\n        if(!databaseConnected){loadLocal();return;}\n\n        const supabase=createClient();\n        const {data:userData}=await supabase.auth.getUser();\n        if(!userData.user){loadLocal();return;}\n        if(active)setLocalMode(false);'''
+          if old not in s: raise SystemExit('candidate load block not found')
+          s=s.replace(old,new,1).replace('      if(!databaseConnected){\n        const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];', '      if(localMode){\n        const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];',1)
+          p.write_text(s)
+
+          # Candidate page: pass the real dedicated-DB directory to local review storage, not stale preview IDs.
+          p=Path('app/candidates/page.tsx')
+          p.write_text('''import { CandidateList } from "@/features/boxers/components/candidate-list";\nimport { loadBoxers } from "@/lib/ringops/load-boxers";\n\nexport default async function CandidatesPage(){\n  const {boxers,databaseConnected}=await loadBoxers();\n  return <main>\n    <section className="border-b border-slate-200 bg-white">\n      <div className="mx-auto max-w-[1240px] px-4 py-7 lg:px-7">\n        <h1 className="text-3xl font-black">候補選手</h1>\n        <p className="mt-2 text-sm text-slate-500">検索で見つけた選手を一時保存し、比較してから所属ジムへの相談へ進みます。</p>\n      </div>\n    </section>\n    <div className="mx-auto max-w-[1240px] px-4 py-7 lg:px-7">\n      <CandidateList databaseConnected={databaseConnected} previewBoxers={boxers}/>\n    </div>\n  </main>;\n}\n''')
+
+          # Matchmaking cases: public review mode reads/writes local cases instead of showing a login wall.
+          p=Path('features/matchmaking/components/case-board.tsx'); s=p.read_text()
+          s=s.replace('  const [items,setItems]=useState<CaseItem[]>(databaseConnected?[]:defaults);\n  const [loading,setLoading]=useState(databaseConnected&&industryMode);', '  const [items,setItems]=useState<CaseItem[]>(databaseConnected&&industryMode?[]:defaults);\n  const [loading,setLoading]=useState(databaseConnected&&industryMode);')
+          s=s.replace('    if(!databaseConnected){', '    if(!databaseConnected||!industryMode){',1)
+          s=s.replace('    if(!databaseConnected){\n      const next=items.map', '    if(!databaseConnected||!industryMode){\n      const next=items.map',1)
+          s=s.replace('      if(!databaseConnected){setItems(current=>current.map(item=>item.id===id?{...item,status:"決定"}:item));return;}', '      if(!databaseConnected||!industryMode){setItems(current=>current.map(item=>item.id===id?{...item,status:"決定"}:item));return;}')
+          s=s.replace('      if(!databaseConnected){\n        localStorage.setItem("ringops_rerecruit_draft"', '      if(!databaseConnected||!industryMode){\n        localStorage.setItem("ringops_rerecruit_draft"',1)
+          s=s.replace('  if(databaseConnected&&!industryMode)return <div className="border-y-2 border-slate-950 bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">業界アカウントでログインすると案件を表示します。</div>;\n', '')
+          p.write_text(s)
+
+          # Open Match: public review mode remains fully interactive with local persistence.
+          p=Path('features/open-matches/components/open-match-board.tsx'); s=p.read_text()
+          s=s.replace('  const [items,setItems]=useState<Item[]>(databaseConnected?[]:demo);\n  const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(databaseConnected?[]:previewOrgs);\n  const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(databaseConnected?[]:previewBoxers);\n  const [loading,setLoading]=useState(databaseConnected);', '  const reviewMode=!industryMode;\n  const [items,setItems]=useState<Item[]>(reviewMode?demo:[]);\n  const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(reviewMode?previewOrgs:[]);\n  const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(reviewMode?previewBoxers:[]);\n  const [loading,setLoading]=useState(databaseConnected&&industryMode);')
+          s=s.replace('  const [organizationId,setOrganizationId]=useState(databaseConnected?"":"preview-gym");', '  const [organizationId,setOrganizationId]=useState(reviewMode?"preview-gym":"");')
+          s=s.replace('    if(databaseConnected)return;', '    if(databaseConnected&&industryMode)return;',1)
+          s=s.replace('    if(!databaseConnected){\n      const org=managedOrgs.find', '    if(!databaseConnected||!industryMode){\n      const org=managedOrgs.find',1)
+          s=s.replace('      if(databaseConnected){\n        const supabase=createClient();', '      if(databaseConnected&&industryMode){\n        const supabase=createClient();',1)
+          s=s.replace('      if(!databaseConnected){\n        const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];', '      if(!databaseConnected||!industryMode){\n        const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];',1)
+          p.write_text(s)
+
+          # Messages: use case-local conversations before login and persist sent messages.
+          p=Path('features/messages/components/message-room.tsx'); s=p.read_text()
+          old='''export function MessageRoom({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){\n  const [conversations,setConversations]=useState<Conversation[]>(databaseConnected?[]:demoConversations); const [activeId,setActiveId]=useState(databaseConnected?"":"demo-room"); const [messages,setMessages]=useState<Msg[]>(databaseConnected?[]:demoMessages); const [text,setText]=useState(""); const [loading,setLoading]=useState(databaseConnected); const [error,setError]=useState(""); const [currentUserId,setCurrentUserId]=useState("");'''
+          new='''export function MessageRoom({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){\n  const reviewMode=!industryMode;\n  const [conversations,setConversations]=useState<Conversation[]>(reviewMode?demoConversations:[]); const [activeId,setActiveId]=useState(reviewMode?"demo-room":""); const [messages,setMessages]=useState<Msg[]>(reviewMode?demoMessages:[]); const [text,setText]=useState(""); const [loading,setLoading]=useState(databaseConnected&&industryMode); const [error,setError]=useState(""); const [currentUserId,setCurrentUserId]=useState("");'''
+          if old not in s: raise SystemExit('message init block not found')
+          s=s.replace(old,new,1)
+          s=s.replace('if(!databaseConnected)return;try{', 'if(!databaseConnected||!industryMode)return;try{',1)
+          old_effect='''  useEffect(()=>{if(!databaseConnected||!industryMode){setLoading(false);return;}let activeFlag=true;'''
+          new_effect='''  useEffect(()=>{\n    if(!industryMode){\n      try{\n        const localCases=JSON.parse(localStorage.getItem("ringops_cases")||"[]") as Array<{id:string;boxerA?:string|null;boxerB?:string|null;event?:string}>;\n        const localMessages=JSON.parse(localStorage.getItem("ringops_case_messages")||"{}") as Record<string,Array<{id:string;sender?:string;body:string;createdAt:string}>>;\n        if(localCases.length){\n          const mapped=localCases.map(c=>({id:c.id,title:`${c.boxerA??c.boxerB??"対戦候補"}｜${c.event??"案件"}`,type:"matchmaking_case",caseId:c.id,eventId:null}));\n          setConversations(mapped);setActiveId(mapped[0].id);\n          const first=localMessages[mapped[0].id]??[];\n          setMessages(first.map(m=>({id:m.id,senderId:"me",name:m.sender??"自組織",body:m.body,time:new Date(m.createdAt).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})})));\n        }\n      }catch{/* review storage only */}\n      setLoading(false);return;\n    }\n    if(!databaseConnected){setLoading(false);return;}let activeFlag=true;'''
+          if old_effect not in s: raise SystemExit('message effect block not found')
+          s=s.replace(old_effect,new_effect,1)
+          s=s.replace('if(!databaseConnected||!activeId)return;', 'if(!databaseConnected||!industryMode||!activeId)return;',1)
+          old_send='''if(!databaseConnected){setMessages(current=>[...current,{id:String(Date.now()),senderId:"me",name:"自分",body,time:new Date().toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})}]);return;}'''
+          new_send='''if(!industryMode){const createdAt=new Date().toISOString();const msg={id:String(Date.now()),senderId:"me",name:"自組織",body,time:new Date(createdAt).toLocaleTimeString("ja-JP",{hour:"2-digit",minute:"2-digit"})};setMessages(current=>[...current,msg]);try{const all=JSON.parse(localStorage.getItem("ringops_case_messages")||"{}");all[activeId]=[...(all[activeId]||[]),{id:msg.id,sender:"自組織",body,createdAt}];localStorage.setItem("ringops_case_messages",JSON.stringify(all));}catch{/* review storage only */}return;}'''
+          if old_send not in s: raise SystemExit('message send block not found')
+          s=s.replace(old_send,new_send,1)
+          s=s.replace('  if(!databaseConnected&&!industryMode)return null;\n  if(databaseConnected&&!industryMode)return <div className="border-y-2 border-slate-950 bg-white p-10 text-center text-sm font-bold text-slate-500">業界ログイン後に連絡ルームを表示します。</div>;\n', '')
+          p.write_text(s)
+          PY
+      - name: Verify
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+      - name: Commit patch
+        run: |
+          rm .github/workflows/oneoff-review-mode.yml
+          git config user.name "RINGOPS automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: make core workflow testable before login"
+          git push
