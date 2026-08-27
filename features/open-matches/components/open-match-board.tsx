@@ -137,8 +137,10 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
     if(!databaseConnected){
       const org=managedOrgs.find(value=>value.id===organizationId);
       const boxer=myBoxers.find(value=>value.id===targetBoxerId);
-      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
       const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
+      const nextSequence=Number(localStorage.getItem("ringops_open_match_sequence")||"0")+1;
+      localStorage.setItem("ringops_open_match_sequence",String(nextSequence));
+      const item:Item={id:`demo-${nextSequence}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
       localStorage.setItem("ringops_open_matches",JSON.stringify([item,...existing]));
       setItems([item,...items]);setShowForm(false);resetForm();return;
     }
