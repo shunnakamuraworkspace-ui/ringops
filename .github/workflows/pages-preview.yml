@@ -6,6 +6,11 @@ on:
     paths:
       - "public/ringops-preview.html"
       - ".github/workflows/pages-preview.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "public/ringops-preview.html"
+      - ".github/workflows/pages-preview.yml"
   workflow_dispatch:
 
 permissions:
@@ -14,7 +19,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: pages
+  group: pages-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
