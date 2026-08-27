@@ -1,8 +1,8 @@
 import { CandidateList } from "@/features/boxers/components/candidate-list";
-import { boxerPreviewData } from "@/features/boxers/data/preview-boxers";
-import { isSupabaseConfigured } from "@/lib/supabase/config";
+import { loadBoxers } from "@/lib/ringops/load-boxers";
 
-export default function CandidatesPage(){
+export default async function CandidatesPage(){
+  const {boxers,databaseConnected}=await loadBoxers();
   return <main>
     <section className="border-b border-slate-200 bg-white">
       <div className="mx-auto max-w-[1240px] px-4 py-7 lg:px-7">
@@ -11,7 +11,7 @@ export default function CandidatesPage(){
       </div>
     </section>
     <div className="mx-auto max-w-[1240px] px-4 py-7 lg:px-7">
-      <CandidateList databaseConnected={isSupabaseConfigured} previewBoxers={boxerPreviewData}/>
+      <CandidateList databaseConnected={databaseConnected} previewBoxers={boxers}/>
     </div>
   </main>;
 }

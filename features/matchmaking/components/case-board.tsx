@@ -31,14 +31,14 @@ const rerecruitable=new Set(["相談中","交渉中","ジム確認待ち","内�
 
 export function CaseBoard({ databaseConnected, industryMode }: { databaseConnected:boolean; industryMode:boolean }) {
   const router=useRouter();
-  const [items,setItems]=useState<CaseItem[]>(databaseConnected?[]:defaults);
+  const [items,setItems]=useState<CaseItem[]>(databaseConnected&&industryMode?[]:defaults);
   const [loading,setLoading]=useState(databaseConnected&&industryMode);
   const [error,setError]=useState("");
   const [busyId,setBusyId]=useState("");
   const [recruitCaseId,setRecruitCaseId]=useState("");
 
   useEffect(()=>{
-    if(!databaseConnected){
+    if(!databaseConnected||!industryMode){
       try{
         const saved=localStorage.getItem("ringops_cases");
         if(saved)setItems([...JSON.parse(saved),...defaults]);
@@ -79,7 +79,7 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
   async function update(id:string,status:string){
     const previous=items;
     setItems(items.map(item=>item.id===id?{...item,status}:item));setError("");
-    if(!databaseConnected){
+    if(!databaseConnected||!industryMode){
       const next=items.map(item=>item.id===id?{...item,status}:item);
       localStorage.setItem("ringops_cases",JSON.stringify(next.filter(item=>!item.id.startsWith("demo-"))));
       return;
@@ -96,7 +96,7 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
   async function approve(id:string){
     setError("");setBusyId(id);
     try{
-      if(!databaseConnected){setItems(current=>current.map(item=>item.id===id?{...item,status:"決定"}:item));return;}
+      if(!databaseConnected||!industryMode){setItems(current=>current.map(item=>item.id===id?{...item,status:"決定"}:item));return;}
       const supabase=createClient();
       const {error:approveError}=await supabase.schema("ringops").rpc("set_case_approval",{p_case_id:id,p_approved:true});
       if(approveError)throw approveError;
@@ -112,7 +112,7 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
   async function rerecruit(item:CaseItem,targetBoxerId:string){
     setError("");setBusyId(item.id);
     try{
-      if(!databaseConnected){
+      if(!databaseConnected||!industryMode){
         localStorage.setItem("ringops_rerecruit_draft",JSON.stringify({
           sourceCaseId:item.id,targetBoxerId,event:item.event,date:item.date,venue:item.venue,weight:item.weight,rounds:item.rounds,note:item.message,
         }));
@@ -132,7 +132,6 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
   }
 
   if(loading)return <div className="border-y-2 border-slate-950 bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">案件を読み込んでいます…</div>;
-  if(databaseConnected&&!industryMode)return <div className="border-y-2 border-slate-950 bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">業界アカウントでログインすると案件を表示します。</div>;
 
   return <div className="border-y-2 border-slate-950 bg-white">
     {error&&<div className="border-b border-rose-200 bg-rose-50 px-5 py-3 text-xs font-bold text-rose-800">{error}</div>}

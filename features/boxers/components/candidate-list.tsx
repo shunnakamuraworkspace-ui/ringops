@@ -40,6 +40,7 @@ export function CandidateList({
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
   const [selectedList,setSelectedList]=useState("すべて");
+  const [localMode,setLocalMode]=useState(!databaseConnected);
 
   useEffect(()=>{
     let active=true;
@@ -47,20 +48,21 @@ export function CandidateList({
     async function load(){
       setLoading(true);setError("");
       try{
-        if(!databaseConnected){
+        const loadLocal=()=>{
           const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
           const mapped=ids.map((id)=>previewBoxers.find(boxer=>boxer.id===id)).filter(Boolean).map((boxer,index)=>({
             listId:"preview",listName:"候補選手",boxerId:boxer!.id,name:boxer!.name,gym:boxer!.gym,division:boxer!.division,
             boxerClass:boxer!.boxerClass,stance:boxer!.stance,record:`${boxer!.totalBouts}戦 ${boxer!.wins}勝（${boxer!.koWins}KO）${boxer!.losses}敗${boxer!.draws?` ${boxer!.draws}分`:""}`,
             status:boxer!.status,verified:boxer!.verified,addedAt:new Date(Date.now()-index*60000).toISOString(),
           }));
-          if(active)setRows(mapped);
-          return;
-        }
+          if(active){setRows(mapped);setLocalMode(true);}
+        };
+        if(!databaseConnected){loadLocal();return;}
 
         const supabase=createClient();
         const {data:userData}=await supabase.auth.getUser();
-        if(!userData.user)throw new Error("not authenticated");
+        if(!userData.user){loadLocal();return;}
+        if(active)setLocalMode(false);
 
         const {data:lists,error:listError}=await supabase.schema("ringops").from("candidate_lists").select("id,name,updated_at").order("updated_at",{ascending:false});
         if(listError)throw listError;
@@ -121,7 +123,7 @@ export function CandidateList({
   async function remove(row:CandidateRow){
     setError("");
     try{
-      if(!databaseConnected){
+      if(localMode){
         const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
         localStorage.setItem("ringops_candidate_boxers",JSON.stringify(ids.filter(id=>id!==row.boxerId)));
       }else{

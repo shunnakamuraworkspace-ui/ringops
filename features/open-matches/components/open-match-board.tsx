@@ -27,15 +27,16 @@ const previewOrgs:ManagedOrg[]=[{id:"preview-gym",name:"青空ボクシングジ
 const previewBoxers:MyBoxer[]=[{id:"20000000-0000-4000-8000-000000000001",name:"山田 直樹",organizationId:"preview-gym"}];
 
 export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){
-  const [items,setItems]=useState<Item[]>(databaseConnected?[]:demo);
-  const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(databaseConnected?[]:previewOrgs);
-  const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(databaseConnected?[]:previewBoxers);
-  const [loading,setLoading]=useState(databaseConnected);
+  const reviewMode=!industryMode;
+  const [items,setItems]=useState<Item[]>(reviewMode?demo:[]);
+  const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(reviewMode?previewOrgs:[]);
+  const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(reviewMode?previewBoxers:[]);
+  const [loading,setLoading]=useState(databaseConnected&&industryMode);
   const [showForm,setShowForm]=useState(false);
   const [error,setError]=useState("");
   const [busyId,setBusyId]=useState("");
 
-  const [organizationId,setOrganizationId]=useState(databaseConnected?"":"preview-gym");
+  const [organizationId,setOrganizationId]=useState(reviewMode?"preview-gym":"");
   const [targetBoxerId,setTargetBoxerId]=useState("");
   const [division,setDivision]=useState("スーパーバンタム級");
   const [date,setDate]=useState("");
@@ -53,7 +54,7 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
   const [note,setNote]=useState("");
 
   useEffect(()=>{
-    if(databaseConnected)return;
+    if(databaseConnected&&industryMode)return;
     try{
       const saved=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
       if(saved.length)setItems([...saved,...demo]);
@@ -134,7 +135,7 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
     if(minW!==null&&maxW!==null&&maxW<minW){setError("契約ウェイトの上限は下限以上にしてください。");return;}
     if(minBouts&&maxBouts&&Number(maxBouts)<Number(minBouts)){setError("戦数上限は下限以上にしてください。");return;}
 
-    if(!databaseConnected){
+    if(!databaseConnected||!industryMode){
       const org=managedOrgs.find(value=>value.id===organizationId);
       const boxer=myBoxers.find(value=>value.id===targetBoxerId);
       const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
@@ -165,12 +166,12 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
   async function changeStatus(id:string,status:"paused"|"closed"){
     setBusyId(id);setError("");
     try{
-      if(databaseConnected){
+      if(databaseConnected&&industryMode){
         const supabase=createClient();
         const {error:updateError}=await supabase.schema("ringops").from("open_matches").update({status}).eq("id",id);
         if(updateError)throw updateError;
       }
-      if(!databaseConnected){
+      if(!databaseConnected||!industryMode){
         const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
         localStorage.setItem("ringops_open_matches",JSON.stringify(existing.filter(item=>item.id!==id)));
       }
