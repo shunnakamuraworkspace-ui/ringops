@@ -1,0 +1,36 @@
+name: Fix preview open match id
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/fix-open-match-id.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Replace impure preview id generation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('features/open-matches/components/open-match-board.tsx')
+          s=p.read_text()
+          old='''      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};\n      const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];'''
+          new='''      const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];\n      const nextSequence=Number(localStorage.getItem("ringops_open_match_sequence")||"0")+1;\n      localStorage.setItem("ringops_open_match_sequence",String(nextSequence));\n      const item:Item={id:`demo-${nextSequence}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};'''
+          if old not in s: raise SystemExit('target not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add features/open-matches/components/open-match-board.tsx
+          git commit -m "fix: use deterministic preview open match ids"
+          git push
