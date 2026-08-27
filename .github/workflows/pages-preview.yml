@@ -1,5 +1,6 @@
 name: Publish RINGOPS Preview
 
+# PR verification enabled so deployment failures are observable.
 on:
   push:
     branches: [main]
