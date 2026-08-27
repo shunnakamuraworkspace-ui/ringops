@@ -21,7 +21,7 @@ type CandidateRow = {
 };
 
 const divisionLabels: Record<string,string> = {
-  minimum:"ミニマム級",light_fly:"ライトフライ級",fly:"フライ級",super_fly:"スーパーフライ級",
+  atom:"アトム級",mini_fly:"ミニフライ級",minimum:"ミニマム級",light_fly:"ライトフライ級",fly:"フライ級",super_fly:"スーパーフライ級",
   bantam:"バンタム級",super_bantam:"スーパーバンタム級",feather:"フェザー級",super_feather:"スーパーフェザー級",
   light:"ライト級",super_light:"スーパーライト級",welter:"ウェルター級",super_welter:"スーパーウェルター級",
   middle:"ミドル級",super_middle:"スーパーミドル級",light_heavy:"ライトヘビー級",cruiser:"クルーザー級",heavy:"ヘビー級",

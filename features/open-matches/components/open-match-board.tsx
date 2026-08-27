@@ -53,6 +53,29 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
   const [note,setNote]=useState("");
 
   useEffect(()=>{
+    if(databaseConnected)return;
+    try{
+      const saved=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
+      if(saved.length)setItems([...saved,...demo]);
+      const rawDraft=localStorage.getItem("ringops_rerecruit_draft");
+      if(rawDraft){
+        const draft=JSON.parse(rawDraft) as {targetBoxerId?:string;event?:string;date?:string;venue?:string;weight?:string;rounds?:number;note?:string};
+        if(draft.targetBoxerId)setTargetBoxerId(draft.targetBoxerId);
+        if(draft.date)setDate(draft.date);
+        if(draft.venue)setVenue(draft.venue);
+        if(draft.rounds)setRounds(String(draft.rounds));
+        if(draft.note)setNote(draft.note);
+        if(draft.weight){
+          const numeric=Number(String(draft.weight).replace(/[^0-9.]/g,""));
+          if(Number.isFinite(numeric)&&numeric>0){setMinWeight(String(numeric));setMaxWeight(String(numeric));}
+        }
+        setShowForm(true);
+        localStorage.removeItem("ringops_rerecruit_draft");
+      }
+    }catch{/* preview storage only */}
+  },[databaseConnected]);
+
+  useEffect(()=>{
     if(!databaseConnected)return;
     if(!industryMode){setLoading(false);return;}
     let active=true;
@@ -114,7 +137,9 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
     if(!databaseConnected){
       const org=managedOrgs.find(value=>value.id===organizationId);
       const boxer=myBoxers.find(value=>value.id===targetBoxerId);
-      const item:Item={id:`demo-${items.length + 1}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
+      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
+      const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
+      localStorage.setItem("ringops_open_matches",JSON.stringify([item,...existing]));
       setItems([item,...items]);setShowForm(false);resetForm();return;
     }
 
@@ -142,6 +167,10 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
         const supabase=createClient();
         const {error:updateError}=await supabase.schema("ringops").from("open_matches").update({status}).eq("id",id);
         if(updateError)throw updateError;
+      }
+      if(!databaseConnected){
+        const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
+        localStorage.setItem("ringops_open_matches",JSON.stringify(existing.filter(item=>item.id!==id)));
       }
       setItems(current=>current.filter(item=>item.id!==id));
     }catch{
