@@ -1,0 +1,64 @@
+name: Patch functional preview flows
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/patch-functional-flow.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Patch functional flows
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('features/open-matches/components/open-match-board.tsx')
+          s=p.read_text()
+
+          marker='''  const [note,setNote]=useState("");\n\n  useEffect(()=>{\n    if(!databaseConnected)return;'''
+          replacement='''  const [note,setNote]=useState("");\n\n  useEffect(()=>{\n    if(databaseConnected)return;\n    try{\n      const saved=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];\n      if(saved.length)setItems([...saved,...demo]);\n      const rawDraft=localStorage.getItem("ringops_rerecruit_draft");\n      if(rawDraft){\n        const draft=JSON.parse(rawDraft) as {targetBoxerId?:string;event?:string;date?:string;venue?:string;weight?:string;rounds?:number;note?:string};\n        if(draft.targetBoxerId)setTargetBoxerId(draft.targetBoxerId);\n        if(draft.date)setDate(draft.date);\n        if(draft.venue)setVenue(draft.venue);\n        if(draft.rounds)setRounds(String(draft.rounds));\n        if(draft.note)setNote(draft.note);\n        if(draft.weight){\n          const numeric=Number(String(draft.weight).replace(/[^0-9.]/g,""));\n          if(Number.isFinite(numeric)&&numeric>0){setMinWeight(String(numeric));setMaxWeight(String(numeric));}\n        }\n        setShowForm(true);\n        localStorage.removeItem("ringops_rerecruit_draft");\n      }\n    }catch{/* preview storage only */}\n  },[databaseConnected]);\n\n  useEffect(()=>{\n    if(!databaseConnected)return;'''
+          if marker not in s:
+              raise SystemExit('open-match mount marker not found')
+          s=s.replace(marker,replacement,1)
+
+          old='''      const item:Item={id:`demo-${items.length + 1}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};\n      setItems([item,...items]);setShowForm(false);resetForm();return;'''
+          new='''      const item:Item={id:`demo-${Date.now()}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};\n      const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];\n      localStorage.setItem("ringops_open_matches",JSON.stringify([item,...existing]));\n      setItems([item,...items]);setShowForm(false);resetForm();return;'''
+          if old not in s:
+              raise SystemExit('open-match create marker not found')
+          s=s.replace(old,new,1)
+
+          old='''      setItems(current=>current.filter(item=>item.id!==id));'''
+          new='''      if(!databaseConnected){\n        const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];\n        localStorage.setItem("ringops_open_matches",JSON.stringify(existing.filter(item=>item.id!==id)));\n      }\n      setItems(current=>current.filter(item=>item.id!==id));'''
+          if old not in s:
+              raise SystemExit('open-match status marker not found')
+          s=s.replace(old,new,1)
+          p.write_text(s)
+
+          p=Path('features/boxers/components/candidate-list.tsx')
+          s=p.read_text()
+          old='''const divisionLabels: Record<string,string> = {\n  minimum:"ミニマム級",light_fly:"ライトフライ級",fly:"フライ級",super_fly:"スーパーフライ級",'''
+          new='''const divisionLabels: Record<string,string> = {\n  atom:"アトム級",mini_fly:"ミニフライ級",minimum:"ミニマム級",light_fly:"ライトフライ級",fly:"フライ級",super_fly:"スーパーフライ級",'''
+          if old not in s:
+              raise SystemExit('candidate division marker not found')
+          p.write_text(s.replace(old,new,1))
+          PY
+      - name: Commit fixes
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add features/open-matches/components/open-match-board.tsx features/boxers/components/candidate-list.tsx
+          git diff --cached --quiet && exit 0
+          git commit -m "fix: persist open match flow and rerecruit drafts"
+          git push
