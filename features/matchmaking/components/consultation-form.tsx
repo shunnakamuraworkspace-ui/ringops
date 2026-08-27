@@ -26,14 +26,28 @@ export function ConsultationForm({ boxer, databaseConnected }: { boxer: BoxerPre
         router.push(`/matchmaking?created=${encodeURIComponent(String(data))}`); router.refresh(); return;
       }
       const existing=JSON.parse(localStorage.getItem("ringops_cases")||"[]");
-      const item={id:`case-${Date.now()}`,boxer:boxer.name,gym:boxer.gym,event,date,weight:`${weight}kg`,rounds:Number(rounds),message,status:"相談中",createdAt:new Date().toISOString()};
+      const item={
+        id:`case-${Date.now()}`,
+        boxerAId:null,
+        boxerA:null,
+        boxerBId:boxer.id,
+        boxerB:boxer.name,
+        event,
+        date,
+        venue:"",
+        weight:`${weight}kg`,
+        rounds:Number(rounds),
+        message,
+        status:"相談中",
+        createdAt:new Date().toISOString(),
+      };
       localStorage.setItem("ringops_cases",JSON.stringify([item,...existing])); setSent(true);
     } catch {
       setError("相談を登録できませんでした。ログイン状態と所属組織を確認してください。");
     } finally { setSaving(false); }
   }
 
-  if(sent)return <div className="border-y-2 border-slate-950 bg-white p-7"><h2 className="text-xl font-black">相談を案件に登録しました</h2><p className="mt-2 text-sm text-slate-500">このプレビューでは端末内に保存しています。Supabase接続時は所属ジムと共有されます。</p><button className="mt-5 h-11 bg-slate-950 px-5 text-sm font-black text-white" onClick={()=>router.push("/matchmaking")}>マッチメイク案件を見る</button></div>;
+  if(sent)return <div className="border-y-2 border-slate-950 bg-white p-7"><h2 className="text-xl font-black">相談を案件に登録しました</h2><p className="mt-2 text-sm text-slate-500">マッチメイク案件に条件を引き継ぎました。</p><button className="mt-5 h-11 bg-slate-950 px-5 text-sm font-black text-white" onClick={()=>router.push("/matchmaking")}>マッチメイク案件を見る</button></div>;
 
   return <form className="border-y-2 border-slate-950 bg-white p-5 sm:p-7" onSubmit={submit}>
     {error&&<p className="mb-5 border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-800">{error}</p>}
