@@ -17,26 +17,35 @@ export function CandidateSaveButton({
   const [error,setError]=useState("");
 
   useEffect(()=>{
-    if(databaseConnected)return;
     try{
       const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
       setSaved(ids.includes(boxerId));
-    }catch{/* preview storage only */}
-  },[boxerId,databaseConnected]);
+    }catch{/* local review storage only */}
+  },[boxerId]);
+
+  function saveLocal(){
+    const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
+    const next=[...new Set([...ids,boxerId])];
+    localStorage.setItem("ringops_candidate_boxers",JSON.stringify(next));
+    setSaved(true);
+  }
 
   async function save(){
     if(saved||busy)return;
     setBusy(true);setError("");
     try{
       if(!databaseConnected){
-        const ids=JSON.parse(localStorage.getItem("ringops_candidate_boxers")||"[]") as string[];
-        const next=[...new Set([...ids,boxerId])];
-        localStorage.setItem("ringops_candidate_boxers",JSON.stringify(next));
-        setSaved(true);
+        saveLocal();
         return;
       }
 
       const supabase=createClient();
+      const {data:userData}=await supabase.auth.getUser();
+      if(!userData.user){
+        saveLocal();
+        return;
+      }
+
       const {error:rpcError}=await supabase.schema("ringops").rpc("save_candidate_boxer",{
         p_boxer_id:boxerId,
         p_list_name:"候補選手",
