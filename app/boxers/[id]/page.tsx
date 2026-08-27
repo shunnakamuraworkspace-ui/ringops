@@ -5,7 +5,7 @@ import { loadBoxer } from "@/lib/ringops/load-boxers";
 
 export default async function BoxerPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const { boxer, industryMode, databaseConnected, loadError } = await loadBoxer(id);
+  const { boxer, industryMode, reviewMode, databaseConnected, loadError } = await loadBoxer(id);
 
   if (loadError) {
     return <main className="mx-auto max-w-[900px] px-4 py-10 lg:px-7">
@@ -19,6 +19,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
   }
 
   if (!boxer) notFound();
+  const matchDataMode = industryMode || reviewMode;
   const age = boxer.birthDate ? calculateAge(boxer.birthDate) : null;
   const record = `${boxer.totalBouts}戦 ${boxer.wins}勝${boxer.koWins ? `（${boxer.koWins}KO）` : ""} ${boxer.losses}敗${boxer.draws ? ` ${boxer.draws}分` : ""}`;
   const contractWeight = boxer.minWeight && boxer.maxWeight ? `${boxer.minWeight.toFixed(1)}〜${boxer.maxWeight.toFixed(1)}kg` : "要確認";
@@ -27,7 +28,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
   return <main className="mx-auto max-w-[1240px] px-4 py-6 lg:px-7">
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
       <Link className="text-xs font-black text-slate-700 underline underline-offset-4" href="/">← 検索結果に戻る</Link>
-      {industryMode && <Link className="text-xs font-black text-slate-700 underline underline-offset-4" href="/candidates">候補選手を見る →</Link>}
+      {matchDataMode && <Link className="text-xs font-black text-slate-700 underline underline-offset-4" href="/candidates">候補選手を見る →</Link>}
     </div>
 
     <section className="border-y-2 border-slate-950 bg-white">
@@ -41,7 +42,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
               <p className="mt-3 text-sm font-black text-slate-800">{boxer.division} · {boxer.boxerClass} · {boxer.stance}構え</p>
               <p className="mt-1 text-sm font-bold text-slate-600">{boxer.gym} / {boxer.prefecture} / {boxer.nationality}</p>
             </div>
-            {industryMode && <div className="min-w-[170px] border-l-4 border-slate-950 pl-3">
+            {matchDataMode && <div className="min-w-[170px] border-l-4 border-slate-950 pl-3">
               <p className="text-[10px] font-black tracking-[.12em] text-slate-600">MATCH STATUS</p>
               <span className={`mt-1.5 inline-flex border px-3 py-1.5 text-sm font-black ${boxer.status === "受付中" ? "border-emerald-200 bg-emerald-50 text-emerald-900" : boxer.status === "条件次第" ? "border-amber-200 bg-amber-50 text-amber-950" : "border-slate-300 bg-slate-100 text-slate-700"}`}>{boxer.status}</span>
               <p className="mt-2 text-xs font-black text-slate-800">{boxer.available}</p>
@@ -59,7 +60,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
       </div>
     </section>
 
-    {industryMode && <section className="mt-5 border-y-2 border-slate-950 bg-white">
+    {matchDataMode && <section className="mt-5 border-y-2 border-slate-950 bg-white">
       <div className="grid md:grid-cols-[1fr_1fr_1fr_auto] md:items-stretch">
         <ActionData label="試合可能時期" value={boxer.available} />
         <ActionData label="契約可能ウェイト" value={contractWeight} />
@@ -113,7 +114,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
       </div>
 
       <aside className="space-y-6">
-        {industryMode ? <section className="border border-slate-300 bg-white lg:sticky lg:top-20">
+        {matchDataMode ? <section className="border border-slate-300 bg-white lg:sticky lg:top-20">
           <div className="bg-slate-950 px-4 py-3 text-white"><p className="text-[10px] font-black tracking-[.12em] text-slate-400">次の操作</p><h2 className="mt-0.5 text-base font-black">この選手を検討する</h2></div>
           <div className="p-4">
             <div className="space-y-4">

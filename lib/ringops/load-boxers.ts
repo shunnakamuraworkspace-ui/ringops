@@ -41,6 +41,7 @@ type LoadResult = {
   boxers: BoxerPreview[];
   databaseConnected: boolean;
   industryMode: boolean;
+  reviewMode: boolean;
   loadError: string | null;
 };
 
@@ -50,6 +51,7 @@ export async function loadBoxers(): Promise<LoadResult> {
       boxers: boxerPreviewData,
       databaseConnected: false,
       industryMode: true,
+      reviewMode: true,
       loadError: null,
     };
   }
@@ -58,6 +60,7 @@ export async function loadBoxers(): Promise<LoadResult> {
   const { data: userData } = await supabase.auth.getUser();
   const user = userData.user;
   let industryMode = false;
+  let reviewMode = false;
 
   if (user) {
     const { data: memberships, error: membershipError } = await supabase
@@ -73,6 +76,7 @@ export async function loadBoxers(): Promise<LoadResult> {
         boxers: [],
         databaseConnected: true,
         industryMode: false,
+        reviewMode: false,
         loadError: "業界アカウント情報を読み込めませんでした。",
       };
     }
@@ -92,6 +96,7 @@ export async function loadBoxers(): Promise<LoadResult> {
       boxers: [],
       databaseConnected: true,
       industryMode,
+      reviewMode,
       loadError: "選手データを読み込めませんでした。時間をおいて再度お試しください。",
     };
   }
@@ -101,6 +106,7 @@ export async function loadBoxers(): Promise<LoadResult> {
       boxers: [],
       databaseConnected: true,
       industryMode,
+      reviewMode,
       loadError: null,
     };
   }
@@ -112,7 +118,9 @@ export async function loadBoxers(): Promise<LoadResult> {
     supabase.schema("ringops").from("rankings").select("boxer_id,ranking_body,rank,champion_status,ranking_date").in("boxer_id", boxerIds).order("ranking_date", { ascending: false }),
     industryMode
       ? supabase.schema("ringops").from("boxer_match_statuses").select("boxer_id,status,available_from,min_contract_weight_kg,max_contract_weight_kg,desired_rounds,travel_condition,verified_at").in("boxer_id", boxerIds)
-      : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),
+      : !user
+        ? supabase.schema("ringops").rpc("get_demo_match_statuses")
+        : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),
   ]);
 
   if (organizationResult.error || rankingResult.error || statusResult.error) {
@@ -120,9 +128,13 @@ export async function loadBoxers(): Promise<LoadResult> {
       boxers: [],
       databaseConnected: true,
       industryMode,
+      reviewMode,
       loadError: "選手関連データの読み込みに失敗しました。管理者へお問い合わせください。",
     };
   }
+
+  reviewMode = !industryMode && !user && Boolean(statusResult.data?.length);
+  const canViewMatchData = industryMode || reviewMode;
 
   const orgMap = new Map((organizationResult.data ?? []).map((item) => [item.id, item.display_name]));
   const statusMap = new Map((statusResult.data ?? []).map((item: any) => [item.boxer_id, item]));
@@ -169,13 +181,13 @@ export async function loadBoxers(): Promise<LoadResult> {
       nextBout: row.next_bout_date ? formatDate(row.next_bout_date) : null,
       nextVenue: row.next_venue_name ?? null,
       status: status ? statusLabels[status.status as keyof typeof statusLabels] : "受付停止",
-      available: industryMode ? formatAvailable(status?.available_from) : "—",
-      availableMonth: industryMode && status?.available_from ? String(status.available_from).slice(0, 7) : "",
-      rounds: industryMode ? (status?.desired_rounds ?? []) : [],
-      minWeight: industryMode && status?.min_contract_weight_kg != null ? Number(status.min_contract_weight_kg) : 0,
-      maxWeight: industryMode && status?.max_contract_weight_kg != null ? Number(status.max_contract_weight_kg) : 0,
-      travel: industryMode ? (status?.travel_condition ?? "—") : "—",
-      verified: industryMode ? relativeDate(status?.verified_at) : "—",
+      available: canViewMatchData ? formatAvailable(status?.available_from) : "—",
+      availableMonth: canViewMatchData && status?.available_from ? String(status.available_from).slice(0, 7) : "",
+      rounds: canViewMatchData ? (status?.desired_rounds ?? []) : [],
+      minWeight: canViewMatchData && status?.min_contract_weight_kg != null ? Number(status.min_contract_weight_kg) : 0,
+      maxWeight: canViewMatchData && status?.max_contract_weight_kg != null ? Number(status.max_contract_weight_kg) : 0,
+      travel: canViewMatchData ? (status?.travel_condition ?? "—") : "—",
+      verified: canViewMatchData ? relativeDate(status?.verified_at) : "—",
       heightCm: Number(row.height_cm ?? 0),
       reachCm: Number(row.reach_cm ?? 0),
       birthDate: row.birth_date ?? "",
@@ -186,6 +198,7 @@ export async function loadBoxers(): Promise<LoadResult> {
     boxers,
     databaseConnected: true,
     industryMode,
+    reviewMode,
     loadError: null,
   };
 }

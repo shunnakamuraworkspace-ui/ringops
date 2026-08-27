@@ -5,8 +5,9 @@ import { loadBoxers } from "@/lib/ringops/load-boxers";
 type SearchParams={division?:string;class?:string;rounds?:string;stance?:string;minWeight?:string;maxWeight?:string;minBouts?:string;maxBouts?:string};
 
 export default async function HomePage({searchParams}:{searchParams:Promise<SearchParams>}) {
-  const [params,{ boxers, databaseConnected, industryMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);
-  const open = industryMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;
+  const [params,{ boxers, databaseConnected, industryMode, reviewMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);
+  const matchDataMode = industryMode || reviewMode;
+  const open = matchDataMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;
 
   return <>
     <section className="border-b border-slate-300 bg-white">
@@ -41,12 +42,14 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
           ? "開発プレビュー：表示中の選手は架空データです。検索・導線・MATCH STATUSの操作確認用です。"
           : industryMode
             ? "業界ログイン中：MATCH STATUS・契約ウェイト・希望R・遠征条件を含めて検索できます。"
-            : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
+            : reviewMode
+              ? "確認モード：デモ選手のみMATCH STATUSと試合条件を表示しています。実運用データは業界ログイン後に表示します。"
+              : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
       </div>
       <BoxerDirectory
         boxers={boxers}
         databaseConnected={databaseConnected}
-        industryMode={industryMode}
+        industryMode={matchDataMode}
         initialDivision={params.division}
         initialClass={params.class}
         initialRounds={params.rounds}

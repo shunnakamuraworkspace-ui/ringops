@@ -120,7 +120,7 @@ export function BoxerDirectory({
   const [undefeated, setUndefeated] = useState("すべて");
   const [lastBoutAge, setLastBoutAge] = useState("すべて");
   const [travel, setTravel] = useState("すべて");
-  const [sort, setSort] = useState("受付優先");
+  const [sort, setSort] = useState(industryMode ? "受付優先" : "ランキング上位");
 
   const prefectures = useMemo(
     () => [...new Set(boxers.map((boxer) => boxer.prefecture).filter(Boolean))].sort(),
@@ -282,7 +282,7 @@ export function BoxerDirectory({
     setSort(value.sort);
   }
 
-  const reset = () => applyFilters(defaultFilters);
+  const reset = () => applyFilters({ ...defaultFilters, sort: industryMode ? "受付優先" : "ランキング上位" });
   const inherited = Boolean(
     initialDivision ||
       initialClass ||
