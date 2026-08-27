@@ -1,0 +1,68 @@
+name: One-off demo directory review mode
+on:
+  push:
+    paths:
+      - '.github/workflows/oneoff-demo-directory.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Patch directory review mode
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p=Path('lib/ringops/load-boxers.ts'); s=p.read_text()
+          s=s.replace('''type LoadResult = {\n  boxers: BoxerPreview[];\n  databaseConnected: boolean;\n  industryMode: boolean;\n  loadError: string | null;\n};''','''type LoadResult = {\n  boxers: BoxerPreview[];\n  databaseConnected: boolean;\n  industryMode: boolean;\n  reviewMode: boolean;\n  loadError: string | null;\n};''')
+          s=s.replace('''      databaseConnected: false,\n      industryMode: true,\n      loadError: null,''','''      databaseConnected: false,\n      industryMode: true,\n      reviewMode: true,\n      loadError: null,''')
+          s=s.replace('''  let industryMode = false;''','''  let industryMode = false;\n  let reviewMode = false;''')
+          s=s.replace('''        databaseConnected: true,\n        industryMode: false,\n        loadError: "業界アカウント情報を読み込めませんでした。",''','''        databaseConnected: true,\n        industryMode: false,\n        reviewMode: false,\n        loadError: "業界アカウント情報を読み込めませんでした。",''')
+          # Add reviewMode to the remaining early return objects that use the variable.
+          s=s.replace('''      databaseConnected: true,\n      industryMode,\n      loadError:''','''      databaseConnected: true,\n      industryMode,\n      reviewMode,\n      loadError:''')
+          old='''    industryMode\n      ? supabase.schema("ringops").from("boxer_match_statuses").select("boxer_id,status,available_from,min_contract_weight_kg,max_contract_weight_kg,desired_rounds,travel_condition,verified_at").in("boxer_id", boxerIds)\n      : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),'''
+          new='''    industryMode\n      ? supabase.schema("ringops").from("boxer_match_statuses").select("boxer_id,status,available_from,min_contract_weight_kg,max_contract_weight_kg,desired_rounds,travel_condition,verified_at").in("boxer_id", boxerIds)\n      : !user\n        ? supabase.schema("ringops").rpc("get_demo_match_statuses")\n        : Promise.resolve({ data: [] as Array<Record<string, unknown>>, error: null }),'''
+          if old not in s: raise SystemExit('status query block not found')
+          s=s.replace(old,new,1)
+          marker='''  const orgMap = new Map((organizationResult.data ?? []).map((item) => [item.id, item.display_name]));'''
+          s=s.replace(marker,'''  reviewMode = !industryMode && !user && Boolean(statusResult.data?.length);\n  const canViewMatchData = industryMode || reviewMode;\n\n'''+marker,1)
+          s=s.replace('''      available: industryMode ? formatAvailable(status?.available_from) : "—",\n      availableMonth: industryMode && status?.available_from ? String(status.available_from).slice(0, 7) : "",\n      rounds: industryMode ? (status?.desired_rounds ?? []) : [],\n      minWeight: industryMode && status?.min_contract_weight_kg != null ? Number(status.min_contract_weight_kg) : 0,\n      maxWeight: industryMode && status?.max_contract_weight_kg != null ? Number(status.max_contract_weight_kg) : 0,\n      travel: industryMode ? (status?.travel_condition ?? "—") : "—",\n      verified: industryMode ? relativeDate(status?.verified_at) : "—",''','''      available: canViewMatchData ? formatAvailable(status?.available_from) : "—",\n      availableMonth: canViewMatchData && status?.available_from ? String(status.available_from).slice(0, 7) : "",\n      rounds: canViewMatchData ? (status?.desired_rounds ?? []) : [],\n      minWeight: canViewMatchData && status?.min_contract_weight_kg != null ? Number(status.min_contract_weight_kg) : 0,\n      maxWeight: canViewMatchData && status?.max_contract_weight_kg != null ? Number(status.max_contract_weight_kg) : 0,\n      travel: canViewMatchData ? (status?.travel_condition ?? "—") : "—",\n      verified: canViewMatchData ? relativeDate(status?.verified_at) : "—",''')
+          s=s.replace('''    databaseConnected: true,\n    industryMode,\n    loadError: null,''','''    databaseConnected: true,\n    industryMode,\n    reviewMode,\n    loadError: null,''')
+          p.write_text(s)
+
+          p=Path('app/page.tsx'); s=p.read_text()
+          s=s.replace('''const [params,{ boxers, databaseConnected, industryMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);\n  const open = industryMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;''','''const [params,{ boxers, databaseConnected, industryMode, reviewMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);\n  const matchDataMode = industryMode || reviewMode;\n  const open = matchDataMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;''')
+          s=s.replace('''          : industryMode\n            ? "業界ログイン中：MATCH STATUS・契約ウェイト・希望R・遠征条件を含めて検索できます。"\n            : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}''','''          : industryMode\n            ? "業界ログイン中：MATCH STATUS・契約ウェイト・希望R・遠征条件を含めて検索できます。"\n            : reviewMode\n              ? "確認モード：デモ選手のみMATCH STATUSと試合条件を表示しています。実運用データは業界ログイン後に表示します。"\n              : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}''')
+          s=s.replace('''        industryMode={industryMode}''','''        industryMode={matchDataMode}''')
+          p.write_text(s)
+
+          p=Path('app/boxers/[id]/page.tsx'); s=p.read_text()
+          s=s.replace('''const { boxer, industryMode, databaseConnected, loadError } = await loadBoxer(id);''','''const { boxer, industryMode, reviewMode, databaseConnected, loadError } = await loadBoxer(id);''')
+          s=s.replace('''  if (!boxer) notFound();\n  const age''','''  if (!boxer) notFound();\n  const matchDataMode = industryMode || reviewMode;\n  const age''')
+          s=s.replace('industryMode &&','matchDataMode &&').replace('industryMode ?','matchDataMode ?')
+          p.write_text(s)
+
+          p=Path('features/boxers/components/boxer-directory.tsx'); s=p.read_text()
+          old='''  const [sort, setSort] = useState("受付優先");'''
+          if old not in s: raise SystemExit('sort init not found')
+          s=s.replace(old,'''  const [sort, setSort] = useState(industryMode ? "受付優先" : "ランキング上位");''',1)
+          s=s.replace('''  const reset = () => applyFilters(defaultFilters);''','''  const reset = () => applyFilters({ ...defaultFilters, sort: industryMode ? "受付優先" : "ランキング上位" });''')
+          p.write_text(s)
+          PY
+      - name: Verify
+        run: |
+          npm ci
+          npm run lint
+          npm run build
+      - name: Commit patch
+        run: |
+          rm .github/workflows/oneoff-demo-directory.yml
+          git config user.name "RINGOPS automation"
+          git config user.email "actions@users.noreply.github.com"
+          git add -A
+          git commit -m "fix: expose safe demo matchmaking data in review mode"
+          git push
