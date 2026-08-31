@@ -1,0 +1,28 @@
+name: One-off fix review data v3
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch review mode flags
+        run: |
+          sed -i 's/const reviewMode=!industryMode;/const reviewMode=!databaseConnected;/' features/open-matches/components/open-match-board.tsx
+          sed -i 's/const reviewMode=!industryMode;/const reviewMode=!databaseConnected;/' features/events/components/event-board.tsx
+          sed -i 's/const reviewMode=!industryMode;/const reviewMode=!databaseConnected;/' features/messages/components/message-room.tsx
+          sed -i 's/if(!industryMode){/if(reviewMode){/g' features/messages/components/message-room.tsx
+      - name: Commit if needed
+        run: |
+          if git diff --quiet; then
+            echo "No patch needed"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add features/open-matches/components/open-match-board.tsx features/events/components/event-board.tsx features/messages/components/message-room.tsx
+          git commit -m "fix: show review data across operational screens"
+          git push
