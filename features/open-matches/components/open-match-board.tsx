@@ -14,6 +14,10 @@ type Item={
 };
 type ManagedOrg={id:string;name:string;type:string};
 type MyBoxer={id:string;name:string;organizationId:string;competition:Competition;division:string};
+type Props={
+  databaseConnected:boolean;industryMode:boolean;initialCompetition?:string;initialDivision?:string;initialRounds?:string;
+  initialDate?:string;initialVenue?:string;initialMinWeight?:string;initialMaxWeight?:string;openFormInitially?:boolean;
+};
 
 const divisionCodes:Record<string,string>={"アトム級":"atom","ミニフライ級":"mini_fly","ミニマム級":"minimum","ライトフライ級":"light_fly","フライ級":"fly","スーパーフライ級":"super_fly","バンタム級":"bantam","スーパーバンタム級":"super_bantam","フェザー級":"feather","スーパーフェザー級":"super_feather","ライト級":"light","スーパーライト級":"super_light","ウェルター級":"welter","スーパーウェルター級":"super_welter","ミドル級":"middle","スーパーミドル級":"super_middle","ライトヘビー級":"light_heavy","クルーザー級":"cruiser","ヘビー級":"heavy"};
 const divisionAliases:Record<string,string>={atomweight:"アトム級",mini_flyweight:"ミニフライ級",minimumweight:"ミニマム級",light_flyweight:"ライトフライ級",flyweight:"フライ級",super_flyweight:"スーパーフライ級",bantamweight:"バンタム級",super_bantamweight:"スーパーバンタム級",featherweight:"フェザー級",super_featherweight:"スーパーフェザー級",lightweight:"ライト級",super_lightweight:"スーパーライト級",welterweight:"ウェルター級",super_welterweight:"スーパーウェルター級",middleweight:"ミドル級",super_middleweight:"スーパーミドル級",light_heavyweight:"ライトヘビー級",cruiserweight:"クルーザー級",heavyweight:"ヘビー級"};
@@ -29,25 +33,30 @@ const demo:Item[]=[
 const previewOrgs:ManagedOrg[]=[{id:"preview-gym",name:"青空ボクシングジム",type:"gym"},{id:"preview-promoter",name:"東京プロモーション",type:"promoter"}];
 const previewBoxers:MyBoxer[]=[{id:"20000000-0000-4000-8000-000000000001",name:"山田 直樹",organizationId:"preview-gym",competition:"男子",division:"スーパーバンタム級"}];
 
-export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){
+export function OpenMatchBoard({
+  databaseConnected,industryMode,initialCompetition,initialDivision,initialRounds,initialDate,initialVenue,initialMinWeight,initialMaxWeight,openFormInitially=false,
+}:Props){
   const reviewMode=!industryMode;
+  const initialCompetitionValue:Competition=initialCompetition==="women"?"女子":"男子";
+  const initialDivisionValue=initialDivision&&divisions.includes(initialDivision)?initialDivision:"スーパーバンタム級";
+  const initialRoundsValue=initialRounds&&["4","6","8","10","12"].includes(initialRounds)?initialRounds:"6";
   const [items,setItems]=useState<Item[]>(reviewMode?demo:[]);
   const [managedOrgs,setManagedOrgs]=useState<ManagedOrg[]>(reviewMode?previewOrgs:[]);
   const [myBoxers,setMyBoxers]=useState<MyBoxer[]>(reviewMode?previewBoxers:[]);
   const [loading,setLoading]=useState(databaseConnected&&industryMode);
-  const [showForm,setShowForm]=useState(false);
+  const [showForm,setShowForm]=useState(openFormInitially);
   const [error,setError]=useState("");
   const [busyId,setBusyId]=useState("");
 
-  const [organizationId,setOrganizationId]=useState(reviewMode?"preview-gym":"");
+  const [organizationId,setOrganizationId]=useState(reviewMode?"preview-promoter":"");
   const [targetBoxerId,setTargetBoxerId]=useState("");
-  const [competition,setCompetition]=useState<Competition>("男子");
-  const [division,setDivision]=useState("スーパーバンタム級");
-  const [date,setDate]=useState("");
-  const [venue,setVenue]=useState("");
-  const [minWeight,setMinWeight]=useState("");
-  const [maxWeight,setMaxWeight]=useState("");
-  const [rounds,setRounds]=useState("6");
+  const [competition,setCompetition]=useState<Competition>(initialCompetitionValue);
+  const [division,setDivision]=useState(initialDivisionValue);
+  const [date,setDate]=useState(initialDate??"");
+  const [venue,setVenue]=useState(initialVenue??"");
+  const [minWeight,setMinWeight]=useState(initialMinWeight??"");
+  const [maxWeight,setMaxWeight]=useState(initialMaxWeight??"");
+  const [rounds,setRounds]=useState(initialRoundsValue);
   const [klass,setKlass]=useState("B級");
   const [stance,setStance]=useState("指定なし");
   const [minBouts,setMinBouts]=useState("");
@@ -92,46 +101,33 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
         const supabase=createClient();
         const {data:userData}=await supabase.auth.getUser();
         if(!userData.user)throw new Error();
-
         const [{data:openRows,error:openError},{data:memberships,error:membershipError}]=await Promise.all([
           supabase.schema("ringops").from("open_matches").select("id,event_date,venue_name,competition_category,division_code,contract_weight_min_kg,contract_weight_max_kg,rounds,preferred_class,preferred_stance,min_bouts,max_bouts,region_condition,travel_condition,deadline,comment,target_boxer_id,organization_id").eq("status","open").order("deadline"),
           supabase.schema("ringops").from("organization_memberships").select("organization_id,role").eq("user_id",userData.user.id).eq("status","active").in("role",["owner","admin","matchmaker"]),
         ]);
         if(openError||membershipError)throw openError||membershipError;
-
         const managedIds=[...new Set((memberships??[]).map(row=>row.organization_id))];
         const openOrgIds=(openRows??[]).map(row=>row.organization_id);
         const orgIds=[...new Set([...managedIds,...openOrgIds])];
         const boxerIds=[...new Set((openRows??[]).map(row=>row.target_boxer_id).filter(Boolean))];
-
         const [orgResult,targetBoxerResult,myBoxerResult]=await Promise.all([
           orgIds.length?supabase.schema("ringops").from("organizations").select("id,display_name,organization_type").in("id",orgIds):Promise.resolve({data:[],error:null}),
           boxerIds.length?supabase.schema("ringops").from("boxers").select("id,name,organization_id,competition_category,division_code").in("id",boxerIds):Promise.resolve({data:[],error:null}),
           managedIds.length?supabase.schema("ringops").from("boxers").select("id,name,organization_id,competition_category,division_code").in("organization_id",managedIds).eq("is_public",true).order("name_kana"):Promise.resolve({data:[],error:null}),
         ]);
         if(orgResult.error||targetBoxerResult.error||myBoxerResult.error)throw orgResult.error||targetBoxerResult.error||myBoxerResult.error;
-
         const orgMap=new Map((orgResult.data??[]).map(org=>[org.id,org]));
         const targetBoxerMap=new Map((targetBoxerResult.data??[]).map(boxer=>[boxer.id,boxer]));
         const mapped:Item[]=(openRows??[]).map(row=>{
           const target=row.target_boxer_id?targetBoxerMap.get(row.target_boxer_id):null;
           const category=row.competition_category??target?.competition_category;
-          return {
-            id:row.id,organizationId:row.organization_id,targetBoxerId:row.target_boxer_id,targetBoxer:target?.name??"対戦枠",
-            organization:orgMap.get(row.organization_id)?.display_name??"業界組織",competition:category==="women"?"女子":"男子",date:row.event_date??"",venue:row.venue_name??"—",
-            division:codeToDivision[row.division_code]??row.division_code,minWeight:row.contract_weight_min_kg==null?null:Number(row.contract_weight_min_kg),maxWeight:row.contract_weight_max_kg==null?null:Number(row.contract_weight_max_kg),
-            rounds:row.rounds,klass:row.preferred_class?`${row.preferred_class}級`:"指定なし",stance:row.preferred_stance==="southpaw"?"左":row.preferred_stance==="orthodox"?"右":"指定なし",
-            minBouts:row.min_bouts,maxBouts:row.max_bouts,region:row.region_condition??"",travel:row.travel_condition??"",deadline:row.deadline??"",note:row.comment??"",
-          };
+          return {id:row.id,organizationId:row.organization_id,targetBoxerId:row.target_boxer_id,targetBoxer:target?.name??"対戦枠",organization:orgMap.get(row.organization_id)?.display_name??"業界組織",competition:category==="women"?"女子":"男子",date:row.event_date??"",venue:row.venue_name??"—",division:codeToDivision[row.division_code]??row.division_code,minWeight:row.contract_weight_min_kg==null?null:Number(row.contract_weight_min_kg),maxWeight:row.contract_weight_max_kg==null?null:Number(row.contract_weight_max_kg),rounds:row.rounds,klass:row.preferred_class?`${row.preferred_class}級`:"指定なし",stance:row.preferred_stance==="southpaw"?"左":row.preferred_stance==="orthodox"?"右":"指定なし",minBouts:row.min_bouts,maxBouts:row.max_bouts,region:row.region_condition??"",travel:row.travel_condition??"",deadline:row.deadline??"",note:row.comment??""};
         });
         const ownOrgs:ManagedOrg[]=managedIds.map(id=>orgMap.get(id)).filter(Boolean).map(org=>({id:org!.id,name:org!.display_name,type:org!.organization_type}));
         const ownBoxers:MyBoxer[]=(myBoxerResult.data??[]).map(boxer=>({id:boxer.id,name:boxer.name,organizationId:boxer.organization_id,competition:boxer.competition_category==="women"?"女子":"男子",division:codeToDivision[boxer.division_code]??boxer.division_code}));
         if(active){setItems(mapped);setManagedOrgs(ownOrgs);setMyBoxers(ownBoxers);setOrganizationId(current=>current||ownOrgs[0]?.id||"");}
-      }catch{
-        if(active)setError("募集情報を読み込めませんでした。");
-      }finally{
-        if(active)setLoading(false);
-      }
+      }catch{if(active)setError("募集情報を読み込めませんでした。");}
+      finally{if(active)setLoading(false);}
     })();
     return()=>{active=false};
   },[databaseConnected,industryMode]);
@@ -139,11 +135,7 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
   const targetOptions=useMemo(()=>myBoxers.filter(boxer=>boxer.organizationId===organizationId),[myBoxers,organizationId]);
   const managedIds=useMemo(()=>new Set(managedOrgs.map(org=>org.id)),[managedOrgs]);
 
-  function chooseTargetBoxer(value:string){
-    setTargetBoxerId(value);
-    const boxer=myBoxers.find(item=>item.id===value);
-    if(boxer){setCompetition(boxer.competition);setDivision(boxer.division);}
-  }
+  function chooseTargetBoxer(value:string){setTargetBoxerId(value);const boxer=myBoxers.find(item=>item.id===value);if(boxer){setCompetition(boxer.competition);setDivision(boxer.division);}}
 
   async function create(e:React.FormEvent){
     e.preventDefault();setError("");
@@ -151,67 +143,35 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
     const minW=minWeight?Number(minWeight):null;const maxW=maxWeight?Number(maxWeight):null;
     if(minW!==null&&maxW!==null&&maxW<minW){setError("契約ウェイトの上限は下限以上にしてください。");return;}
     if(minBouts&&maxBouts&&Number(maxBouts)<Number(minBouts)){setError("戦数上限は下限以上にしてください。");return;}
-
     if(!databaseConnected||!industryMode){
-      const org=managedOrgs.find(value=>value.id===organizationId);
-      const boxer=myBoxers.find(value=>value.id===targetBoxerId);
-      const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
-      const nextSequence=Number(localStorage.getItem("ringops_open_match_sequence")||"0")+1;
-      localStorage.setItem("ringops_open_match_sequence",String(nextSequence));
+      const org=managedOrgs.find(value=>value.id===organizationId);const boxer=myBoxers.find(value=>value.id===targetBoxerId);const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];const nextSequence=Number(localStorage.getItem("ringops_open_match_sequence")||"0")+1;localStorage.setItem("ringops_open_match_sequence",String(nextSequence));
       const item:Item={id:`review-${nextSequence}`,organizationId,targetBoxerId:targetBoxerId||null,targetBoxer:boxer?.name??"対戦枠",organization:org?.name??"自組織",competition,date,venue,division,minWeight:minW,maxWeight:maxW,rounds:Number(rounds),klass,stance,minBouts:minBouts?Number(minBouts):null,maxBouts:maxBouts?Number(maxBouts):null,region,travel,deadline,note};
-      localStorage.setItem("ringops_open_matches",JSON.stringify([item,...existing]));
-      setItems([item,...items]);setShowForm(false);resetForm();return;
+      localStorage.setItem("ringops_open_matches",JSON.stringify([item,...existing]));setItems([item,...items]);setShowForm(false);resetForm();return;
     }
-
     try{
-      const supabase=createClient();
-      const {data:userData}=await supabase.auth.getUser();
-      const user=userData.user;if(!user)throw new Error();
-      const {error:insertError}=await supabase.schema("ringops").from("open_matches").insert({
-        organization_id:organizationId,target_boxer_id:targetBoxerId||null,event_date:date||null,venue_name:venue||null,competition_category:competitionToDb[competition],division_code:divisionCodes[division],
-        contract_weight_min_kg:minW,contract_weight_max_kg:maxW,rounds:Number(rounds),preferred_class:classToDb[klass]??null,preferred_stance:stanceToDb[stance]??null,
-        min_bouts:minBouts?Number(minBouts):null,max_bouts:maxBouts?Number(maxBouts):null,region_condition:region||null,travel_condition:travel||null,
-        deadline:deadline||null,comment:note||null,status:"open",created_by:user.id,
-      });
-      if(insertError)throw insertError;
-      location.reload();
-    }catch{
-      setError("募集を登録できませんでした。組織権限を確認してください。");
-    }
+      const supabase=createClient();const {data:userData}=await supabase.auth.getUser();const user=userData.user;if(!user)throw new Error();
+      const {error:insertError}=await supabase.schema("ringops").from("open_matches").insert({organization_id:organizationId,target_boxer_id:targetBoxerId||null,event_date:date||null,venue_name:venue||null,competition_category:competitionToDb[competition],division_code:divisionCodes[division],contract_weight_min_kg:minW,contract_weight_max_kg:maxW,rounds:Number(rounds),preferred_class:classToDb[klass]??null,preferred_stance:stanceToDb[stance]??null,min_bouts:minBouts?Number(minBouts):null,max_bouts:maxBouts?Number(maxBouts):null,region_condition:region||null,travel_condition:travel||null,deadline:deadline||null,comment:note||null,status:"open",created_by:user.id});
+      if(insertError)throw insertError;location.reload();
+    }catch{setError("募集を登録できませんでした。組織権限を確認してください。");}
   }
 
   async function changeStatus(id:string,status:"paused"|"closed"){
     setBusyId(id);setError("");
     try{
-      if(databaseConnected&&industryMode){
-        const supabase=createClient();
-        const {error:updateError}=await supabase.schema("ringops").from("open_matches").update({status}).eq("id",id);
-        if(updateError)throw updateError;
-      }else{
-        const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];
-        localStorage.setItem("ringops_open_matches",JSON.stringify(existing.filter(item=>item.id!==id)));
-      }
+      if(databaseConnected&&industryMode){const supabase=createClient();const {error:updateError}=await supabase.schema("ringops").from("open_matches").update({status}).eq("id",id);if(updateError)throw updateError;}
+      else{const existing=JSON.parse(localStorage.getItem("ringops_open_matches")||"[]") as Item[];localStorage.setItem("ringops_open_matches",JSON.stringify(existing.filter(item=>item.id!==id)));}
       setItems(current=>current.filter(item=>item.id!==id));
-    }catch{
-      setError("募集状態を変更できませんでした。");
-    }finally{
-      setBusyId("");
-    }
+    }catch{setError("募集状態を変更できませんでした。");}
+    finally{setBusyId("");}
   }
 
-  function resetForm(){
-    setTargetBoxerId("");setCompetition("男子");setDivision("スーパーバンタム級");setDate("");setVenue("");setMinWeight("");setMaxWeight("");setRounds("6");setKlass("B級");setStance("指定なし");setMinBouts("");setMaxBouts("");setRegion("");setTravel("");setDeadline("");setNote("");
-  }
+  function resetForm(){setTargetBoxerId("");setCompetition("男子");setDivision("スーパーバンタム級");setDate("");setVenue("");setMinWeight("");setMaxWeight("");setRounds("6");setKlass("B級");setStance("指定なし");setMinBouts("");setMaxBouts("");setRegion("");setTravel("");setDeadline("");setNote("");}
 
   if(loading)return <div className="border-y-2 border-slate-950 bg-white py-12 text-center text-sm font-bold text-slate-500">募集情報を読み込んでいます…</div>;
-
   return <>
-    <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-      <div><p className="text-xs font-bold text-slate-500">募集中 {items.length}件</p>{reviewMode&&<p className="mt-1 text-[10px] font-bold text-slate-400">確認モード：作成内容はこの端末に保存されます。</p>}</div>
-      <button className="h-10 bg-slate-950 px-4 text-xs font-black text-white" onClick={()=>setShowForm(!showForm)}>{showForm?"閉じる":"対戦相手募集を作成"}</button>
-    </div>
+    <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold text-slate-500">募集中 {items.length}件</p>{reviewMode&&<p className="mt-1 text-[10px] font-bold text-slate-400">確認モード：作成内容はこの端末に保存されます。</p>}</div><button className="h-10 bg-slate-950 px-4 text-xs font-black text-white" onClick={()=>setShowForm(!showForm)}>{showForm?"閉じる":"対戦相手募集を作成"}</button></div>
     {error&&<div className="mb-4 border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-800">{error}</div>}
-
+    {openFormInitially&&showForm&&<div className="mb-3 border-l-4 border-slate-950 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-700">興行の対戦枠から条件を引き継ぎました。必要な条件だけ調整して募集してください。</div>}
     {showForm&&<form className="mb-6 border-y-2 border-slate-950 bg-white p-5" onSubmit={create}>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Select label="投稿組織" value={organizationId} onChange={value=>{setOrganizationId(value);setTargetBoxerId("");}} values={managedOrgs.map(org=>({value:org.id,label:org.name}))}/>
@@ -234,7 +194,6 @@ export function OpenMatchBoard({databaseConnected,industryMode}:{databaseConnect
       <Field label="条件・コメント"><textarea className="mt-1 min-h-24 w-full border border-slate-300 p-3 text-sm outline-none focus:border-slate-950" value={note} onChange={e=>setNote(e.target.value)} maxLength={1500}/></Field>
       <div className="mt-4 flex justify-end"><button className="h-11 bg-slate-950 px-5 text-xs font-black text-white">募集を公開</button></div>
     </form>}
-
     <div className="border-y-2 border-slate-950 bg-white">
       {items.map(item=><article className="grid gap-4 border-b border-slate-200 px-5 py-5 last:border-0 lg:grid-cols-[1.45fr_1fr_.9fr_.8fr_1.15fr] lg:items-center" key={item.id}>
         <div><b>{item.targetBoxer}</b><p className="mt-1 text-xs font-bold text-slate-500">{item.organization}</p><p className="mt-1 text-xs text-slate-400">{item.date}｜{item.venue}</p></div>
