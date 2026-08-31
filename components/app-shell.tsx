@@ -92,7 +92,7 @@ export function AppShell({ children, user, unreadCount, demoMode }: Props) {
           <p className="mb-1.5 px-2 text-[10px] font-black tracking-[.08em] text-slate-400">{group.label}</p>
           <div className="space-y-0.5">{group.items.map(([label, href]) => {
             const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-            return <Link className={`flex h-10 items-center justify-between rounded-md px-3 text-[13px] font-bold transition ${active ? "bg-[#e8eef4] text-[#16324a]" : "text-slate-650 hover:bg-[#f0f2f5] hover:text-slate-950"}`} href={href} key={href}>
+            return <Link className={`flex h-10 items-center justify-between rounded-md px-3 text-[13px] font-bold transition ${active ? "bg-[#e8eef4] text-[#16324a]" : "text-slate-700 hover:bg-[#f0f2f5] hover:text-slate-950"}`} href={href} key={href}>
               <span>{label}</span>{label === "連絡" && unreadCount > 0 && <span className="min-w-5 rounded-full bg-[#16324a] px-1.5 text-center text-[10px] leading-5 text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
             </Link>;
           })}</div>
@@ -121,7 +121,7 @@ export function AppShell({ children, user, unreadCount, demoMode }: Props) {
           </div>
         </div>
         <div className="flex overflow-x-auto border-t border-[#edf0f3] bg-[#fbfcfd] px-2 lg:hidden">
-          {groups.flatMap((group) => group.items).map(([label, href]) => <Link className={`shrink-0 border-b-2 px-3 py-2.5 text-[11px] font-bold ${isActive(pathname, href) ? "border-[#16324a] text-[#16324a]" : "border-transparent text-slate-500"}`} href={href} key={href}>{label}</Link>)}
+          {groups.flatMap((group) => group.items.map(([label, href]) => ({ label, href }))).map(({ label, href }) => <Link className={`shrink-0 border-b-2 px-3 py-2.5 text-[11px] font-bold ${isActive(pathname, href) ? "border-[#16324a] text-[#16324a]" : "border-transparent text-slate-500"}`} href={href} key={href}>{label}</Link>)}
         </div>
       </header>
 
