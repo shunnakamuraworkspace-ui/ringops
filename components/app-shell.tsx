@@ -6,27 +6,29 @@ import { useEffect, useState, type ReactNode } from "react";
 import { signOut } from "@/app/login/actions";
 
 type UserInfo = { email?: string; displayName?: string } | null;
+type Props = { children: ReactNode; user: UserInfo; unreadCount: number; demoMode: boolean };
+type NavItem = { label: string; href: string; icon: IconName };
+type IconName = "search" | "plus" | "match" | "calendar" | "star" | "message" | "building" | "book";
 
-type Props = {
-  children: ReactNode;
-  user: UserInfo;
-  unreadCount: number;
-  demoMode: boolean;
-};
+const primaryNav: NavItem[] = [
+  { label: "選手を探す", href: "/", icon: "search" },
+  { label: "対戦相手募集", href: "/open-matches", icon: "plus" },
+  { label: "マッチメイク", href: "/matchmaking", icon: "match" },
+  { label: "興行", href: "/events", icon: "calendar" },
+];
 
-const groups = [
-  { label: "探す", items: [["選手名鑑", "/"], ["候補", "/candidates"]] },
-  { label: "組む", items: [["対戦相手募集", "/open-matches"], ["マッチメイク", "/matchmaking"]] },
-  { label: "運営", items: [["興行", "/events"], ["連絡", "/messages"], ["ジム管理", "/gym"]] },
-] as const;
+const secondaryNav: NavItem[] = [
+  { label: "候補", href: "/candidates", icon: "star" },
+  { label: "連絡", href: "/messages", icon: "message" },
+  { label: "ジム管理", href: "/gym", icon: "building" },
+  { label: "操作ガイド", href: "/guide", icon: "book" },
+];
 
 const guideSteps = [
-  { no: "01", title: "選手を探す", body: "階級・戦績・地域・MATCH STATUSで絞り、詳細を確認します。", href: "/" },
-  { no: "02", title: "候補に入れる", body: "比較したい選手を候補へ保存。確認モードでは最初から候補例も入っています。", href: "/candidates" },
-  { no: "03", title: "ジムへ相談する", body: "候補から興行日・契約ウェイト・Rを入れて相談案件を作ります。", href: "/matchmaking" },
-  { no: "04", title: "交渉を進める", body: "相談中→交渉中→ジム確認待ち→内定→決定まで案件で追います。", href: "/matchmaking" },
-  { no: "05", title: "相手を募集する", body: "対戦相手が未定・流れた時はOPEN MATCHを作り、その条件で選手検索へ戻れます。", href: "/open-matches" },
-  { no: "06", title: "興行を組む", body: "興行単位で対戦枠を作り、募集中・交渉中・決定を一覧で管理します。", href: "/events" },
+  { no: "1", title: "選手を探す", body: "階級・受付状況・試合月・契約kgで候補を絞ります。", href: "/" },
+  { no: "2", title: "相談する", body: "選手一覧の「相談する」から試合条件を入力します。", href: "/" },
+  { no: "3", title: "案件を進める", body: "相談内容はマッチメイクに入り、交渉から決定まで追えます。", href: "/matchmaking" },
+  { no: "4", title: "相手がいなければ募集", body: "条件を公開して対戦相手を募集し、その条件のまま選手検索へ戻れます。", href: "/open-matches" },
 ];
 
 export function AppShell({ children, user, unreadCount, demoMode }: Props) {
@@ -37,32 +39,24 @@ export function AppShell({ children, user, unreadCount, demoMode }: Props) {
   useEffect(() => {
     if (!demoMode) return;
     try {
-      const seeded = localStorage.getItem("ringops_demo_seeded_v3");
-      if (!seeded) {
-        localStorage.setItem("ringops_candidate_boxers", JSON.stringify([
-          "20000000-0000-0000-0000-000000000001",
-          "20000000-0000-0000-0000-000000000002",
-          "20000000-0000-0000-0000-000000000007",
-        ]));
-        localStorage.setItem("ringops_demo_seeded_v3", "1");
-      }
-      if (!localStorage.getItem("ringops_guide_seen_v1")) setWelcomeOpen(true);
+      if (!localStorage.getItem("ringops_guide_seen_v2")) setWelcomeOpen(true);
     } catch {
-      // Browser storage is optional for the review experience.
+      // Storage is optional in review mode.
     }
   }, [demoMode]);
 
-  function closeWelcome() {
+  function closeGuide() {
+    setGuideOpen(false);
     setWelcomeOpen(false);
-    try { localStorage.setItem("ringops_guide_seen_v1", "1"); } catch {}
+    try { localStorage.setItem("ringops_guide_seen_v2", "1"); } catch {}
   }
 
   function resetDemo() {
-    if (!window.confirm("確認モードで作成した候補・募集・案件・興行・メッセージを初期状態へ戻しますか？")) return;
+    if (!window.confirm("確認用に変更した候補・募集・案件・興行・メッセージを初期状態へ戻しますか？")) return;
     try {
       const keys: string[] = [];
-      for (let i = 0; i < localStorage.length; i += 1) {
-        const key = localStorage.key(i);
+      for (let index = 0; index < localStorage.length; index += 1) {
+        const key = localStorage.key(index);
         if (key?.startsWith("ringops_")) keys.push(key);
       }
       keys.forEach((key) => localStorage.removeItem(key));
@@ -72,99 +66,111 @@ export function AppShell({ children, user, unreadCount, demoMode }: Props) {
   }
 
   const displayName = user?.displayName || user?.email?.split("@")[0] || "確認ユーザー";
+  const mobileNav = [...primaryNav, ...secondaryNav.filter((item) => item.href !== "/guide")];
 
-  return <div className="min-h-screen bg-[#f4f6f8] text-slate-950">
-    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[224px] border-r border-[#d9dee5] bg-[#fbfcfd] lg:flex lg:flex-col">
-      <div className="border-b border-[#e3e7ec] px-5 py-5">
+  return <div className="min-h-screen bg-[#f7f8fa] text-slate-950">
+    <aside className="fixed inset-y-0 left-0 z-50 hidden w-[240px] border-r border-[#e2e6ea] bg-white lg:flex lg:flex-col">
+      <div className="flex h-16 items-center border-b border-[#edf0f2] px-5">
         <Link className="flex items-center gap-3" href="/">
-          <span className="flex size-9 items-center justify-center rounded-lg bg-[#102033] text-sm font-black tracking-tight text-white">R</span>
-          <span><b className="block text-[15px] tracking-[.08em]">RINGOPS</b><small className="mt-0.5 block text-[10px] font-bold text-slate-500">BOXING OPERATIONS</small></span>
+          <span className="flex size-9 items-center justify-center rounded-xl bg-[#173b5e] text-sm font-black text-white shadow-sm">R</span>
+          <span><b className="block text-[15px] font-black tracking-[.06em] text-[#152536]">RINGOPS</b><small className="block text-[10px] font-medium text-slate-400">ボクシング業務管理</small></span>
         </Link>
       </div>
 
-      {demoMode && <div className="mx-3 mt-3 rounded-lg border border-[#cdd8e5] bg-[#f0f5fa] px-3 py-2.5">
-        <div className="flex items-center gap-2"><span className="size-2 rounded-full bg-[#2f6f9f]"/><b className="text-xs">確認モード</b></div>
-        <p className="mt-1 text-[10px] leading-4 text-slate-600">架空データで全体の操作を試せます。確認操作はこの端末にだけ保存されます。</p>
-      </div>}
-
       <nav className="flex-1 overflow-y-auto px-3 py-4">
-        {groups.map((group) => <div className="mb-5" key={group.label}>
-          <p className="mb-1.5 px-2 text-[10px] font-black tracking-[.08em] text-slate-400">{group.label}</p>
-          <div className="space-y-0.5">{group.items.map(([label, href]) => {
-            const active = href === "/" ? pathname === "/" : pathname.startsWith(href);
-            return <Link className={`flex h-10 items-center justify-between rounded-md px-3 text-[13px] font-bold transition ${active ? "bg-[#e8eef4] text-[#16324a]" : "text-slate-700 hover:bg-[#f0f2f5] hover:text-slate-950"}`} href={href} key={href}>
-              <span>{label}</span>{label === "連絡" && unreadCount > 0 && <span className="min-w-5 rounded-full bg-[#16324a] px-1.5 text-center text-[10px] leading-5 text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
-            </Link>;
-          })}</div>
-        </div>)}
+        <p className="mb-2 px-2 text-[10px] font-bold text-slate-400">マッチメイク</p>
+        <div className="space-y-1">{primaryNav.map((item) => <NavLink item={item} pathname={pathname} key={item.href} />)}</div>
+        <div className="my-4 border-t border-[#edf0f2]" />
+        <p className="mb-2 px-2 text-[10px] font-bold text-slate-400">その他</p>
+        <div className="space-y-1">{secondaryNav.map((item) => <NavLink item={item} pathname={pathname} unreadCount={item.href === "/messages" ? unreadCount : 0} key={item.href} />)}</div>
       </nav>
 
-      <div className="border-t border-[#e3e7ec] p-3">
-        <button className="mb-1 flex h-10 w-full items-center rounded-md px-3 text-left text-xs font-bold text-slate-700 hover:bg-[#eef1f4]" onClick={() => setGuideOpen(true)}>使い方・操作ガイド</button>
-        <Link className="mb-1 flex h-10 items-center rounded-md px-3 text-xs font-bold text-slate-700 hover:bg-[#eef1f4]" href="/guide">マニュアルを開く</Link>
-        {demoMode && <button className="flex h-10 w-full items-center rounded-md px-3 text-left text-[11px] font-bold text-slate-500 hover:bg-[#eef1f4]" onClick={resetDemo}>確認データを初期化</button>}
+      <div className="border-t border-[#edf0f2] p-3">
+        {demoMode && <div className="mb-2 rounded-xl bg-[#f2f6f9] px-3 py-3">
+          <div className="flex items-center justify-between"><span className="text-xs font-black text-[#315b7c]">確認モード</span><span className="size-2 rounded-full bg-emerald-500" /></div>
+          <p className="mt-1 text-[10px] leading-4 text-slate-500">ログインなしで全機能を試せます。変更はこの端末だけに保存されます。</p>
+        </div>}
+        <button className="flex h-9 w-full items-center gap-2 rounded-lg px-3 text-left text-xs font-bold text-slate-600 hover:bg-slate-50" onClick={() => setGuideOpen(true)}><Icon name="book" />使い方を見る</button>
+        {demoMode && <button className="mt-1 flex h-9 w-full items-center rounded-lg px-3 text-left text-[11px] font-medium text-slate-400 hover:bg-slate-50 hover:text-slate-600" onClick={resetDemo}>確認データを初期化</button>}
       </div>
     </aside>
 
-    <div className="lg:pl-[224px]">
-      <header className="sticky top-0 z-40 border-b border-[#d9dee5] bg-white/95 backdrop-blur">
-        <div className="flex h-14 items-center justify-between gap-3 px-4 lg:px-6">
-          <div className="flex min-w-0 items-center gap-3 lg:hidden"><Link className="font-black tracking-[.08em]" href="/">RINGOPS</Link>{demoMode && <span className="rounded bg-[#e8eef4] px-2 py-1 text-[10px] font-black text-[#16324a]">確認</span>}</div>
-          <div className="hidden min-w-0 items-center gap-3 lg:flex"><span className="text-xs font-bold text-slate-500">{pageTitle(pathname)}</span>{demoMode && <span className="text-[10px] font-bold text-slate-400">デモデータで操作確認中</span>}</div>
+    <div className="lg:pl-[240px]">
+      <header className="sticky top-0 z-40 border-b border-[#e2e6ea] bg-white/95 backdrop-blur">
+        <div className="flex h-14 items-center justify-between gap-3 px-4 lg:h-16 lg:px-6">
+          <div className="flex min-w-0 items-center gap-3">
+            <Link className="font-black tracking-[.06em] text-[#173b5e] lg:hidden" href="/">RINGOPS</Link>
+            <h1 className="hidden truncate text-sm font-black text-slate-800 lg:block">{pageTitle(pathname)}</h1>
+            {demoMode && <span className="rounded-md bg-[#eef4f8] px-2 py-1 text-[10px] font-black text-[#315b7c]">確認版</span>}
+          </div>
           <div className="flex items-center gap-2">
-            <button className="h-9 rounded-md border border-[#cfd6dd] bg-white px-3 text-xs font-bold text-slate-700 hover:bg-[#f7f8fa]" onClick={() => setGuideOpen(true)}>使い方</button>
-            {!user ? <Link className="h-9 rounded-md bg-[#16324a] px-3 text-xs font-black leading-9 text-white hover:bg-[#10283c]" href="/login">業界ログイン</Link> : <>
+            <button className="h-9 rounded-lg border border-[#d8dee4] bg-white px-3 text-xs font-bold text-slate-600 hover:bg-slate-50" onClick={() => setGuideOpen(true)}>使い方</button>
+            {!user ? <Link className="h-9 rounded-lg bg-[#173b5e] px-3 text-xs font-black leading-9 text-white hover:bg-[#102f4b]" href="/login">業界ログイン</Link> : <>
               <span className="hidden text-xs font-bold text-slate-600 sm:inline">{displayName}</span>
-              <span className="flex size-8 items-center justify-center rounded-full bg-[#e8eef4] text-xs font-black text-[#16324a]">{displayName.slice(0,1)}</span>
+              <span className="flex size-8 items-center justify-center rounded-full bg-[#e9f1f7] text-xs font-black text-[#315b7c]">{displayName.slice(0, 1)}</span>
               <form action={signOut}><button className="px-1 text-[10px] font-bold text-slate-400 hover:text-slate-700">ログアウト</button></form>
             </>}
           </div>
         </div>
-        <div className="flex overflow-x-auto border-t border-[#edf0f3] bg-[#fbfcfd] px-2 lg:hidden">
-          {groups.flatMap((group) => group.items.map(([label, href]) => ({ label, href }))).map(({ label, href }) => <Link className={`shrink-0 border-b-2 px-3 py-2.5 text-[11px] font-bold ${isActive(pathname, href) ? "border-[#16324a] text-[#16324a]" : "border-transparent text-slate-500"}`} href={href} key={href}>{label}</Link>)}
-        </div>
+        <div className="flex overflow-x-auto border-t border-[#f0f2f4] bg-white px-2 lg:hidden">{mobileNav.map((item) => <Link className={`shrink-0 border-b-2 px-3 py-2.5 text-[11px] font-bold ${isActive(pathname, item.href) ? "border-[#24547a] text-[#24547a]" : "border-transparent text-slate-400"}`} href={item.href} key={item.href}>{item.label}</Link>)}</div>
       </header>
-
-      {demoMode && <div className="border-b border-[#dbe3eb] bg-[#eef4f8] px-4 py-2 lg:px-6">
-        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center justify-between gap-2 text-[11px]">
-          <p className="font-bold text-[#27465f]"><b>確認用フルモード</b>：ログインなしで検索・候補・相談・募集・案件・興行・連絡・ジム管理を試せます。</p>
-          <button className="font-black text-[#16324a] underline underline-offset-4" onClick={() => setGuideOpen(true)}>何から触ればいい？</button>
-        </div>
-      </div>}
-
       <div>{children}</div>
     </div>
 
-    {(guideOpen || welcomeOpen) && <div className="fixed inset-0 z-[80] bg-slate-950/30" onMouseDown={() => { setGuideOpen(false); closeWelcome(); }}>
-      <aside className="absolute right-0 top-0 h-full w-full max-w-[460px] overflow-y-auto border-l border-[#d9dee5] bg-[#fbfcfd] shadow-2xl" onMouseDown={(e) => e.stopPropagation()}>
-        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#dde2e7] bg-white px-5 py-4">
-          <div><p className="text-[10px] font-black tracking-[.1em] text-[#597086]">START GUIDE</p><h2 className="mt-1 text-xl font-black">3分でわかる RINGOPS</h2></div>
-          <button className="size-9 rounded-md border border-[#d4dae0] bg-white text-lg text-slate-500" onClick={() => { setGuideOpen(false); closeWelcome(); }}>×</button>
+    {(guideOpen || welcomeOpen) && <div className="fixed inset-0 z-[80] bg-[#0f172a]/30" onMouseDown={closeGuide}>
+      <aside className="absolute right-0 top-0 h-full w-full max-w-[430px] overflow-y-auto border-l border-[#e0e4e8] bg-white shadow-2xl" onMouseDown={(event) => event.stopPropagation()}>
+        <div className="sticky top-0 z-10 flex items-center justify-between border-b border-[#edf0f2] bg-white px-5 py-4">
+          <div><p className="text-[10px] font-bold text-slate-400">はじめての方へ</p><h2 className="mt-1 text-xl font-black tracking-tight text-slate-950">まず4つだけ覚える</h2></div>
+          <button className="flex size-9 items-center justify-center rounded-lg border border-[#d8dee4] text-lg text-slate-400 hover:bg-slate-50" onClick={closeGuide}>×</button>
         </div>
         <div className="p-5">
-          <div className="rounded-lg border border-[#cad6e1] bg-[#edf4f8] p-4"><b className="text-sm text-[#16324a]">最初はこの順番で触ってください</b><p className="mt-1 text-xs leading-5 text-[#506579]">RINGOPSは「選手を探す」から始まり、「相談 → 交渉 → 決定 → 興行管理」までを一本につなぐ業務ツールです。</p></div>
-          <div className="mt-5 space-y-2">{guideSteps.map((step) => <Link className="group flex gap-3 rounded-lg border border-[#dfe3e8] bg-white p-3.5 hover:border-[#9fb2c4] hover:bg-[#fafcfd]" href={step.href} key={step.no} onClick={() => { setGuideOpen(false); closeWelcome(); }}>
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-[#16324a] text-[10px] font-black text-white">{step.no}</span>
-            <span><b className="text-sm">{step.title}</b><span className="mt-1 block text-[11px] leading-5 text-slate-600">{step.body}</span></span>
+          <p className="text-sm leading-6 text-slate-600">RINGOPSは、選手を探してから試合が決まるまでを1本につなぐ道具です。最初は下の順番だけ触れば十分です。</p>
+          <div className="mt-5 space-y-2">{guideSteps.map((step) => <Link className="flex gap-3 rounded-xl border border-[#e2e6ea] p-4 transition hover:border-[#b7c6d2] hover:bg-[#fafcfd]" href={step.href} key={step.no} onClick={closeGuide}>
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-[#173b5e] text-xs font-black text-white">{step.no}</span>
+            <span><b className="text-sm text-slate-900">{step.title}</b><span className="mt-1 block text-[11px] leading-5 text-slate-500">{step.body}</span></span>
           </Link>)}</div>
-          <div className="mt-6 border-t border-[#dfe3e8] pt-5"><h3 className="text-sm font-black">役割別の見方</h3><div className="mt-3 grid gap-2 sm:grid-cols-2"><div className="rounded-lg border border-[#dfe3e8] bg-white p-3"><b className="text-xs">興行主・マッチメーカー</b><p className="mt-1 text-[11px] leading-5 text-slate-600">選手名鑑 → OPEN MATCH → 案件 → 興行</p></div><div className="rounded-lg border border-[#dfe3e8] bg-white p-3"><b className="text-xs">ジム</b><p className="mt-1 text-[11px] leading-5 text-slate-600">ジム管理 → 相談確認 → 案件承認 → 連絡</p></div></div></div>
-          <Link className="mt-5 flex h-11 items-center justify-center rounded-md bg-[#16324a] text-sm font-black text-white" href="/guide" onClick={() => { setGuideOpen(false); closeWelcome(); }}>詳しいマニュアルを見る</Link>
+          <Link className="mt-5 flex h-11 items-center justify-center rounded-lg border border-[#ccd5dd] bg-white text-sm font-black text-[#315b7c] hover:bg-[#f7fafc]" href="/guide" onClick={closeGuide}>詳しい操作マニュアル</Link>
         </div>
       </aside>
     </div>}
   </div>;
 }
 
-function isActive(pathname: string, href: string) { return href === "/" ? pathname === "/" : pathname.startsWith(href); }
+function NavLink({ item, pathname, unreadCount = 0 }: { item: NavItem; pathname: string; unreadCount?: number }) {
+  const active = isActive(pathname, item.href);
+  return <Link className={`flex h-10 items-center gap-3 rounded-lg px-3 text-[13px] font-bold transition ${active ? "bg-[#edf3f7] text-[#234f70]" : "text-slate-600 hover:bg-[#f7f8fa] hover:text-slate-900"}`} href={item.href}>
+    <Icon name={item.icon} />
+    <span className="flex-1">{item.label}</span>
+    {unreadCount > 0 && <span className="min-w-5 rounded-full bg-[#173b5e] px-1.5 text-center text-[10px] leading-5 text-white">{unreadCount > 99 ? "99+" : unreadCount}</span>}
+  </Link>;
+}
+
+function Icon({ name }: { name: IconName }) {
+  const common = "size-[17px] shrink-0";
+  if (name === "search") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><circle cx="11" cy="11" r="6.5"/><path d="m16 16 4 4"/></svg>;
+  if (name === "plus") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M12 8v8M8 12h8"/></svg>;
+  if (name === "match") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M7 7h11l-3-3M17 17H6l3 3M18 7l-3 3M6 17l3-3"/></svg>;
+  if (name === "calendar") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><rect x="4" y="5" width="16" height="15" rx="3"/><path d="M8 3v4M16 3v4M4 10h16"/></svg>;
+  if (name === "star") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="m12 4 2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.6-4.8 2.6.9-5.4-3.9-3.8 5.4-.8L12 4Z"/></svg>;
+  if (name === "message") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M5 5h14v11H9l-4 3V5Z"/></svg>;
+  if (name === "building") return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M5 20V6l7-3 7 3v14M8 9h2M14 9h2M8 13h2M14 13h2M10 20v-4h4v4"/></svg>;
+  return <svg className={common} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8"><path d="M5 5.5A3.5 3.5 0 0 1 8.5 2H12v18H8.5A3.5 3.5 0 0 0 5 23V5.5ZM19 5.5A3.5 3.5 0 0 0 15.5 2H12v18h3.5A3.5 3.5 0 0 1 19 23V5.5Z"/></svg>;
+}
+
+function isActive(pathname: string, href: string) {
+  return href === "/" ? pathname === "/" || pathname.startsWith("/boxers/") : pathname.startsWith(href);
+}
+
 function pageTitle(pathname: string) {
-  if (pathname === "/") return "選手名鑑";
+  if (pathname === "/") return "選手を探す";
   if (pathname.startsWith("/boxers/")) return "選手詳細";
   if (pathname.startsWith("/candidates")) return "候補";
   if (pathname.startsWith("/open-matches")) return "対戦相手募集";
+  if (pathname.startsWith("/matchmaking/new")) return "所属ジムへ相談";
   if (pathname.startsWith("/matchmaking")) return "マッチメイク";
   if (pathname.startsWith("/events")) return "興行";
   if (pathname.startsWith("/messages")) return "連絡";
   if (pathname.startsWith("/gym")) return "ジム管理";
-  if (pathname.startsWith("/guide")) return "操作マニュアル";
+  if (pathname.startsWith("/guide")) return "操作ガイド";
   return "RINGOPS";
 }
