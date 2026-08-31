@@ -39,7 +39,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
             <div>
               <p className="text-xs font-black text-slate-600">{boxer.kana}</p>
               <h1 className="mt-1 text-3xl font-black tracking-tight text-slate-950 sm:text-4xl">{boxer.name}</h1>
-              <p className="mt-3 text-sm font-black text-slate-800">{boxer.division} · {boxer.boxerClass} · {boxer.stance}構え</p>
+              <p className="mt-3 text-sm font-black text-slate-800">{boxer.competitionCategory ? `${boxer.competitionCategory} · ` : ""}{boxer.division} · {boxer.boxerClass} · {boxer.stance}構え</p>
               <p className="mt-1 text-sm font-bold text-slate-600">{boxer.gym} / {boxer.prefecture} / {boxer.nationality}</p>
             </div>
             {matchDataMode && <div className="min-w-[170px] border-l-4 border-slate-950 pl-3">
@@ -102,6 +102,7 @@ export default async function BoxerPage({ params }: { params: Promise<{ id: stri
         <Section title="基本情報">
           <dl className="grid border-t border-slate-300 sm:grid-cols-2">
             <Row label="所属ジム" value={boxer.gym} />
+            <Row label="競技区分" value={boxer.competitionCategory ?? "未設定"} />
             <Row label="階級" value={boxer.division} />
             <Row label="クラス" value={boxer.boxerClass} />
             <Row label="構え" value={`${boxer.stance}構え`} />
