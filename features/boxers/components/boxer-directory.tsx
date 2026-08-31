@@ -320,7 +320,7 @@ export function BoxerDirectory({
 
   return (
     <>
-      <section className="border-b border-slate-300 bg-[#eef2f5]">
+      <section className="border-b border-[#d9dee5] bg-[#f7f9fb]">
         <div className="mx-auto max-w-[1480px] px-4 py-4 lg:px-7">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
             <div className="relative flex-1">
@@ -352,7 +352,7 @@ export function BoxerDirectory({
           </div>
 
           {inherited && (
-            <div className="mt-3 border-l-4 border-slate-950 bg-white px-3 py-2 text-xs font-bold text-slate-700">
+            <div className="mt-3 rounded-lg border border-[#cad8e3] bg-[#eef4f8] px-3 py-2 text-xs font-bold text-[#526879]">
               対戦相手募集の条件を引き継いでいます。必要な条件だけ変更してください。
             </div>
           )}
@@ -373,13 +373,13 @@ export function BoxerDirectory({
 
         <div className="grid gap-6 lg:grid-cols-[320px_minmax(0,1fr)]">
           <aside className={`${filtersOpen ? "block" : "hidden"} lg:block`}>
-            <div className="border border-slate-300 bg-white lg:sticky lg:top-20">
-              <div className="flex items-center justify-between border-b border-slate-300 bg-slate-950 px-4 py-3 text-white">
+            <div className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white lg:sticky lg:top-20">
+              <div className="flex items-center justify-between border-b border-[#d9dee5] bg-[#edf2f6] px-4 py-3 text-slate-900">
                 <div>
-                  <p className="text-[10px] font-black tracking-[.14em] text-slate-400">FILTER</p>
+                  <p className="text-[10px] font-black tracking-[.08em] text-[#6f8395]">詳細条件</p>
                   <h2 className="mt-0.5 text-base font-black">条件検索</h2>
                 </div>
-                <button className="text-xs font-bold text-slate-300 hover:text-white" onClick={reset} type="button">
+                <button className="text-xs font-bold text-slate-500 hover:text-slate-900" onClick={reset} type="button">
                   全解除
                 </button>
               </div>
@@ -497,7 +497,7 @@ export function BoxerDirectory({
             )}
 
             {filtered.length === 0 ? (
-              <div className="border-y-2 border-slate-950 bg-white px-5 py-14 text-center">
+              <div className="rounded-lg border border-[#d9dee5] bg-white px-5 py-14 text-center">
                 <p className="text-lg font-black text-slate-950">該当する選手がいません</p>
                 <p className="mt-2 text-sm font-medium text-slate-600">階級・戦数・ウェイトのどれかを1つ緩めると候補を広げられます。</p>
                 <button className="mt-5 h-10 border border-slate-950 px-4 text-xs font-black" onClick={reset} type="button">
@@ -505,8 +505,8 @@ export function BoxerDirectory({
                 </button>
               </div>
             ) : (
-              <div className="overflow-hidden border-y-2 border-slate-950 bg-white">
-                <div className={`hidden gap-3 border-b border-slate-300 bg-[#f3f5f7] px-4 py-2.5 text-[10px] font-black text-slate-700 xl:grid ${industryMode ? "grid-cols-[1.7fr_.8fr_1.25fr_1.2fr_1.3fr_150px]" : "grid-cols-[1.8fr_.85fr_1.35fr_1.2fr_150px]"}`}>
+              <div className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white">
+                <div className={`hidden gap-3 border-b border-[#d9dee5] bg-[#f7f9fb] px-4 py-2.5 text-[10px] font-black text-slate-700 xl:grid ${industryMode ? "grid-cols-[1.7fr_.8fr_1.25fr_1.2fr_1.3fr_150px]" : "grid-cols-[1.8fr_.85fr_1.35fr_1.2fr_150px]"}`}>
                   <span>選手</span>
                   <span>クラス / 構え</span>
                   <span>戦績 / ランキング</span>
@@ -521,7 +521,7 @@ export function BoxerDirectory({
                     key={boxer.id}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex size-12 shrink-0 items-center justify-center bg-slate-900 text-base font-black text-white">
+                      <div className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-[#16324a] text-base font-black text-white">
                         {boxer.name.slice(0, 1)}
                       </div>
                       <div className="min-w-0">
@@ -581,7 +581,7 @@ export function BoxerDirectory({
 
                     <div className="flex gap-2 xl:block">
                       <Link
-                        className="flex h-10 flex-1 items-center justify-center border border-slate-950 bg-slate-950 px-3 text-xs font-black text-white hover:bg-slate-800 xl:w-full"
+                        className="flex h-10 flex-1 items-center justify-center rounded-md bg-[#16324a] px-3 text-xs font-black text-white hover:bg-[#10283c] xl:w-full"
                         href={`/boxers/${boxer.id}`}
                       >
                         詳細を見る
@@ -612,8 +612,8 @@ function QuickButton({
     <button
       className={`h-10 border px-3 text-xs font-black ${
         active
-          ? "border-slate-950 bg-slate-950 text-white"
-          : "border-slate-400 bg-white text-slate-800 hover:border-slate-950"
+          ? "border-[#16324a] bg-[#16324a] text-white"
+          : "border-[#c6d0d9] bg-white text-slate-700 hover:border-[#8093a4]"
       }`}
       onClick={onClick}
       type="button"
@@ -633,7 +633,7 @@ function FilterSection({
   children: ReactNode;
 }) {
   return (
-    <section className="border-b border-slate-300 p-4 last:border-b-0">
+    <section className="border-b border-[#e2e6ea] p-4 last:border-b-0">
       <div className="mb-3">
         <h3 className="text-sm font-black text-slate-950">{title}</h3>
         <p className="mt-0.5 text-[10px] font-bold text-slate-500">{description}</p>

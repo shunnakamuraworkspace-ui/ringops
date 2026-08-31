@@ -167,12 +167,12 @@ export function OpenMatchBoard({
 
   function resetForm(){setTargetBoxerId("");setCompetition("男子");setDivision("スーパーバンタム級");setDate("");setVenue("");setMinWeight("");setMaxWeight("");setRounds("6");setKlass("B級");setStance("指定なし");setMinBouts("");setMaxBouts("");setRegion("");setTravel("");setDeadline("");setNote("");}
 
-  if(loading)return <div className="border-y-2 border-slate-950 bg-white py-12 text-center text-sm font-bold text-slate-500">募集情報を読み込んでいます…</div>;
+  if(loading)return <div className="rounded-lg border border-[#d9dee5] bg-white py-12 text-center text-sm font-bold text-slate-500">募集情報を読み込んでいます…</div>;
   return <>
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-bold text-slate-500">募集中 {items.length}件</p>{reviewMode&&<p className="mt-1 text-[10px] font-bold text-slate-400">確認モード：作成内容はこの端末に保存されます。</p>}</div><button className="h-10 bg-slate-950 px-4 text-xs font-black text-white" onClick={()=>setShowForm(!showForm)}>{showForm?"閉じる":"対戦相手募集を作成"}</button></div>
     {error&&<div className="mb-4 border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-800">{error}</div>}
     {openFormInitially&&showForm&&<div className="mb-3 border-l-4 border-slate-950 bg-slate-50 px-4 py-3 text-xs font-bold text-slate-700">興行の対戦枠から条件を引き継ぎました。必要な条件だけ調整して募集してください。</div>}
-    {showForm&&<form className="mb-6 border-y-2 border-slate-950 bg-white p-5" onSubmit={create}>
+    {showForm&&<form className="mb-6 rounded-lg border border-[#d9dee5] bg-white p-5" onSubmit={create}>
       <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
         <Select label="投稿組織" value={organizationId} onChange={value=>{setOrganizationId(value);setTargetBoxerId("");}} values={managedOrgs.map(org=>({value:org.id,label:org.name}))}/>
         <Select label="対象選手（任意）" value={targetBoxerId} onChange={chooseTargetBoxer} values={[{value:"",label:"対戦枠として募集"},...targetOptions.map(boxer=>({value:boxer.id,label:boxer.name}))]}/>
@@ -194,7 +194,7 @@ export function OpenMatchBoard({
       <Field label="条件・コメント"><textarea className="mt-1 min-h-24 w-full border border-slate-300 p-3 text-sm outline-none focus:border-slate-950" value={note} onChange={e=>setNote(e.target.value)} maxLength={1500}/></Field>
       <div className="mt-4 flex justify-end"><button className="h-11 bg-slate-950 px-5 text-xs font-black text-white">募集を公開</button></div>
     </form>}
-    <div className="border-y-2 border-slate-950 bg-white">
+    <div className="rounded-lg border border-[#d9dee5] bg-white">
       {items.map(item=><article className="grid gap-4 border-b border-slate-200 px-5 py-5 last:border-0 lg:grid-cols-[1.45fr_1fr_.9fr_.8fr_1.15fr] lg:items-center" key={item.id}>
         <div><b>{item.targetBoxer}</b><p className="mt-1 text-xs font-bold text-slate-500">{item.organization}</p><p className="mt-1 text-xs text-slate-400">{item.date}｜{item.venue}</p></div>
         <div><p className="text-[10px] font-black text-slate-400">{item.competition}</p><b className="text-sm">{item.division}</b><p className="mt-1 text-xs text-slate-500">{weightLabel(item.minWeight,item.maxWeight)}</p></div>

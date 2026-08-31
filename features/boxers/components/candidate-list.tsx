@@ -137,20 +137,20 @@ export function CandidateList({
     }
   }
 
-  if(loading)return <div className="border-y-2 border-slate-950 bg-white px-5 py-14 text-center text-sm font-bold text-slate-500">候補選手を読み込んでいます…</div>;
+  if(loading)return <div className="rounded-lg border border-[#d9dee5] bg-white px-5 py-14 text-center text-sm font-bold text-slate-500">候補選手を読み込んでいます…</div>;
 
   return <>
     {error&&<div className="mb-4 border border-rose-200 bg-rose-50 px-4 py-3 text-xs font-bold text-rose-800">{error}</div>}
     <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
       <div>
-        <p className="text-[11px] font-black tracking-[.12em] text-slate-400">SHORTLIST</p>
+        <p className="text-[11px] font-black tracking-[.12em] text-slate-400">比較リスト</p>
         <h2 className="mt-1 text-2xl font-black">候補 {visible.length}名</h2>
       </div>
       {listNames.length>1&&<label><span className="mb-1 block text-[10px] font-black text-slate-400">候補リスト</span><select className="h-9 border border-slate-300 bg-white px-3 text-xs font-bold" value={selectedList} onChange={e=>setSelectedList(e.target.value)}><option>すべて</option>{listNames.map(name=><option key={name}>{name}</option>)}</select></label>}
     </div>
 
-    <div className="border-y-2 border-slate-950 bg-white">
-      <div className="hidden grid-cols-[1.6fr_1.35fr_.7fr_1.2fr_1fr_auto] gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-[10px] font-black text-slate-500 lg:grid">
+    <div className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white">
+      <div className="hidden grid-cols-[1.6fr_1.35fr_.7fr_1.2fr_1fr_auto] gap-4 border-b border-[#d9dee5] bg-[#f7f9fb] px-5 py-3 text-[10px] font-black text-slate-500 lg:grid">
         <span>選手</span><span>戦績</span><span>構え</span><span>受付 / 確認</span><span>リスト</span><span>操作</span>
       </div>
       {visible.map(row=><article className="grid gap-4 border-b border-slate-200 px-5 py-5 last:border-0 lg:grid-cols-[1.6fr_1.35fr_.7fr_1.2fr_1fr_auto] lg:items-center" key={`${row.listId}:${row.boxerId}`}>
@@ -159,9 +159,9 @@ export function CandidateList({
         <p className="text-sm font-black">{row.stance}</p>
         <div><span className="inline-flex bg-slate-100 px-2.5 py-1 text-xs font-black text-slate-700">{row.status}</span><p className="mt-1 text-[10px] font-bold text-slate-400">確認：{row.verified}</p></div>
         <div><p className="text-xs font-black">{row.listName}</p><p className="mt-1 text-[10px] text-slate-400">追加 {formatDate(row.addedAt)}</p></div>
-        <div className="flex gap-2 lg:flex-col"><Link className="flex h-9 items-center justify-center bg-slate-950 px-3 text-xs font-black text-white" href={`/matchmaking/new?boxer=${row.boxerId}`}>相談</Link><button className="h-9 px-2 text-[10px] font-bold text-slate-500 underline underline-offset-4" onClick={()=>remove(row)}>候補から削除</button></div>
+        <div className="flex gap-2 lg:flex-col"><Link className="flex h-9 items-center justify-center rounded-md bg-[#16324a] px-3 text-xs font-black text-white hover:bg-[#10283c]" href={`/matchmaking/new?boxer=${row.boxerId}`}>相談</Link><button className="h-9 px-2 text-[10px] font-bold text-slate-500 underline underline-offset-4" onClick={()=>remove(row)}>候補から削除</button></div>
       </article>)}
-      {!visible.length&&<div className="px-5 py-16 text-center"><p className="font-black">候補選手はまだありません</p><p className="mt-2 text-sm text-slate-500">選手ページから候補に保存すると、ここでまとめて比較できます。</p><Link className="mt-5 inline-flex h-10 items-center border border-slate-950 px-4 text-xs font-black" href="/">選手を探す</Link></div>}
+      {!visible.length&&<div className="px-5 py-16 text-center"><p className="font-black">候補選手はまだありません</p><p className="mt-2 text-sm text-slate-500">選手ページから候補に保存すると、ここでまとめて比較できます。</p><Link className="mt-5 inline-flex h-10 items-center rounded-md border border-[#aebbc6] bg-white px-4 text-xs font-black text-[#16324a]" href="/">選手を探す</Link></div>}
     </div>
   </>;
 }

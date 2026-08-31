@@ -182,7 +182,7 @@ export function EventBoard({databaseConnected,industryMode}:{databaseConnected:b
     }catch{setError("興行ステータスを更新できませんでした。");}
   }
 
-  if(loading)return <div className="border-y-2 border-slate-950 bg-white py-12 text-center text-sm font-bold text-slate-500">興行を読み込んでいます…</div>;
+  if(loading)return <div className="rounded-lg border border-[#d9dee5] bg-white py-12 text-center text-sm font-bold text-slate-500">興行を読み込んでいます…</div>;
 
   return <>
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
@@ -192,14 +192,14 @@ export function EventBoard({databaseConnected,industryMode}:{databaseConnected:b
 
     {error&&<div className="mb-4 border border-rose-200 bg-rose-50 p-3 text-xs font-bold text-rose-800">{error}</div>}
 
-    {showForm&&<form className="mb-6 grid gap-3 border-y-2 border-slate-950 bg-white p-5 sm:grid-cols-[1fr_180px_1fr_auto] sm:items-end" onSubmit={createEvent}>
+    {showForm&&<form className="mb-6 grid gap-3 rounded-lg border border-[#d9dee5] bg-white p-5 sm:grid-cols-[1fr_180px_1fr_auto] sm:items-end" onSubmit={createEvent}>
       <Field label="興行名"><input className="input" required value={name} onChange={e=>setName(e.target.value)} /></Field>
       <Field label="興行日"><input className="input" type="date" required value={date} onChange={e=>setDate(e.target.value)} /></Field>
       <Field label="会場"><input className="input" required value={venue} onChange={e=>setVenue(e.target.value)} /></Field>
       <button className="h-11 bg-slate-950 px-5 text-xs font-black text-white">作成</button>
     </form>}
 
-    <div className="divide-y divide-slate-200 border-y-2 border-slate-950 bg-white">
+    <div className="divide-y divide-slate-200 rounded-lg border border-[#d9dee5] bg-white">
       {events.map(event=><article className="grid gap-5 px-5 py-6 lg:grid-cols-[280px_1fr]" key={event.id}>
         <div>
           <h2 className="text-lg font-black">{event.name}</h2>

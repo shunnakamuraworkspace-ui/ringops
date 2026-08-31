@@ -28,6 +28,7 @@ const dbToJa:Record<string,string>={recruiting:"募集中",consulting:"相談中
 const jaToDb:Record<string,string>=Object.fromEntries(Object.entries(dbToJa).map(([key,value])=>[value,key]));
 const editableOptions=["募集中","相談中","交渉中","ジム確認待ち","内定","中止"];
 const rerecruitable=new Set(["相談中","交渉中","ジム確認待ち","内定"]);
+const progressStages=["相談中","交渉中","ジム確認待ち","内定","決定"];
 
 export function CaseBoard({ databaseConnected, industryMode }: { databaseConnected:boolean; industryMode:boolean }) {
   const router=useRouter();
@@ -131,11 +132,11 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
     }
   }
 
-  if(loading)return <div className="border-y-2 border-slate-950 bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">案件を読み込んでいます…</div>;
+  if(loading)return <div className="rounded-lg border border-[#d9dee5] bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">案件を読み込んでいます…</div>;
 
-  return <div className="border-y-2 border-slate-950 bg-white">
+  return <div className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white">
     {error&&<div className="border-b border-rose-200 bg-rose-50 px-5 py-3 text-xs font-bold text-rose-800">{error}</div>}
-    <div className="hidden grid-cols-[1.6fr_1.35fr_1fr_.7fr_1.5fr] gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-[10px] font-black text-slate-500 md:grid"><span>対戦候補</span><span>興行 / 日程</span><span>条件</span><span>R</span><span>進捗 / 操作</span></div>
+    <div className="hidden grid-cols-[1.6fr_1.35fr_1fr_.7fr_1.5fr] gap-4 border-b border-[#d9dee5] bg-[#f7f9fb] px-5 py-3 text-[10px] font-black text-slate-500 md:grid"><span>対戦候補</span><span>興行 / 日程</span><span>条件</span><span>R</span><span>進捗 / 操作</span></div>
     {items.map(item=>{
       const targets=[{id:item.boxerAId,name:item.boxerA},{id:item.boxerBId,name:item.boxerB}].filter((value):value is {id:string;name:string}=>Boolean(value.id&&value.name));
       const canRerecruit=rerecruitable.has(item.status)&&targets.length>0;
@@ -145,7 +146,15 @@ export function CaseBoard({ databaseConnected, industryMode }: { databaseConnect
         <div><b className="text-sm">{item.weight||"—"}</b>{item.message&&<p className="mt-1 line-clamp-2 text-[10px] text-slate-400">{item.message}</p>}</div>
         <b>{item.rounds?`${item.rounds}R`:"—"}</b>
         <div>
-          <div className="flex gap-2">{item.status==="決定"?<span className="flex h-10 flex-1 items-center justify-center bg-emerald-50 px-3 text-xs font-black text-emerald-800">試合決定</span>:<><select className="h-10 min-w-0 flex-1 border border-slate-300 px-2 text-xs font-bold" value={item.status} onChange={e=>update(item.id,e.target.value)}>{editableOptions.map(value=><option key={value}>{value}</option>)}</select>{["ジム確認待ち","内定"].includes(item.status)&&<button className="h-10 shrink-0 border border-slate-950 px-3 text-xs font-black disabled:opacity-50" disabled={busyId===item.id} onClick={()=>approve(item.id)}>自組織で承認</button>}</>}</div>
+          <div className="mb-2 flex items-center gap-1" aria-label="案件進捗">
+            {progressStages.map((stage,index)=>{
+              const current=progressStages.indexOf(item.status);
+              const done=current>=index&&current>=0;
+              return <span className={`h-1.5 flex-1 rounded-full ${done?"bg-[#315d7d]":"bg-[#dce2e7]"}`} key={stage} title={stage}/>;
+            })}
+          </div>
+          <p className="mb-2 text-[10px] font-bold text-slate-500">現在：<b className="text-slate-800">{item.status}</b></p>
+          <div className="flex gap-2">{item.status==="決定"?<span className="flex h-10 flex-1 items-center justify-center rounded-md bg-emerald-50 px-3 text-xs font-black text-emerald-800">試合決定</span>:<><select className="h-10 min-w-0 flex-1 border border-slate-300 px-2 text-xs font-bold" value={item.status} onChange={e=>update(item.id,e.target.value)}>{editableOptions.map(value=><option key={value}>{value}</option>)}</select>{["ジム確認待ち","内定"].includes(item.status)&&<button className="h-10 shrink-0 border border-slate-950 px-3 text-xs font-black disabled:opacity-50" disabled={busyId===item.id} onClick={()=>approve(item.id)}>自組織で承認</button>}</>}</div>
           {canRerecruit&&<div className="mt-2 border-t border-slate-100 pt-2">{recruitCaseId!==item.id?<button className="text-[10px] font-black text-slate-600 underline underline-offset-4" onClick={()=>setRecruitCaseId(item.id)}>対戦相手を再募集</button>:<div><p className="mb-1.5 text-[10px] font-bold text-slate-400">残す選手を選択</p><div className="flex flex-wrap gap-1.5">{targets.map(target=><button className="border border-slate-300 px-2 py-1 text-[10px] font-black hover:border-slate-950 disabled:opacity-50" disabled={busyId===item.id} key={target.id} onClick={()=>rerecruit(item,target.id)}>{target.name}を残す</button>)}<button className="px-1 text-[10px] text-slate-400 underline" onClick={()=>setRecruitCaseId("")}>取消</button></div></div>}</div>}
         </div>
       </article>;
