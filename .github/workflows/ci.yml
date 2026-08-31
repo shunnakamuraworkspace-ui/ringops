@@ -43,3 +43,11 @@ jobs:
               exit 1
             }
           done
+          echo "Checking /api/health and RINGOPS database connection"
+          HEALTH=$(curl -fsS http://127.0.0.1:3000/api/health) || {
+            cat /tmp/ringops-next.log
+            exit 1
+          }
+          echo "$HEALTH"
+          echo "$HEALTH" | grep -q '"ok":true' || exit 1
+          echo "$HEALTH" | grep -q '"database":"connected"' || exit 1
