@@ -87,7 +87,7 @@ export async function loadBoxers(): Promise<LoadResult> {
   const { data: boxerRows, error: boxerError } = await supabase
     .schema("ringops")
     .from("boxers")
-    .select("id,organization_id,name,name_kana,nationality,country_code,residence_country_code,domestic_or_international,prefecture_code,birth_date,height_cm,reach_cm,division_code,boxer_class,stance,total_bouts,wins,losses,draws,ko_wins,last_bout_date,next_bout_date,next_venue_name")
+    .select("id,organization_id,name,name_kana,nationality,country_code,residence_country_code,domestic_or_international,competition_category,prefecture_code,birth_date,height_cm,reach_cm,division_code,boxer_class,stance,total_bouts,wins,losses,draws,ko_wins,last_bout_date,next_bout_date,next_venue_name")
     .eq("is_public", true)
     .order("name_kana");
 
@@ -158,6 +158,8 @@ export async function loadBoxers(): Promise<LoadResult> {
     const status: any = statusMap.get(row.id);
     const domesticOrInternational: BoxerPreview["domesticOrInternational"] =
       row.domestic_or_international === "international" ? "海外" : "国内";
+    const competitionCategory: BoxerPreview["competitionCategory"] =
+      row.competition_category === "women" ? "女子" : row.competition_category === "men" ? "男子" : undefined;
 
     return {
       id: row.id,
@@ -168,6 +170,7 @@ export async function loadBoxers(): Promise<LoadResult> {
       nationality: row.nationality ?? row.country_code ?? "—",
       countryCode: row.country_code ?? undefined,
       domesticOrInternational,
+      competitionCategory,
       division: divisions[row.division_code] ?? row.division_code,
       boxerClass: `${row.boxer_class}級` as BoxerPreview["boxerClass"],
       stance: row.stance === "southpaw" ? "左" : "右",
