@@ -36,7 +36,7 @@ jobs:
             cat /tmp/ringops-next.log
             exit 1
           fi
-          for path in / /candidates /open-matches /matchmaking /events /messages /gym /boxers/20000000-0000-0000-0000-000000000001; do
+          for path in / /candidates /open-matches /matchmaking /events /messages /gym /boxers/20000000-0000-4000-8000-000000000001 /matchmaking/new?boxer=20000000-0000-4000-8000-000000000001; do
             echo "Checking $path"
             curl -fsS "http://127.0.0.1:3000$path" >/dev/null || {
               cat /tmp/ringops-next.log
