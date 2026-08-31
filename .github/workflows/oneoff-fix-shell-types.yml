@@ -1,0 +1,32 @@
+name: One-off fix shell types
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch app shell
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          p=Path('components/app-shell.tsx')
+          s=p.read_text()
+          old='groups.flatMap((group) => group.items).map(([label, href]) =>'
+          new='groups.flatMap((group) => group.items.map(([label, href]) => ({ label, href }))).map(({ label, href }) =>'
+          if old not in s:
+              raise SystemExit('target expression not found')
+          s=s.replace(old,new).replace('text-slate-650','text-slate-700')
+          p.write_text(s)
+          Path('.github/workflows/oneoff-fix-shell-types.yml').unlink()
+          PY
+      - name: Commit fix
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add components/app-shell.tsx .github/workflows/oneoff-fix-shell-types.yml
+          git commit -m "fix: type mobile navigation items"
+          git push
