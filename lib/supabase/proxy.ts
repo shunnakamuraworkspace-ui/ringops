@@ -17,15 +17,50 @@ const protectedRoutePrefixes = [
   "/onboarding",
 ];
 
-function isProtectedRoute(pathname: string) {
-  return protectedRoutePrefixes.some(
+const reviewRoutePrefixes = [
+  "/candidates",
+  "/open-matches",
+  "/matchmaking",
+  "/events",
+  "/messages",
+  "/notifications",
+  "/gym",
+];
+
+const reviewModeEnabled = process.env.RINGOPS_REVIEW_MODE !== "false";
+
+function matchesPrefix(pathname: string, prefixes: readonly string[]) {
+  return prefixes.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
+}
+
+function hasSessionCookie(request: NextRequest) {
+  return request.cookies
+    .getAll()
+    .some(({ name }) => name.startsWith("sb-") && name.includes("auth-token"));
 }
 
 export async function updateSession(request: NextRequest) {
   let response = NextResponse.next({ request });
   if (!isSupabaseConfigured) return response;
+
+  const pathname = request.nextUrl.pathname;
+  const protectedRoute = matchesPrefix(pathname, protectedRoutePrefixes);
+  const reviewRoute = matchesPrefix(pathname, reviewRoutePrefixes);
+  const hasSession = hasSessionCookie(request);
+
+  // Anonymous review traffic should never wait on a Supabase auth roundtrip.
+  if (!hasSession) {
+    if (!protectedRoute || (reviewModeEnabled && reviewRoute)) return response;
+
+    const loginUrl = request.nextUrl.clone();
+    const requestedPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
+    loginUrl.pathname = "/login";
+    loginUrl.search = "";
+    loginUrl.searchParams.set("next", requestedPath);
+    return NextResponse.redirect(loginUrl);
+  }
 
   const supabase = createServerClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
     cookies: {
@@ -45,7 +80,7 @@ export async function updateSession(request: NextRequest) {
   const { data } = await supabase.auth.getClaims();
   const isAuthenticated = Boolean(data?.claims?.sub);
 
-  if (isProtectedRoute(request.nextUrl.pathname) && !isAuthenticated) {
+  if (protectedRoute && !isAuthenticated) {
     const loginUrl = request.nextUrl.clone();
     const requestedPath = `${request.nextUrl.pathname}${request.nextUrl.search}`;
     loginUrl.pathname = "/login";
