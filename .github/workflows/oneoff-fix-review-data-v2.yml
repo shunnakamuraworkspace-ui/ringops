@@ -1,0 +1,44 @@
+name: One-off fix review data v2
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  patch:
+    if: github.event.head_commit.message == 'ci: retry review data fix'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Fix review-mode flags
+        run: |
+          node <<'NODE'
+          const fs = require('fs');
+          const files = [
+            'features/open-matches/components/open-match-board.tsx',
+            'features/events/components/event-board.tsx',
+            'features/messages/components/message-room.tsx',
+          ];
+          for (const path of files) {
+            let text = fs.readFileSync(path, 'utf8');
+            text = text.replace('const reviewMode=!industryMode;', 'const reviewMode=!databaseConnected;');
+            if (path.includes('message-room')) {
+              text = text.replaceAll('if(!industryMode){', 'if(reviewMode){');
+            }
+            fs.writeFileSync(path, text);
+          }
+          NODE
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Commit fix
+        run: |
+          git config user.name "shunnakamuraworkspace-ui"
+          git config user.email "shun.nakamura.workspace@gmail.com"
+          git add features/open-matches/components/open-match-board.tsx features/events/components/event-board.tsx features/messages/components/message-room.tsx
+          git commit -m "fix: show review data across operational screens"
+          git pull --rebase origin main
+          git push
