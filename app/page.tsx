@@ -12,19 +12,14 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
   const open = matchDataMode && !loadError ? visibleBoxers.filter((boxer) => boxer.status !== "受付停止").length : null;
 
   return <>
-    <section className="border-b border-slate-300 bg-white">
-      <div className="mx-auto max-w-[1480px] px-4 py-5 lg:px-7">
-        <div className="flex flex-wrap items-end justify-between gap-4">
-          <div>
-            <p className="text-[11px] font-black tracking-[.14em] text-slate-600">選手検索</p>
-            <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-[28px]">対戦候補を、条件からすぐ探す。</h1>
-            <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-600">競技区分・階級・戦績・地域・ランキング・次戦に加えて、業界ログイン時はジム確認済みのMATCH STATUSと試合条件まで同じ画面で絞り込めます。</p>
-          </div>
-          {!loadError && <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-l-2 border-slate-950 pl-4 text-xs font-bold text-slate-700">
-            <p>登録 <b className="text-slate-950">{boxers.length}名</b></p>
-            {selectedCompetition !== "すべて" && <p>表示 <b className="text-slate-950">{visibleBoxers.length}名</b></p>}
-            {open !== null && <p>相談可能 <b className="text-slate-950">{open}名</b></p>}
-            {databaseConnected && !industryMode && <Link className="border border-slate-950 bg-slate-950 px-3 py-2 font-black text-white" href="/login">業界ログイン</Link>}
+    <section className="border-b border-[#d9dee5] bg-white">
+      <div className="mx-auto max-w-[1480px] px-4 py-4 lg:px-7">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div><div className="flex items-center gap-2"><h1 className="text-xl font-black tracking-tight text-slate-950 sm:text-2xl">選手名鑑</h1>{reviewMode&&<span className="rounded-md bg-[#edf4f8] px-2 py-1 text-[10px] font-black text-[#315d7d]">デモデータ</span>}</div><p className="mt-1 text-xs font-medium text-slate-500">条件を絞って、相談できる選手を探します。</p></div>
+          {!loadError && <div className="flex items-center divide-x divide-[#dde2e7] rounded-lg border border-[#d9dee5] bg-[#fbfcfd] text-xs">
+            <div className="px-3 py-2"><span className="text-slate-500">登録</span><b className="ml-2 text-slate-950">{boxers.length}名</b></div>
+            {selectedCompetition !== "すべて" && <div className="px-3 py-2"><span className="text-slate-500">表示</span><b className="ml-2 text-slate-950">{visibleBoxers.length}名</b></div>}
+            {open !== null && <div className="px-3 py-2"><span className="text-slate-500">相談可</span><b className="ml-2 text-[#315d7d]">{open}名</b></div>}
           </div>}
         </div>
       </div>
@@ -32,59 +27,27 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
 
     {loadError ? <>
       <div className="border-b border-rose-300 bg-rose-50 px-4 py-3 text-center text-xs font-black text-rose-900">{loadError}</div>
-      <main className="mx-auto max-w-[900px] px-4 py-12 lg:px-7">
-        <section className="border-y-2 border-slate-950 bg-white px-5 py-10 text-center">
-          <p className="text-lg font-black">現在、選手データを表示できません</p>
-          <p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-slate-600">架空データへ自動で切り替えず、正式データの復旧後に表示します。誤った情報を業務判断に使わせないための保護です。</p>
-          <Link className="mt-5 inline-flex h-10 items-center border border-slate-950 bg-slate-950 px-4 text-xs font-black text-white" href="/">再読み込み</Link>
-        </section>
-      </main>
+      <main className="mx-auto max-w-[900px] px-4 py-12 lg:px-7"><section className="rounded-xl border border-[#d9dee5] bg-white px-5 py-10 text-center"><p className="text-lg font-black">現在、選手データを表示できません</p><p className="mx-auto mt-2 max-w-xl text-sm font-medium leading-6 text-slate-600">誤った情報を業務判断に使わないよう、データ取得エラー時は自動で別データへ切り替えません。</p><Link className="mt-5 inline-flex h-10 items-center rounded-md bg-[#16324a] px-4 text-xs font-black text-white" href="/">再読み込み</Link></section></main>
     </> : <>
-      <div className="border-b border-slate-300 bg-[#f7f8fa] px-4 py-2 text-center text-[11px] font-bold text-slate-600">
-        {!databaseConnected
-          ? "開発プレビュー：表示中の選手は架空データです。検索・導線・MATCH STATUSの操作確認用です。"
-          : industryMode
-            ? "業界ログイン中：MATCH STATUS・契約ウェイト・希望R・遠征条件を含めて検索できます。"
-            : reviewMode
-              ? "確認モード：デモ選手のみMATCH STATUSと試合条件を表示しています。実運用データは業界ログイン後に表示します。"
-              : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
-      </div>
-      <div className="border-b border-slate-300 bg-white">
-        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center gap-2 px-4 py-3 lg:px-7">
+      <div className="border-b border-[#d9dee5] bg-[#fbfcfd]">
+        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center gap-2 px-4 py-2.5 lg:px-7">
           <span className="mr-1 text-[11px] font-black text-slate-500">競技区分</span>
           {(["すべて","男子","女子"] as const).map((label) => {
             const value = label === "男子" ? "men" : label === "女子" ? "women" : "";
             const active = selectedCompetition === label;
-            return <Link
-              className={active ? "border border-slate-950 bg-slate-950 px-3 py-2 text-xs font-black text-white" : "border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-700 hover:border-slate-950"}
-              href={competitionHref(params,value)}
-              key={label}
-            >{label}</Link>;
+            return <Link className={active ? "rounded-md bg-[#16324a] px-3 py-2 text-xs font-black text-white" : "rounded-md border border-[#d3dae1] bg-white px-3 py-2 text-xs font-black text-slate-600 hover:border-[#9aa9b7]"} href={competitionHref(params,value)} key={label}>{label}</Link>;
           })}
+          <span className="ml-auto hidden text-[10px] font-bold text-slate-400 sm:inline">{industryMode ? "業界データ表示中" : reviewMode ? "確認用MATCH STATUSを表示中" : "公開情報のみ"}</span>
         </div>
       </div>
-      <BoxerDirectory
-        boxers={visibleBoxers}
-        databaseConnected={databaseConnected}
-        industryMode={matchDataMode}
-        initialDivision={params.division}
-        initialClass={params.class}
-        initialRounds={params.rounds}
-        initialStance={params.stance}
-        initialMinWeight={params.minWeight}
-        initialMaxWeight={params.maxWeight}
-        initialMinBouts={params.minBouts}
-        initialMaxBouts={params.maxBouts}
-      />
+      <BoxerDirectory boxers={visibleBoxers} databaseConnected={databaseConnected} industryMode={matchDataMode} initialDivision={params.division} initialClass={params.class} initialRounds={params.rounds} initialStance={params.stance} initialMinWeight={params.minWeight} initialMaxWeight={params.maxWeight} initialMinBouts={params.minBouts} initialMaxBouts={params.maxBouts}/>
     </>}
   </>;
 }
 
 function competitionHref(params: SearchParams, competition: string) {
   const query = new URLSearchParams();
-  for (const [key,value] of Object.entries(params)) {
-    if (key !== "competition" && value) query.set(key,value);
-  }
+  for (const [key,value] of Object.entries(params)) if (key !== "competition" && value) query.set(key,value);
   if (competition) query.set("competition",competition);
   const value = query.toString();
   return value ? `/?${value}` : "/";
