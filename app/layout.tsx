@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   description: "日本のプロボクシング業界向けマッチメイク業務プラットフォーム",
 };
 
-const demoSeedScript = `try{if(!localStorage.getItem('ringops_demo_seeded_v4')){localStorage.setItem('ringops_candidate_boxers',JSON.stringify(['20000000-0000-0000-0000-000000000001','20000000-0000-0000-0000-000000000002','20000000-0000-0000-0000-000000000007']));localStorage.setItem('ringops_demo_seeded_v4','1')}}catch(e){}`;
+const demoSeedScript = `try{if(!localStorage.getItem('ringops_demo_seeded_v5')){localStorage.setItem('ringops_candidate_boxers',JSON.stringify(['20000000-0000-4000-8000-000000000001','20000000-0000-4000-8000-000000000002','20000000-0000-4000-8000-000000000007']));localStorage.setItem('ringops_demo_seeded_v5','1')}}catch(e){}`;
 
 export default async function RootLayout({ children }: { children: ReactNode }) {
   let user: { id?: string; email?: string; user_metadata?: { display_name?: string } } | null = null;
