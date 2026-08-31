@@ -1,0 +1,75 @@
+name: One-off polish core UI
+on:
+  push:
+    branches: [main]
+permissions:
+  contents: write
+jobs:
+  polish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Polish core screens
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def replace(path, old, new):
+              p=Path(path); s=p.read_text()
+              if old not in s:
+                  raise SystemExit(f'target not found in {path}: {old[:80]}')
+              p.write_text(s.replace(old,new))
+
+          p='features/boxers/components/boxer-directory.tsx'
+          replace(p, 'className="border-b border-slate-300 bg-[#eef2f5]"', 'className="border-b border-[#d9dee5] bg-[#f7f9fb]"')
+          replace(p, 'className="mt-3 border-l-4 border-slate-950 bg-white px-3 py-2 text-xs font-bold text-slate-700"', 'className="mt-3 rounded-lg border border-[#cad8e3] bg-[#eef4f8] px-3 py-2 text-xs font-bold text-[#526879]"')
+          replace(p, 'className="border border-slate-300 bg-white lg:sticky lg:top-20"', 'className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white lg:sticky lg:top-20"')
+          replace(p, 'className="flex items-center justify-between border-b border-slate-300 bg-slate-950 px-4 py-3 text-white"', 'className="flex items-center justify-between border-b border-[#d9dee5] bg-[#edf2f6] px-4 py-3 text-slate-900"')
+          replace(p, 'className="text-[10px] font-black tracking-[.14em] text-slate-400">FILTER</p>', 'className="text-[10px] font-black tracking-[.08em] text-[#6f8395]">詳細条件</p>')
+          replace(p, 'className="text-xs font-bold text-slate-300 hover:text-white"', 'className="text-xs font-bold text-slate-500 hover:text-slate-900"')
+          replace(p, 'className="border-y-2 border-slate-950 bg-white px-5 py-14 text-center"', 'className="rounded-lg border border-[#d9dee5] bg-white px-5 py-14 text-center"')
+          replace(p, 'className="overflow-hidden border-y-2 border-slate-950 bg-white"', 'className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white"')
+          replace(p, 'className={`hidden gap-3 border-b border-slate-300 bg-[#f3f5f7]', 'className={`hidden gap-3 border-b border-[#d9dee5] bg-[#f7f9fb]')
+          replace(p, 'className="flex size-12 shrink-0 items-center justify-center bg-slate-900 text-base font-black text-white"', 'className="flex size-12 shrink-0 items-center justify-center rounded-lg bg-[#16324a] text-base font-black text-white"')
+          replace(p, 'className="flex h-10 flex-1 items-center justify-center border border-slate-950 bg-slate-950 px-3 text-xs font-black text-white hover:bg-slate-800 xl:w-full"', 'className="flex h-10 flex-1 items-center justify-center rounded-md bg-[#16324a] px-3 text-xs font-black text-white hover:bg-[#10283c] xl:w-full"')
+          replace(p, '? "border-slate-950 bg-slate-950 text-white"\n          : "border-slate-400 bg-white text-slate-800 hover:border-slate-950"', '? "border-[#16324a] bg-[#16324a] text-white"\n          : "border-[#c6d0d9] bg-white text-slate-700 hover:border-[#8093a4]"')
+          replace(p, 'className="border-b border-slate-300 p-4 last:border-b-0"', 'className="border-b border-[#e2e6ea] p-4 last:border-b-0"')
+
+          p='features/boxers/components/candidate-list.tsx'
+          replace(p, 'className="border-y-2 border-slate-950 bg-white px-5 py-14 text-center text-sm font-bold text-slate-500"', 'className="rounded-lg border border-[#d9dee5] bg-white px-5 py-14 text-center text-sm font-bold text-slate-500"')
+          replace(p, '>SHORTLIST</p>', '>比較リスト</p>')
+          replace(p, 'className="border-y-2 border-slate-950 bg-white"', 'className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white"')
+          replace(p, 'className="hidden grid-cols-[1.6fr_1.35fr_.7fr_1.2fr_1fr_auto] gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-[10px] font-black text-slate-500 lg:grid"', 'className="hidden grid-cols-[1.6fr_1.35fr_.7fr_1.2fr_1fr_auto] gap-4 border-b border-[#d9dee5] bg-[#f7f9fb] px-5 py-3 text-[10px] font-black text-slate-500 lg:grid"')
+          replace(p, 'className="flex h-9 items-center justify-center bg-slate-950 px-3 text-xs font-black text-white"', 'className="flex h-9 items-center justify-center rounded-md bg-[#16324a] px-3 text-xs font-black text-white hover:bg-[#10283c]"')
+          replace(p, 'className="mt-5 inline-flex h-10 items-center border border-slate-950 px-4 text-xs font-black"', 'className="mt-5 inline-flex h-10 items-center rounded-md border border-[#aebbc6] bg-white px-4 text-xs font-black text-[#16324a]"')
+
+          p='features/matchmaking/components/case-board.tsx'
+          replace(p, 'const rerecruitable=new Set(["相談中","交渉中","ジム確認待ち","内定"]);', 'const rerecruitable=new Set(["相談中","交渉中","ジム確認待ち","内定"]);\nconst progressStages=["相談中","交渉中","ジム確認待ち","内定","決定"];')
+          replace(p, 'if(loading)return <div className="border-y-2 border-slate-950 bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">', 'if(loading)return <div className="rounded-lg border border-[#d9dee5] bg-white px-5 py-12 text-center text-sm font-bold text-slate-500">')
+          replace(p, 'return <div className="border-y-2 border-slate-950 bg-white">', 'return <div className="overflow-hidden rounded-lg border border-[#d9dee5] bg-white">')
+          replace(p, 'className="hidden grid-cols-[1.6fr_1.35fr_1fr_.7fr_1.5fr] gap-4 border-b border-slate-200 bg-slate-50 px-5 py-3 text-[10px] font-black text-slate-500 md:grid"', 'className="hidden grid-cols-[1.6fr_1.35fr_1fr_.7fr_1.5fr] gap-4 border-b border-[#d9dee5] bg-[#f7f9fb] px-5 py-3 text-[10px] font-black text-slate-500 md:grid"')
+          old='''        <div>\n          <div className="flex gap-2">{item.status==="決定"?'''
+          new='''        <div>\n          <div className="mb-2 flex items-center gap-1" aria-label="案件進捗">\n            {progressStages.map((stage,index)=>{\n              const current=progressStages.indexOf(item.status);\n              const done=current>=index&&current>=0;\n              return <span className={`h-1.5 flex-1 rounded-full ${done?"bg-[#315d7d]":"bg-[#dce2e7]"}`} key={stage} title={stage}/>;\n            })}\n          </div>\n          <p className="mb-2 text-[10px] font-bold text-slate-500">現在：<b className="text-slate-800">{item.status}</b></p>\n          <div className="flex gap-2">{item.status==="決定"?'''
+          replace(p, old, new)
+          replace(p, 'className="flex h-10 flex-1 items-center justify-center bg-emerald-50 px-3 text-xs font-black text-emerald-800"', 'className="flex h-10 flex-1 items-center justify-center rounded-md bg-emerald-50 px-3 text-xs font-black text-emerald-800"')
+
+          # Softened operational containers in the other core review screens.
+          for p in ['features/open-matches/components/open-match-board.tsx','features/events/components/event-board.tsx','features/messages/components/message-room.tsx']:
+              path=Path(p); s=path.read_text(); s=s.replace('border-y-2 border-slate-950 bg-white','rounded-lg border border-[#d9dee5] bg-white'); path.write_text(s)
+
+          Path('.github/workflows/oneoff-polish-core-ui.yml').unlink()
+          PY
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Commit polish
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add features .github/workflows/oneoff-polish-core-ui.yml
+          git commit -m "style: polish core operational screens"
+          git push
