@@ -8,6 +8,8 @@ RINGOPSは、選手検索、マッチメイク受付、対戦相手募集、案�
 
 本体は Next.js + Supabase で構成し、Vercel の本番デプロイを前提に運用します。
 
+Vercel は GitHub の `main` ブランチを本番デプロイ元として接続します。
+
 公開後は `/api/health` でアプリとRINGOPS専用Supabaseの疎通を確認できます。
 
 ## 開発方針
