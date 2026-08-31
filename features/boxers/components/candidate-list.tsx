@@ -21,10 +21,10 @@ type CandidateRow = {
 };
 
 const divisionLabels: Record<string,string> = {
-  atom:"アトム級",mini_fly:"ミニフライ級",minimum:"ミニマム級",light_fly:"ライトフライ級",fly:"フライ級",super_fly:"スーパーフライ級",
-  bantam:"バンタム級",super_bantam:"スーパーバンタム級",feather:"フェザー級",super_feather:"スーパーフェザー級",
-  light:"ライト級",super_light:"スーパーライト級",welter:"ウェルター級",super_welter:"スーパーウェルター級",
-  middle:"ミドル級",super_middle:"スーパーミドル級",light_heavy:"ライトヘビー級",cruiser:"クルーザー級",heavy:"ヘビー級",
+  atom:"アトム級",atomweight:"アトム級",mini_fly:"ミニフライ級",mini_flyweight:"ミニフライ級",minimum:"ミニマム級",minimumweight:"ミニマム級",light_fly:"ライトフライ級",light_flyweight:"ライトフライ級",fly:"フライ級",flyweight:"フライ級",super_fly:"スーパーフライ級",super_flyweight:"スーパーフライ級",
+  bantam:"バンタム級",bantamweight:"バンタム級",super_bantam:"スーパーバンタム級",super_bantamweight:"スーパーバンタム級",feather:"フェザー級",featherweight:"フェザー級",super_feather:"スーパーフェザー級",super_featherweight:"スーパーフェザー級",
+  light:"ライト級",lightweight:"ライト級",super_light:"スーパーライト級",super_lightweight:"スーパーライト級",welter:"ウェルター級",welterweight:"ウェルター級",super_welter:"スーパーウェルター級",super_welterweight:"スーパーウェルター級",
+  middle:"ミドル級",middleweight:"ミドル級",super_middle:"スーパーミドル級",super_middleweight:"スーパーミドル級",light_heavy:"ライトヘビー級",light_heavyweight:"ライトヘビー級",cruiser:"クルーザー級",cruiserweight:"クルーザー級",heavy:"ヘビー級",heavyweight:"ヘビー級",
 };
 
 const statusLabels:Record<string,string>={accepting:"受付中",conditional:"条件次第",paused:"受付停止"};
