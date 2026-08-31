@@ -1,0 +1,92 @@
+name: One-off competition category and smoke tests
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Patch competition category and CI smoke tests
+        run: |
+          python3 <<'PY'
+          from pathlib import Path
+
+          path = Path('features/boxers/components/boxer-directory.tsx')
+          s = path.read_text()
+          replacements = [
+            ('  scope: string;\n  prefecture: string;', '  scope: string;\n  competition: string;\n  prefecture: string;'),
+            ('  scope: "すべて",\n  prefecture: "すべて",', '  scope: "すべて",\n  competition: "すべて",\n  prefecture: "すべて",'),
+            ('  const [scope, setScope] = useState("すべて");\n  const [prefecture, setPrefecture] = useState("すべて");', '  const [scope, setScope] = useState("すべて");\n  const [competition, setCompetition] = useState("すべて");\n  const [prefecture, setPrefecture] = useState("すべて");'),
+            ('    scope,\n    prefecture,', '    scope,\n    competition,\n    prefecture,'),
+            ('      const scopeOk = scope === "すべて" || boxerScope === scope;\n      const prefectureOk', '      const scopeOk = scope === "すべて" || boxerScope === scope;\n      const competitionOk = competition === "すべて" || boxer.competitionCategory === competition;\n      const prefectureOk'),
+            ('        scopeOk &&\n        prefectureOk &&', '        scopeOk &&\n        competitionOk &&\n        prefectureOk &&'),
+            ('    scope,\n    prefecture,\n    nationality,', '    scope,\n    competition,\n    prefecture,\n    nationality,'),
+            ('    setScope(value.scope);\n    setPrefecture(value.prefecture);', '    setScope(value.scope);\n    setCompetition(value.competition);\n    setPrefecture(value.prefecture);'),
+            ('    scope !== "すべて" ? { label: scope, clear: () => setScope("すべて") } : null,\n    prefecture', '    scope !== "すべて" ? { label: scope, clear: () => setScope("すべて") } : null,\n    competition !== "すべて" ? { label: `競技区分：${competition}`, clear: () => setCompetition("すべて") } : null,\n    prefecture'),
+            ('                <div className="grid grid-cols-2 gap-2">\n                  <Select label="国内 / 海外" value={scope} onChange={setScope} values={["すべて", "国内", "海外"]} />\n                  <Select label="都道府県" value={prefecture} onChange={setPrefecture} values={["すべて", ...prefectures]} />\n                </div>', '                <div className="grid grid-cols-2 gap-2">\n                  <Select label="競技区分" value={competition} onChange={setCompetition} values={["すべて", "男子", "女子"]} />\n                  <Select label="国内 / 海外" value={scope} onChange={setScope} values={["すべて", "国内", "海外"]} />\n                </div>\n                <Select label="都道府県" value={prefecture} onChange={setPrefecture} values={["すべて", ...prefectures]} />'),
+          ]
+          for old, new in replacements:
+            if old not in s:
+              raise SystemExit(f'missing boxer-directory pattern: {old[:80]}')
+            s = s.replace(old, new, 1)
+          path.write_text(s)
+
+          path = Path('app/boxers/[id]/page.tsx')
+          s = path.read_text()
+          old = '<p className="mt-3 text-sm font-black text-slate-800">{boxer.division} · {boxer.boxerClass} · {boxer.stance}構え</p>'
+          new = '<p className="mt-3 text-sm font-black text-slate-800">{boxer.competitionCategory ? `${boxer.competitionCategory} · ` : ""}{boxer.division} · {boxer.boxerClass} · {boxer.stance}構え</p>'
+          if old not in s: raise SystemExit('missing profile heading pattern')
+          s = s.replace(old, new, 1)
+          old = '            <Row label="階級" value={boxer.division} />\n            <Row label="クラス" value={boxer.boxerClass} />'
+          new = '            <Row label="競技区分" value={boxer.competitionCategory ?? "未設定"} />\n            <Row label="階級" value={boxer.division} />\n            <Row label="クラス" value={boxer.boxerClass} />'
+          if old not in s: raise SystemExit('missing profile details pattern')
+          s = s.replace(old, new, 1)
+          path.write_text(s)
+
+          path = Path('.github/workflows/ci.yml')
+          s = path.read_text()
+          old = '      - run: npm run build\n'
+          new = '''      - run: npm run build
+      - name: Smoke test production server
+        run: |
+          npm start > /tmp/ringops-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID 2>/dev/null || true' EXIT
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then READY=1; break; fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then cat /tmp/ringops-next.log; exit 1; fi
+          for path in / /candidates /open-matches /matchmaking /events /messages /gym /boxers/20000000-0000-0000-0000-000000000001; do
+            echo "Checking $path"
+            curl -fsS "http://127.0.0.1:3000$path" >/dev/null || { cat /tmp/ringops-next.log; exit 1; }
+          done
+'''
+          if old not in s: raise SystemExit('missing CI build pattern')
+          s = s.replace(old, new, 1)
+          path.write_text(s)
+          PY
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - name: Remove one-off workflow
+        run: rm .github/workflows/oneoff-competition-smoke.yml
+      - name: Commit changes
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add features/boxers/components/boxer-directory.tsx app/boxers/'[id]'/page.tsx .github/workflows/ci.yml .github/workflows/oneoff-competition-smoke.yml
+          git commit -m "feat: add competition category and route smoke tests"
+          git push
