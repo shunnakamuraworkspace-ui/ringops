@@ -9,7 +9,7 @@ on:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,3 +19,27 @@ jobs:
       - run: npm ci
       - run: npm run lint
       - run: npm run build
+      - name: Smoke test production server
+        run: |
+          npm start > /tmp/ringops-next.log 2>&1 &
+          APP_PID=$!
+          trap 'kill $APP_PID 2>/dev/null || true' EXIT
+          READY=0
+          for i in $(seq 1 30); do
+            if curl -fsS http://127.0.0.1:3000/ >/dev/null; then
+              READY=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$READY" -ne 1 ]; then
+            cat /tmp/ringops-next.log
+            exit 1
+          fi
+          for path in / /candidates /open-matches /matchmaking /events /messages /gym /boxers/20000000-0000-0000-0000-000000000001; do
+            echo "Checking $path"
+            curl -fsS "http://127.0.0.1:3000$path" >/dev/null || {
+              cat /tmp/ringops-next.log
+              exit 1
+            }
+          done
