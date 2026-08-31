@@ -2,12 +2,14 @@ import Link from "next/link";
 import { BoxerDirectory } from "@/features/boxers/components/boxer-directory";
 import { loadBoxers } from "@/lib/ringops/load-boxers";
 
-type SearchParams={division?:string;class?:string;rounds?:string;stance?:string;minWeight?:string;maxWeight?:string;minBouts?:string;maxBouts?:string};
+type SearchParams={division?:string;class?:string;rounds?:string;stance?:string;minWeight?:string;maxWeight?:string;minBouts?:string;maxBouts?:string;competition?:string};
 
 export default async function HomePage({searchParams}:{searchParams:Promise<SearchParams>}) {
   const [params,{ boxers, databaseConnected, industryMode, reviewMode, loadError }] = await Promise.all([searchParams,loadBoxers()]);
   const matchDataMode = industryMode || reviewMode;
-  const open = matchDataMode && !loadError ? boxers.filter((boxer) => boxer.status !== "受付停止").length : null;
+  const selectedCompetition = params.competition === "men" ? "男子" : params.competition === "women" ? "女子" : "すべて";
+  const visibleBoxers = selectedCompetition === "すべて" ? boxers : boxers.filter((boxer) => boxer.competitionCategory === selectedCompetition);
+  const open = matchDataMode && !loadError ? visibleBoxers.filter((boxer) => boxer.status !== "受付停止").length : null;
 
   return <>
     <section className="border-b border-slate-300 bg-white">
@@ -16,10 +18,11 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
           <div>
             <p className="text-[11px] font-black tracking-[.14em] text-slate-600">選手検索</p>
             <h1 className="mt-1 text-2xl font-black tracking-tight text-slate-950 sm:text-[28px]">対戦候補を、条件からすぐ探す。</h1>
-            <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-600">階級・戦績・地域・ランキング・次戦に加えて、業界ログイン時はジム確認済みのMATCH STATUSと試合条件まで同じ画面で絞り込めます。</p>
+            <p className="mt-2 max-w-3xl text-sm font-medium leading-6 text-slate-600">競技区分・階級・戦績・地域・ランキング・次戦に加えて、業界ログイン時はジム確認済みのMATCH STATUSと試合条件まで同じ画面で絞り込めます。</p>
           </div>
           {!loadError && <div className="flex flex-wrap items-center gap-x-5 gap-y-2 border-l-2 border-slate-950 pl-4 text-xs font-bold text-slate-700">
             <p>登録 <b className="text-slate-950">{boxers.length}名</b></p>
+            {selectedCompetition !== "すべて" && <p>表示 <b className="text-slate-950">{visibleBoxers.length}名</b></p>}
             {open !== null && <p>相談可能 <b className="text-slate-950">{open}名</b></p>}
             {databaseConnected && !industryMode && <Link className="border border-slate-950 bg-slate-950 px-3 py-2 font-black text-white" href="/login">業界ログイン</Link>}
           </div>}
@@ -46,8 +49,22 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
               ? "確認モード：デモ選手のみMATCH STATUSと試合条件を表示しています。実運用データは業界ログイン後に表示します。"
               : "一般公開表示：MATCH STATUS・契約ウェイト等の業界情報はログイン後に表示します。"}
       </div>
+      <div className="border-b border-slate-300 bg-white">
+        <div className="mx-auto flex max-w-[1480px] flex-wrap items-center gap-2 px-4 py-3 lg:px-7">
+          <span className="mr-1 text-[11px] font-black text-slate-500">競技区分</span>
+          {(["すべて","男子","女子"] as const).map((label) => {
+            const value = label === "男子" ? "men" : label === "女子" ? "women" : "";
+            const active = selectedCompetition === label;
+            return <Link
+              className={active ? "border border-slate-950 bg-slate-950 px-3 py-2 text-xs font-black text-white" : "border border-slate-300 bg-white px-3 py-2 text-xs font-black text-slate-700 hover:border-slate-950"}
+              href={competitionHref(params,value)}
+              key={label}
+            >{label}</Link>;
+          })}
+        </div>
+      </div>
       <BoxerDirectory
-        boxers={boxers}
+        boxers={visibleBoxers}
         databaseConnected={databaseConnected}
         industryMode={matchDataMode}
         initialDivision={params.division}
@@ -61,4 +78,14 @@ export default async function HomePage({searchParams}:{searchParams:Promise<Sear
       />
     </>}
   </>;
+}
+
+function competitionHref(params: SearchParams, competition: string) {
+  const query = new URLSearchParams();
+  for (const [key,value] of Object.entries(params)) {
+    if (key !== "competition" && value) query.set(key,value);
+  }
+  if (competition) query.set("competition",competition);
+  const value = query.toString();
+  return value ? `/?${value}` : "/";
 }
