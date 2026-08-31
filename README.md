@@ -4,13 +4,11 @@
 
 RINGOPSは、選手検索、マッチメイク受付、対戦相手募集、案件管理、興行管理、関係者間連絡を一つにつなぐことを目的とします。
 
-## 公開プレビュー
+## 公開
 
-現行UIを確認するための静的プレビューです。
+本体は Next.js + Supabase で構成し、Vercel の本番デプロイを前提に運用します。
 
-https://htmlpreview.github.io/?https://github.com/shunnakamuraworkspace-ui/ringops/blob/main/public/ringops-preview.html
-
-※ 本番アプリとは別の確認用プレビューです。正式運用はNext.js + Supabase + 本番ホスティングで行います。
+公開後は `/api/health` でアプリとRINGOPS専用Supabaseの疎通を確認できます。
 
 ## 開発方針
 
