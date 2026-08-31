@@ -30,7 +30,7 @@ const demo:EventItem[]=[{
 }];
 
 export function EventBoard({databaseConnected,industryMode}:{databaseConnected:boolean;industryMode:boolean}){
-  const reviewMode=!industryMode;
+  const reviewMode=!databaseConnected;
   const [events,setEvents]=useState<EventItem[]>(reviewMode?demo:[]);
   const [loading,setLoading]=useState(databaseConnected&&industryMode);
   const [error,setError]=useState("");

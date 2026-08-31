@@ -36,7 +36,7 @@ const previewBoxers:MyBoxer[]=[{id:"20000000-0000-4000-8000-000000000001",name:"
 export function OpenMatchBoard({
   databaseConnected,industryMode,initialCompetition,initialDivision,initialRounds,initialDate,initialVenue,initialMinWeight,initialMaxWeight,openFormInitially=false,
 }:Props){
-  const reviewMode=!industryMode;
+  const reviewMode=!databaseConnected;
   const initialCompetitionValue:Competition=initialCompetition==="women"?"女子":"男子";
   const initialDivisionValue=initialDivision&&divisions.includes(initialDivision)?initialDivision:"スーパーバンタム級";
   const initialRoundsValue=initialRounds&&["4","6","8","10","12"].includes(initialRounds)?initialRounds:"6";
