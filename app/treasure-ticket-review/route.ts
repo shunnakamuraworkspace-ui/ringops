@@ -11,7 +11,17 @@ export async function GET() {
     });
   }
 
-  const html = await upstream.text();
+  let html = await upstream.text();
+  html = html
+    .replace(
+      'oninput="st.q=this.value;admin()"',
+      'oninput="st.q=this.value" onchange="admin()"',
+    )
+    .replace(
+      '>${st.draft.memo}</textarea>',
+      '>${esc(st.draft.memo)}</textarea>',
+    );
+
   return new Response(html, {
     status: 200,
     headers: {
@@ -19,6 +29,9 @@ export async function GET() {
       "Cache-Control": "no-store, max-age=0",
       "X-Robots-Tag": "noindex, nofollow",
       "X-Content-Type-Options": "nosniff",
+      "X-Frame-Options": "DENY",
+      "Referrer-Policy": "strict-origin-when-cross-origin",
+      "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     },
   });
 }
