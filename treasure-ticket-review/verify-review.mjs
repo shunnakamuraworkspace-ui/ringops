@@ -39,9 +39,10 @@ assert.ok(!html.includes("このサービスを使うのは「選手・ジム・
 assert.ok(html.includes('id="beginner-guide"'), "Beginner guide is present");
 assert.ok(html.includes('id="faq"'), "Help FAQ is present");
 assert.ok(html.includes('data-label="注文番号"'), "Order history is mobile friendly");
-for (const label of ["選手の画面を開く", "ジムの画面を開く", "興行の画面を開く"]) {
-  assert.ok(html.includes(label), `Role-specific action present: ${label}`);
+for (const [id, label] of [["open-player", "選手"], ["open-gym", "ジム"], ["open-admin", "興行"]]) {
+  assert.ok(html.includes(`id="${id}"`), `Role entry present: ${label}`);
 }
+assert.ok(html.includes("使う立場を選んでください。"), "Hero copy must stay short");
 assert.ok(html.includes('data-r="admin" onclick="openRole(\'admin\')">興行'), "Promoter tab should be labelled 興行");
 assert.equal(demo.orders().length, 3);
 assert.equal(demo.remaining("rs"), 87);
