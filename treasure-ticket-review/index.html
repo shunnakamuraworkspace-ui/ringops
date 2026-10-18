@@ -436,22 +436,156 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .disclosure-content .featuregrid{margin:0;gap:10px}
 .disclosure-content .feature{box-shadow:none}
 @media(max-width:700px){.role-section-compact .roles{grid-template-columns:1fr}.role-section-compact .role-compact{min-height:0;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1px 12px;padding:15px 16px}.role-compact .role-purpose{grid-column:1;max-width:none}.role-compact .role-chevron{grid-column:2;grid-row:1/3;align-self:center}.home{padding:12px 13px 54px}.hero-compact{padding:19px 18px}.onboarding-disclosures{margin-top:20px}}
+
+/* TREASURE 2026 / Light, editorial app-home refresh. Review-only design. */
+html,body{background:#f7f9fd}
+body{color:#1c2b41}
+.home-modern{max-width:1020px;padding:34px 22px 65px}
+.hero-modern{border:0;box-shadow:none;background:transparent;padding:0 0 5px;border-radius:0;overflow:visible}
+.hero-modern::before{display:none}
+.app-wordmark{display:flex;align-items:center;gap:11px}
+.brandmark-modern{
+  width:43px;height:43px;border-radius:15px;font-size:24px;
+  background:linear-gradient(145deg,#4388ff,#4267e8);box-shadow:0 7px 18px #4f7cff30
+}
+.wordmark-copy{display:flex;flex-direction:column;min-width:0;gap:1px}
+.wordmark-copy strong{font-size:17px;letter-spacing:-.035em;color:#1b2940;font-weight:850;line-height:1.2}
+.wordmark-copy strong span{color:#4269e8}
+.wordmark-copy small{color:#71809a;font-size:11px;letter-spacing:.04em;font-weight:700}
+.preview-label{
+  margin-left:auto;padding:6px 12px;border:1px solid #dae5fb;border-radius:999px;
+  background:#fff;color:#5173bc;font-size:12px;font-weight:800;white-space:nowrap;
+}
+.hero-intro{position:relative;padding:36px 0 19px}
+.hero-intro::after{
+  content:"";position:absolute;right:2%;top:5%;
+  width:min(240px,33%);height:150px;pointer-events:none;border-radius:50%;
+  background:radial-gradient(ellipse at 45% 42%,#bad0ff88,transparent 68%);
+  filter:blur(9px);z-index:0
+}
+.hero-intro>*{position:relative;z-index:1}
+.hello-kicker{display:flex;align-items:center;gap:8px;font-size:11px;color:#5576bf;font-weight:850;letter-spacing:.17em}
+.sparkle-dot{width:7px;height:7px;border-radius:50%;background:#8eaaff;box-shadow:0 0 0 5px #e7eeff}
+.hero-modern .hero-intro h1{color:#1c2b41;font-size:clamp(30px,4.3vw,49px);line-height:1.27;letter-spacing:-.055em;margin:12px 0 9px;font-weight:850}
+.hero-modern .hero-intro h1 span{color:#4673e9}
+.hero-modern .hero-intro p{font-size:15px;color:#63758d;line-height:1.65;margin:12px 0 0}
+.role-modern{margin-top:8px}
+.role-section-header{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:3px}
+.section-mini{font-size:10px;font-weight:850;letter-spacing:.17em;color:#8a9bb4}
+.role-modern .role-section-header h2{font-size:20px;font-weight:850;letter-spacing:-.04em;color:#26344a;margin:5px 0}
+.role-steps-label{font-size:12px;color:#7b8ca4;font-weight:800;white-space:nowrap}
+.role-modern .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:15px;margin:15px 0 12px}
+.role-modern .role-modern-card{
+  --role-accent:#4c79e9;--role-wash:#eff5ff;
+  min-height:230px;display:flex;align-items:stretch;flex-direction:column;gap:0;
+  text-align:left;position:relative;overflow:hidden;isolation:isolate;
+  background:#fff;border:1px solid #e5eaf3;border-radius:22px;
+  padding:21px 20px 18px;
+  box-shadow:0 10px 27px #374e840b,0 2px 5px #263d5605;
+  transition:transform .22s ease,box-shadow .22s ease,border-color .22s ease;
+}
+.role-modern-card::before{
+  content:"";position:absolute;right:-34px;top:-38px;width:140px;height:140px;
+  border-radius:50%;background:var(--role-wash);z-index:-1;pointer-events:none
+}
+.role-modern .role-modern-card:hover{
+  background:#fff;transform:translateY(-4px);border-color:var(--role-accent);
+  box-shadow:0 15px 35px #3b58a419
+}
+.role-modern-card:focus-visible{outline:3px solid #6e96ff;outline-offset:4px}
+.role-gym{--role-accent:#2a9ca5!important;--role-wash:#eaf9f9!important}
+.role-promoter{--role-accent:#8570db!important;--role-wash:#f3efff!important}
+.modern-card-top{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.modern-number{font-size:12px;font-weight:850;color:var(--role-accent);letter-spacing:.08em}
+.modern-tag{font-size:9px;letter-spacing:.16em;font-weight:900;color:var(--role-accent)}
+.modern-role{margin-top:24px;color:#1d2b42;font-size:25px;letter-spacing:-.065em;font-weight:850;line-height:1.2}
+.modern-purpose{margin-top:8px;font-size:14px;line-height:1.65;color:#68798d;font-weight:500;min-height:46px}
+.modern-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:20px;color:var(--role-accent);font-size:13px;font-weight:850}
+.modern-arrow{width:35px;height:35px;display:grid;place-items:center;border-radius:50%;background:var(--role-wash);color:var(--role-accent);font-size:19px;transition:transform .2s ease}
+.role-modern-card:hover .modern-arrow{transform:translateX(3px)}
+.role-modern .role-short-note{font-size:12px;color:#8090a4;margin:6px 2px 0}
+.help-intro{display:flex;align-items:center;gap:13px;margin-top:37px;margin-bottom:12px}
+.help-intro span{color:#86a0cd;font-size:10px;letter-spacing:.16em;font-weight:900}
+.help-intro strong{font-size:15px;letter-spacing:-.01em;color:#43536a;font-weight:800}
+.onboarding-disclosures{display:grid;gap:10px;margin-top:0}
+.disclosure{border:1px solid #e5eaf3;border-radius:18px;background:#fff;box-shadow:0 3px 12px #2a447609}
+.disclosure[open]{border-color:#cfdbf9}
+.disclosure summary{min-height:72px;padding:15px 19px}
+.disclosure summary strong{font-weight:850;color:#263853;font-size:15px;letter-spacing:-.015em}
+.disclosure summary small{color:#8492a6;font-size:12px}
+.disclosure-toggle{background:#f0f4ff;color:#5578d5;border-radius:50%;width:30px;height:30px;flex-basis:30px;font-size:20px}
+.disclosure-content{color:#52637a}
+.disclosure-faq,.disclosure-reset{margin-top:10px}
+.disclosure-faq .faq{border:0;background:transparent;padding:0;margin:0}
+.disclosure-faq .faq>.eyebrow,.disclosure-faq .faq>h2{display:none}
+.disclosure-faq .faq details{border-color:#e5eaf3}
+.disclosure-faq .faq summary{font-size:14px;min-height:45px;padding:10px 0;background:transparent;color:#405570}
+.disclosure-reset .resetbox{margin:0;padding:0;border:0;background:transparent}
+.disclosure-reset .resetbox strong{color:#263853}
+@media(max-width:760px){
+ .home-modern{padding:18px 16px 55px}
+ .hero-intro{padding-top:29px;padding-bottom:14px}
+ .hero-modern .hero-intro h1{font-size:clamp(30px,8.4vw,41px)}
+ .role-modern .roles{grid-template-columns:1fr;gap:12px;margin:13px 0 8px}
+ .role-modern .role-modern-card{
+   min-height:0;display:grid;grid-template-columns:minmax(0,1fr) auto;
+   padding:17px 19px 17px;align-items:center;gap:1px 14px;border-radius:19px
+ }
+ .role-modern-card::before{width:100px;height:100px;right:-24px;top:-33px}
+ .modern-card-top{grid-column:1;justify-content:flex-start;gap:12px}
+ .modern-tag{font-size:9px}
+ .modern-role{grid-column:1;margin:10px 0 0;font-size:23px}
+ .modern-purpose{grid-column:1;margin-top:4px;min-height:auto;font-size:13px}
+ .modern-bottom{grid-column:2;grid-row:1/4;justify-self:end;padding:0;margin:0}
+ .modern-bottom>span:first-child{display:none}
+ .modern-arrow{width:41px;height:41px;font-size:22px}
+ .help-intro{margin-top:30px}
+ .hero-intro::after{opacity:.7;width:40%}
+}
+@media(max-width:380px){.wordmark-copy strong{font-size:15px}.preview-label{padding:5px 8px;font-size:11px}.hero-modern .hero-intro h1{font-size:29px}}
+@media(prefers-reduced-motion:reduce){.role-modern .role-modern-card,.modern-arrow{transition:none}}
 </style></head><body>
-<div id="home" class="home">
-<header class="hero hero-compact">
-  <div class="brandline"><span class="brandmark" aria-hidden="true">T</span><div><div class="eyebrow">TREASURE BOXING PROMOTION</div><div class="brandline-note">TICKET MANAGEMENT</div></div></div>
-  <h1>チケット管理 <span class="title-tag">確認用</span></h1>
-  <p class="hero-short">使う立場を選んでください。</p>
-</header>
-<section id="role-select" class="role-section role-section-compact" aria-labelledby="role-select-title">
-  <h2 id="role-select-title">どの画面を開きますか？</h2>
-  <div class="roles">
-    <button id="open-player" class="role role-compact" onclick="openRole('player')"><span class="role-id"><span>選手</span></span><span class="role-purpose">チケットを注文する</span><span class="role-chevron" aria-hidden="true">→</span></button>
-    <button id="open-gym" class="role role-compact" onclick="openRole('gym')"><span class="role-id"><span>ジム</span></span><span class="role-purpose">所属選手の注文を確認する</span><span class="role-chevron" aria-hidden="true">→</span></button>
-    <button id="open-admin" class="role role-compact" onclick="openRole('admin')"><span class="role-id"><span>興行</span></span><span class="role-purpose">注文・在庫・精算を管理する</span><span class="role-chevron" aria-hidden="true">→</span></button>
+<div id="home" class="home home-modern">
+<header class="hero hero-modern">
+  <div class="app-wordmark">
+    <span class="brandmark brandmark-modern" aria-hidden="true">T</span>
+    <span class="wordmark-copy"><strong>TREASURE <span>Ticket</span></strong><small>チケット管理システム</small></span>
+    <span class="preview-label">体験版</span>
   </div>
-  <p class="role-short-note">※ これはサンプル操作画面です。招待・請求などは実行されません。</p>
+  <div class="hero-intro">
+    <span class="hello-kicker"><span aria-hidden="true" class="sparkle-dot"></span>WELCOME TO TREASURE</span>
+    <h1>チケット管理を、<br><span>もっとかんたんに。</span></h1>
+    <p>使う画面を選んで、さっそく試してみましょう。</p>
+  </div>
+</header>
+<section id="role-select" class="role-section role-modern" aria-labelledby="role-select-title">
+  <div class="role-section-header">
+    <div><span class="section-mini">SELECT YOUR ROLE</span><h2 id="role-select-title">どの画面を開きますか？</h2></div>
+    <span class="role-steps-label">3つの入口</span>
+  </div>
+  <div class="roles">
+    <button id="open-player" class="role role-modern-card role-player" onclick="openRole('player')" aria-label="選手の画面：チケットを注文する">
+      <span class="modern-card-top"><span class="modern-number">01</span><span class="modern-tag">PLAYER</span></span>
+      <span class="modern-role">選手</span>
+      <span class="modern-purpose">チケットを注文する</span>
+      <span class="modern-bottom"><span>選手の画面へ</span><span class="modern-arrow" aria-hidden="true">→</span></span>
+    </button>
+    <button id="open-gym" class="role role-modern-card role-gym" onclick="openRole('gym')" aria-label="ジムの画面：所属選手の注文を確認する">
+      <span class="modern-card-top"><span class="modern-number">02</span><span class="modern-tag">GYM</span></span>
+      <span class="modern-role">ジム</span>
+      <span class="modern-purpose">所属選手の注文を確認する</span>
+      <span class="modern-bottom"><span>ジムの画面へ</span><span class="modern-arrow" aria-hidden="true">→</span></span>
+    </button>
+    <button id="open-admin" class="role role-modern-card role-promoter" onclick="openRole('admin')" aria-label="興行の画面：注文・在庫・精算を管理する">
+      <span class="modern-card-top"><span class="modern-number">03</span><span class="modern-tag">PROMOTER</span></span>
+      <span class="modern-role">興行</span>
+      <span class="modern-purpose">注文・在庫・精算を管理する</span>
+      <span class="modern-bottom"><span>興行の画面へ</span><span class="modern-arrow" aria-hidden="true">→</span></span>
+    </button>
+  </div>
+  <p class="role-short-note"><span aria-hidden="true">ⓘ</span> この画面は体験版です。実際の招待・請求は行いません。</p>
 </section>
+<div class="help-intro"><span>HOW TO USE</span><strong>使い方が知りたいときは</strong></div>
 <section class="onboarding-disclosures" aria-label="必要なときに読む説明">
   <details class="disclosure" id="invite-flow">
     <summary><span><strong>初めての方へ</strong><small>招待制・登録方法を見る</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
@@ -495,12 +629,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
       <p class="disclosure-foot">実際の名前・住所・口座番号などは入力しないでください。</p>
     </div>
   </details>
-</section><section id="faq" class="faq">
+</section><details class="disclosure disclosure-faq">
+  <summary><span><strong>よくある質問</strong><small>招待メール・注文の修正など</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+  <div class="disclosure-content"><section id="faq" class="faq">
   <div class="eyebrow">よくある質問</div><h2>困ったときは</h2>
   <details><summary>招待メールが届かないときは？</summary><p>迷惑メールを確認し、メールアドレスが正しいかを招待元に問い合わせます。ジム担当者はTREASUREに、選手は所属ジムに連絡します。</p></details>
   <details><summary>チケットの注文を間違えたら？</summary><p>このデモでは確定前の確認画面で「修正する」を押してください。実運用で確定後の変更が必要な場合はジム担当者へ相談します。請求済み注文は直接取り消せません。</p></details>
   <details><summary>入力した内容は他の端末でも見られる？</summary><p>この確認ページはブラウザ内のサンプルデータのみ保存します。スマホとパソコンの同期はされません。本番システムではデータベースに保存する設計です。</p></details>
-</section><section class="resetbox"><div><strong>テストをやり直すとき</strong><p>追加注文・ジム確認・発送状態を初期サンプルへ戻します。</p></div><button class="btn" onclick="resetAll()">確認用データを初期状態に戻す</button></section></div>
+</section></div>
+</details><details class="disclosure disclosure-reset">
+  <summary><span><strong>デモを最初からやり直す</strong><small>注文・確認・発送のサンプルデータを初期化</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+  <div class="disclosure-content"><section class="resetbox"><div><strong>テストをやり直すとき</strong><p>追加注文・ジム確認・発送状態を初期サンプルへ戻します。</p></div><button class="btn" onclick="resetAll()">確認用データを初期状態に戻す</button></section></div>
+</details></div>
 <section id="app" class="app hidden"><header class="top"><div class="brand"><span class="brandmark brandmark-sm" aria-hidden="true">T</span><span>TREASURE <strong>Ticket</strong></span></div><div class="event">TREASURE BOXING PROMOTION Vol.1 · 後楽園ホール</div><div class="spacer"></div><div class="switch"><button data-r="player" onclick="openRole('player')">選手 <span>レビュー</span></button><button data-r="gym" onclick="openRole('gym')">ジム <span>レビュー</span></button><button data-r="admin" onclick="openRole('admin')">興行 <span>レビュー</span></button></div></header><main class="main"><div class="toolbar"><span class="crumb">確認用デモ · 実際の招待・決済は行いません</span><span class="spacer"></span><button class="btn" onclick="roleHelp()">使い方・困ったとき</button><button class="btn" onclick="backHome()">トップに戻る</button><button class="btn red" onclick="resetAll()">初期化</button></div><div id="screen"></div></main></section><div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div><dialog id="help-dialog" aria-labelledby="help-title" class="help-dialog"><h2 id="help-title"></h2><p id="help-body"></p><div class="help-actions"><button class="btn gold" onclick="closeHelp()">閉じる</button></div></dialog>
 <script>
 const KEY='treasure-review-final-v1',types=[['rs','RS席',20000],['s','S席',15000],['a','A席',10000],['free','先着自由席',5000]],seed=[{id:'DEMO-TRS-20260917-0001',at:'2026/09/17 10:15',pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:'初回注文',c:{rs:2,s:4,a:3,free:0},memo:'確認用サンプル注文',status:'確認済み',ship:'発送準備中',gymOk:true},{id:'DEMO-TRS-20260917-1001',at:'2026/09/17 11:20',pid:'takahashi',player:'高橋選手',gid:'aozora',gym:'青空ボクシングジム',kind:'追加注文',c:{rs:0,s:2,a:5,free:1},memo:'追加分の確認用データ',status:'受付済み',ship:'未発送',gymOk:false},{id:'DEMO-TRS-20260917-2001',at:'2026/09/17 12:05',pid:'sasaki',player:'佐々木選手',gid:'toto',gym:'東都ファイトジム',kind:'初回注文',c:{rs:1,s:0,a:4,free:2},memo:'',status:'確認済み',ship:'発送済み',gymOk:true}];
