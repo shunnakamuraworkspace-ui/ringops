@@ -48,7 +48,190 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
  .tbl td:last-child{border-bottom:0}
  .tbl td::before{content:attr(data-label);flex:0 0 40%;text-align:left;color:#625b53;font-weight:800}
  .tbl td .sub{font-size:12px}
-}</style></head><body>
+}
+/* TREASURE design system v2: high-contrast, task-first, restrained premium palette
+   Gold = primary action / brand. Blue = help / next step. Green = complete.
+   Amber = pending. Red = error / destructive only. */
+:root{
+  --bg:#13191d;
+  --gold:#d9b56a;
+  --gold2:#edd59e;
+  --ink:#202a31;
+  --paper:#f5f7f5;
+  --line:#dce2df;
+  --muted:#52616b;
+  --green:#246744;
+  --red:#a02e3c;
+  --surface:#ffffff;
+  --dark-surface:#1b2227;
+  --focus:#ab792b;
+}
+html{background:var(--bg)}
+body{background:var(--bg);color:#f8f9f5;font-size:15px}
+body,button,input,select,textarea{-webkit-font-smoothing:antialiased}
+button,a,summary{touch-action:manipulation}
+button:not(:disabled){transition:background-color .15s,border-color .15s,box-shadow .15s,color .15s,transform .15s}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,textarea:focus-visible,summary:focus-visible{
+  outline:3px solid #f4c765;outline-offset:3px;
+}
+.home{max-width:1050px}
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(115deg,#442229 0%,#21242a 48%,#151d21 100%);
+  border:1px solid #655440;border-radius:24px;
+  box-shadow:0 12px 38px rgba(0,0,0,.14);
+}
+.hero::before{content:"";position:absolute;inset:0 0 auto;height:4px;background:linear-gradient(90deg,#bb8748,#e5c77e,#9e683d)}
+.hero h1{max-width:800px;color:#fff;letter-spacing:-.035em}
+.hero p{color:#edf0ea}
+.eyebrow{color:#edd59e}
+.badge{border-color:#6b685f;color:#f1ece4;background:rgba(255,255,255,.035)}
+.badge.ok{border-color:#bba26a;color:#f6e7c0;background:rgba(217,181,106,.1)}
+.demo-notice{
+  border-color:#d9c7a0;background:#f9f5e8;
+  color:#413a2e;box-shadow:0 2px 9px #0000000d;
+}
+.demo-notice strong{color:#41311c}
+.quicklinks a{background:#ffffff0c;border-color:#847668;color:#fff4d8}
+.quicklinks a:hover{background:#ffffff1c;border-color:#e1bb71}
+.inviteflow{
+  border-color:#746044;background:linear-gradient(145deg,#222b2e,#191f23);
+  box-shadow:0 9px 28px rgba(0,0,0,.12);
+}
+.inviteflow h2,.guidebox h2{color:#f5e4bc}
+.inviteflow>p,.guidebox>p{color:#e8edeb!important}
+.flowstep{
+  background:#303a3c;border-color:#526063;box-shadow:0 2px 7px #00000016;
+}
+.flowstep small{color:#eacb88}
+.flowstep b{color:#fff}
+.flowstep .sub{color:#eff0e9}
+.arrow{color:#e9c47d}
+.help{color:#e2e6e3;border-color:#4d5553}
+.guidebox{background:#20282b;border-color:#546063}
+.guidecard{background:#2c3639;border-color:#516063}
+.guidecard ol{color:#eff1eb}.guidecard b{color:#fff}
+.roles{gap:14px}
+.role{
+  background:#242c30;border:1px solid #647077;
+  box-shadow:0 6px 19px #00000020;
+}
+.role:hover{background:#323b40;border-color:#e1bc77;transform:translateY(-2px)}
+.role small{color:#e8c781}
+.role h2{color:#fff}
+.role p{color:#ecf0ed}
+.role b{color:#f7da95}
+.feature{
+  background:#1e272b;border-color:#515b5e
+}
+.feature small{color:#e9c985}
+.feature strong{color:#fff}
+.feature p{color:#e0e7e2}
+.faq{background:#20282b;border-color:#526063}
+.faq summary{color:#fff}
+.faq details{border-color:#526063}.faq details p{color:#e5ece5}
+.resetbox{background:#222b2f;border-color:#526063}
+.resetbox p{color:#e5e9e7}
+/* Secondary actions on dark surfaces */
+.home .btn:not(.gold):not(.red){background:#313b3f;border-color:#718082;color:#fff}
+.home .btn:hover:not(:disabled){background:#445054;border-color:#d1bd95}
+/* Workspace */
+.app{background:var(--paper);color:var(--ink)}
+.top{background:#162027;border-bottom:2px solid #b38a48;box-shadow:0 2px 10px #1d242314}
+.brand{color:#f0d69d;letter-spacing:.11em}
+.event{color:#dbe0dc}
+.switch button{background:#26343b;border-color:#728086;color:#f4f6f4}
+.switch button.active{
+  background:#e3c17a;border-color:#e3c17a;color:#232c2e;
+  box-shadow:inset 0 0 0 1px #eccf95;
+}
+.main{max-width:1050px}
+.crumb{color:#53636e}
+.pagehead h1{color:#1d282e}
+.pagehead p,.ph p,.note{color:#53616b}
+.status,.stat,.panel{background:#fff;border-color:#dbe1dd}
+.status{border-left:4px solid #b58c4a}
+.panel{box-shadow:0 5px 20px rgba(24,42,38,.035)}
+.ph{background:#f9faf9;border-bottom-color:#e3e8e5}
+.ph h2{color:#1d2b32}
+.stat{box-shadow:0 3px 12px #1c36310a}
+.stat small{color:#54636b}
+.stat strong{color:#1c2b32;font-variant-numeric:tabular-nums}
+.order{border-color:#dce3de;background:#fff;box-shadow:0 2px 10px rgba(20,38,33,.04)}
+.order>.line b{color:#243039}
+.meta,.sub{color:#4d5c64}
+.field label{color:#33434c;font-weight:850}
+.input{background:#fff;border:1px solid #a9b6b7;color:#1f2d35;box-shadow:inset 0 1px 2px #172f2907}
+.input:focus{
+  border-color:#97692a;box-shadow:0 0 0 3px rgba(203,158,78,.25);
+  outline:0;
+}
+.input:disabled{background:#eef1ee;color:#56616b}
+.error{background:#fff0f1;color:#8d2033;border:1px solid #ecc4c9;font-size:14px}
+.steps{gap:10px}
+.step{background:#f6f8f6;border-color:#d5dfda;color:#52626b}
+.step.active{background:#27343c;border-color:#27343c;color:#fff;box-shadow:0 3px 8px #1d2c3422}
+.total{background:#fff7df;border:1px solid #d8b971;color:#4a3820}
+.total strong{color:#2e2d24;font-size:clamp(22px,3vw,28px);font-variant-numeric:tabular-nums}
+.remaining-info{color:#316447}
+.actions{background:#f8faf8;border-color:#e4e9e5}
+.btn{border:1px solid #aab8b6;background:#fff;color:#263944;font-weight:850}
+.btn:hover:not(:disabled){background:#f0f5f2;border-color:#60777d}
+.btn.gold{
+  background:#d9b56a;border:1px solid #b58b43;color:#262118;
+  box-shadow:0 2px 8px #6d4c161a;
+}
+.btn.gold:hover:not(:disabled){background:#ebca86;border-color:#a67831}
+.btn.red{background:#fff3f3;color:#8d2a35;border-color:#dfa6aa;box-shadow:none}
+.btn.red:hover:not(:disabled){background:#ffe6e9;border-color:#b13b48}
+.switch .btn{background:initial}
+/* State is a word plus a semantic color, never color alone */
+.pill{font-size:12px;line-height:1.45;border-color:#cad5d2;background:#f0f4f3;color:#364d55}
+.pill.gold,.pill.warn{border-color:#e4c987;background:#fff5d9;color:#744d0d}
+.pill.green{border-color:#91c8a5;background:#e6f5e9;color:#1b6238}
+.pill.red{border-color:#dda9b0;background:#ffedf0;color:#942a38}
+.security{background:#f7f9f5;border:1px solid #becfc1}
+.security strong{color:#25392d}
+.order-next{background:#ecf3f8;color:#234962;border-left:4px solid #5784a4;border-radius:10px}
+.role-banner{background:#eaf2f8;border:1px solid #adc7db;border-left:4px solid #527da3}
+.role-banner small{color:#315d80}
+.role-banner strong{color:#1b435e}
+.role-banner p{color:#305870}
+.role-banner .btn{background:#fff;color:#25516d;border-color:#adc1d1}
+.checkitem{background:#f8faf9;border-color:#dce4df}
+.checkitem b{color:#2b3940}
+.checkitem .sub{color:#53616a}
+.tbl th{background:#f0f4f2;color:#34454d;border-color:#dce4df}
+.tbl td{color:#24333c}
+.empty{background:#f7faf7;border-color:#bccdc1;color:#4e6061}
+.help-dialog{border-color:#c5cfc6}
+.help-dialog .btn.gold{min-width:120px}
+.toast{background:#22333d;border-color:#6e96aa;color:#fff}
+/* Contrast consistency and compact mobile layout */
+@media(max-width:800px){
+ .role,.flowstep,.guidecard{box-shadow:none}
+ .top{border-bottom-width:2px}
+ .pagehead{gap:5px}
+ .toolbar{margin-bottom:18px}
+}
+@media(max-width:480px){
+ .hero{border-radius:20px}
+ .hero h1{font-size:clamp(27px,7vw,36px)}
+ .quicklinks a{background:#ffffff0e}
+ .role{border-radius:17px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr))}
+ .stat strong{font-size:clamp(17px,4.4vw,22px)}
+ .total{padding:16px}
+ .actions{gap:10px}
+ .actions .btn{min-height:52px}
+ .top{flex-wrap:wrap}
+ .brand{flex:1;min-width:145px}
+ .switch{justify-content:flex-end}
+ .tbl tr{background:#fff;border-color:#dce2df}
+ .tbl td{border-color:#e8eeea;color:#24343b}
+ .tbl td::before{color:#51616a}
+}
+</style></head><body>
 <div id="home" class="home"><header class="hero"><div class="eyebrow">TREASURE BOXING PROMOTION</div><h1>チケット管理システム 確認用</h1><p>まずは利用開始の流れを確認してください。この画面では、選手の注文からジム確認・TREASUREの管理まで、サンプルデータで操作を体験できます。</p><div class="badges"><span class="badge ok">使い方を確認できるデモ</span><span class="badge">スマホ対応</span><span class="badge">サンプルデータのみ</span></div><div class="demo-notice"><strong>このURLは画面確認用です。</strong> 本物のログイン認証・招待メール送信・口座登録・ジム請求は行いません。注文や確認の変更はこのブラウザ内だけに保存されます。</div><nav class="quicklinks" aria-label="確認ページの案内"><a href="#invite-flow">① 利用開始の流れ</a><a href="#role-select">② 画面を試す</a><a href="#beginner-guide">③ 操作の説明</a></nav></header><section id="invite-flow" class="inviteflow">
   <div class="eyebrow">HOW TO START</div>
   <h2>このサービスは招待制です</h2>
@@ -99,9 +282,9 @@ let st={role:null,step:'input',draft:{kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},me
 function closeHelp(){const d=document.getElementById('help-dialog');if(d.close)d.close();else d.removeAttribute('open')}
 function roleHelp(){const x={player:['選手の使い方','1. ジムから招待され登録します。2. 選手用画面で注文区分と券種・枚数を入力します。3. 内容を確認して注文します。4. ジムが確認し、TREASUREが発送管理します。注文をやり直す際は「修正する」を押してください。'],gym:['ジム担当者の使い方','1. TREASUREから招待を受けます。2. 郵送先と精算口座を登録します。3. 選手を招待します。4. 所属選手の注文を確認し、問題なければ「確認済み」にします。精算はジム単位で行います。'],admin:['TREASUREの使い方','1. 専用画面へ2段階認証でログインします。2. ジム担当者を招待します。3. 券種と在庫を設定します。4. 注文・受け渡しを管理し、締切後にジムごとの請求と入金を確認します。']};const item=x[st.role]||['この画面について','先に利用開始の流れを確認してください。'];showHelp(item[0],item[1]+' ※このURLはサンプル画面で、招待メール送信・本物の口座登録・請求書発行は行われません。')}
 function roleBanner(){const role={player:['選手の確認画面','① 注文区分を選ぶ → ② 枚数を入れる → ③ 確認して確定'],gym:['ジムの確認画面','所属選手の注文を確認し、問題なければ「確認済み」に変更'],admin:['TREASUREの確認画面','注文を検索し、確認状態・発送状態を管理']}[st.role]||['確認画面',''];return '<div class="role-banner"><div><small>次にすること</small><strong>'+role[0]+'</strong><p>'+role[1]+'</p></div><button class="btn" onclick="roleHelp()">操作方法を見る</button></div>'}
-function head(a,b){return`<div class="pagehead"><h1>${a}</h1><p>${b}</p></div><div class="status"><span class="pill gold">TREASURE Vol.1</span><span class="pill green">受付中</span><span class="pill">後楽園ホール</span><span class="spacer"></span><span class="pill">確認用データ</span></div>`}function stat(a,b){return`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function render(){st.role==='player'?player():st.role==='gym'?gym():admin()}function summary(){let n=0,m=0;types.forEach(([k,l,p])=>{let v=Number(st.draft.c[k]||0);if(Number.isInteger(v)&&v>=0){n+=v;m+=v*p}});return{n,m}}function err(id,s){let e=document.getElementById(id);if(e){e.textContent=s;e.classList.add('show')}}function validate(){document.querySelectorAll('.error').forEach(e=>e.classList.remove('show'));let ok=true,n=0;if(!st.draft.kind){err('e-kind','注文区分を選択してください');ok=false}types.forEach(([k,l])=>{let r=st.draft.c[k],v=Number(r);if(r===''||!Number.isInteger(v)){err('e-'+k,l+'は整数で入力してください');ok=false}else if(v<0||v>100){err('e-'+k,l+'は0〜100枚で入力してください');ok=false}else if(v>remaining(k)){err('e-'+k,l+'は残り'+remaining(k)+'枚までです。枚数を減らしてください');ok=false}else n+=v});if(n===0){err('e-count','いずれかを1枚以上入力してください');ok=false}if(st.draft.memo.length>200){err('e-memo','備考は200文字以内で入力してください');ok=false}return ok}function hist(a){if(!a.length)return'<div class="empty">注文はまだありません。注文するとここに履歴が表示されます。</div>';return`<div class="tablewrap"><table class="tbl"><thead><tr><th>注文番号</th><th>選手 / ジム</th><th>区分</th><th>RS</th><th>S</th><th>A</th><th>自由</th><th>ジム</th><th>管理</th><th>発送</th><th>金額</th></tr></thead><tbody>${a.map(o=>`<tr><td data-label="注文番号"><b>${esc(o.id)}</b></td><td data-label="選手 / ジム"><b>${esc(o.player)}</b><div class="sub">${esc(o.gym)}</div></td><td data-label="区分">${esc(o.kind)}</td><td data-label="RS席">${o.t.rs.c}枚</td><td data-label="S席">${o.t.s.c}枚</td><td data-label="A席">${o.t.a.c}枚</td><td data-label="自由席">${o.t.free.c}枚</td><td data-label="ジム確認"><span class="pill ${o.gymOk?'green':'red'}">${o.gymOk?'確認済':'未確認'}</span></td><td data-label="管理者確認">${esc(o.status)}</td><td data-label="発送">${esc(o.ship)}</td><td data-label="金額"><b>${yen(o.m)}</b></td></tr>`).join('')}</tbody></table></div>`}function player(){let a=orders().filter(o=>o.pid==='aoki'),s=summary(),x=head('選手用チケット注文','青木選手 / 青空ボクシングジム')+`<div class="steps"><div class="step ${st.step==='input'?'active':''}">1. 入力</div><div class="step ${st.step==='confirm'?'active':''}">2. 内容確認</div><div class="step ${st.step==='complete'?'active':''}">3. 注文完了</div></div>`;if(st.step==='input')x+=`<section class="panel"><div class="ph"><h2>新規注文</h2><p>確定後はジム・TREASURE管理画面へ反映されます。</p></div><div class="pad"><div class="grid"><div class="field"><label>選手名</label><input class="input" readonly value="青木選手"></div><div class="field"><label>所属ジム</label><input class="input" readonly value="青空ボクシングジム"></div><div class="field"><label>注文区分</label><select id="kind" class="input" onchange="st.draft.kind=this.value"><option value="">選択してください</option><option ${st.draft.kind==='初回注文'?'selected':''}>初回注文</option><option ${st.draft.kind==='追加注文'?'selected':''}>追加注文</option></select><div id="e-kind" class="error"></div></div><div></div>${types.map(([k,l,p])=>`<div class="field"><label>${l}（${yen(p)}）</label><input id="c-${k}" class="input" type="number" min="0" max="100" step="1" value="${st.draft.c[k]}" max="${Math.min(100,remaining(k))}" oninput="st.draft.c.${k}=this.value;totalNow()"><p class="remaining-info">残り ${remaining(k)}枚（興行側確保分を除く）</p><div id="e-${k}" class="error"></div></div>`).join('')}</div><div id="e-count" class="error"></div><div class="field" style="margin-top:13px"><label>備考（任意・200文字以内）</label><textarea id="memo" class="input" oninput="st.draft.memo=this.value">${esc(st.draft.memo)}</textarea><div id="e-memo" class="error"></div></div><div id="tot" class="total" role="status" aria-live="polite">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div></div><div class="actions"><button id="confirm" class="btn gold" onclick="if(validate()){st.step='confirm';player();scrollTo(0,0)}">注文内容を確認</button></div></section>`;else if(st.step==='confirm')x+=`<section class="panel"><div class="ph"><h2>注文内容の確認</h2><p>確定前に枚数と金額を確認してください。</p></div><div class="pad"><p><b>注文区分：</b>${st.draft.kind}</p>${types.map(([k,l,p])=>`<p>${l}：${Number(st.draft.c[k])}枚 / ${yen(Number(st.draft.c[k])*p)}</p>`).join('')}<div class="total">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div><p class="note">備考：${esc(st.draft.memo)||'なし'}</p></div><div class="actions"><button class="btn" onclick="st.step='input';player()">修正する</button><button id="submit" class="btn gold" onclick="submitOrder()">この内容で注文する</button></div></section>`;else x+=`<section class="panel"><div class="pad"><span class="pill green">注文完了</span><h2>確認用注文を受け付けました</h2><p>ジム画面とTREASURE管理画面にも反映されています。</p><button class="btn gold" onclick="st.step='input';st.draft={kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},memo:''};player()">続けて新しい注文</button></div></section>`;x+=`<section class="panel"><div class="ph"><h2>自分の注文履歴</h2><p>ほかの選手の注文は表示されません。</p></div>${hist(a)}</section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function totalNow(){let s=summary(),e=document.getElementById('tot');if(e)e.innerHTML=`合計 ${s.n}枚 / <strong>${yen(s.m)}</strong>`}function datePart(){let p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),m=Object.fromEntries(p.map(x=>[x.type,x.value]));return m.year+m.month+m.day}function nextId(a){let pre='DEMO-TRS-'+datePart()+'-',u=new Set(a.map(o=>o.id));for(let i=1;i<10000;i++){let id=pre+String(i).padStart(4,'0');if(!u.has(id))return id}return pre+Date.now()}function submitOrder(){if(st.step!=='confirm')return false;if(!validate()){st.step='input';player();validate();msg('注文できません。入力内容と残枚数を確認してください');return false}let a=orders(),now=new Date();a.unshift(enrich({id:nextId(a),at:now.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}),pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:st.draft.kind,c:Object.fromEntries(types.map(([k])=>[k,Number(st.draft.c[k])])),memo:st.draft.memo,status:'受付済み',ship:'未発送',gymOk:false}));save(a);st.step='complete';player();msg('注文を保存しました。次はジムで内容を確認します。');return true}
-function gym(){let a=orders().filter(o=>o.gid==='aozora'),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),u=a.filter(o=>!o.gymOk).length,x=head('ジム担当者画面','青空ボクシングジム / 担当者')+`<div class="security"><strong>ジム登録情報の表示例（サンプル）</strong><div class="kv" style="margin-top:8px"><span>チケット郵送先</span><b>〒112-0004 東京都文京区後楽1-3-61</b><span>精算口座</span><b>みずほ銀行 神田支店 / ****4567</b><span>登録状態</span><b>住所 ✓　担当者 ✓　口座 ✓</b></div><div class="mini-actions"><button class="btn" onclick="showHelp('郵便番号から住所を入力', '実運用では郵便番号を入力すると住所候補を補完します。ここでは表示例のみで、外部への検索送信は行いません。')">住所入力の説明</button><button class="btn" onclick="showHelp('銀行・支店の入力', '実運用では銀行・支店を候補から選べる設計です。この確認画面は表示例で、実際の口座情報を登録しません。')">銀行入力の説明</button><button class="btn gold" onclick="showHelp('所属選手を招待する', '本番ではジム担当者が選手名とメールアドレスを入力して招待メールを送ります。この確認画面ではメール送信は行いません。')">選手招待の流れを見る</button></div></div><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('ジム未確認',u+'件')}</div><section class="panel"><div class="ph"><h2>担当ジムの注文</h2><p>ジム確認のみ変更できます。発送・管理者確認はTREASURE側の権限です。</p></div><div class="pad">${a.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.at}</div></div><span class="pill ${o.gymOk?'green':'red'}">${o.gymOk?'ジム確認済み':'ジム未確認'}</span></div><div class="meta"><span>RS ${o.t.rs.c}枚</span><span>S ${o.t.s.c}枚</span><span>A ${o.t.a.c}枚</span><span>自由 ${o.t.free.c}枚</span><span>管理：${o.status}</span><span>発送：${o.ship}</span></div><div class="order-next">${o.ship==='発送済み'?'発送済みの注文です。':o.status==='確認済み'?'TREASUREが確認済みです。次の案内をお待ちください。':o.gymOk?'TREASUREの管理者確認待ちです。':'枚数と内容を確認して「この注文を確認済みにする」を押してください。'}</div><button class="btn ${o.gymOk?'':'gold'}" style="margin-top:11px" onclick="gymToggle('${o.id}')" ${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'disabled title="TREASUREで処理済みのため変更できません"':''}>${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'確認完了（変更不可）':o.gymOk?'未確認に戻す':'この注文を確認済みにする'}</button></article>`).join('')}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function gymToggle(id){let a=orders(),o=a.find(x=>x.id===id&&x.gid==='aozora');if(!o)return false;if(o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')){msg('TREASUREで管理者確認または発送処理済みのため、ジム側では戻せません');return false}o.gymOk=!o.gymOk;save(a);gym();msg(o.gymOk?'ジム確認済みにしました。次はTREASUREで管理者確認します。':'ジム未確認に戻しました');return true}
-function searchAdmin(field){st.q=field.value;const start=field.selectionStart??field.value.length;admin();const next=document.getElementById("q");if(next){next.focus();next.setSelectionRange(start,start)}}function admin(){let a=orders(),f=a.filter(o=>(st.gf==='all'||o.gid===st.gf)&&(st.sf==='all'||o.ship===st.sf)&&(!st.q||[o.id,o.player,o.gym].join(' ').toLowerCase().includes(st.q.toLowerCase()))),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),x=head('TREASURE管理画面','TREASURE BOXING PROMOTION / 管理者')+`<div class="security"><strong>管理者セキュリティ：MFA必須</strong><p class="note">本番ではAAL2（Authenticator等）を通過したTREASURE管理者だけがこの画面へ入れます。</p><div class="mini-actions"><button class="btn gold" onclick="showHelp('管理者の2段階認証', '正式版では管理者がログイン後、Authenticatorアプリの確認コードで2段階認証します。この画面では認証処理を行いません。')">MFAの説明を見る</button><button class="btn" onclick="showHelp('ジム担当者の招待', 'TREASUREがジム名・担当者名・メールアドレスを登録し、担当者に招待メールを送ります。このデモでは送信しません。')">ジム招待の流れを見る</button><button class="btn" onclick="showHelp('操作履歴', '正式版では誰が・いつ・何を変更したかを確認できます。口座番号などの機密情報をそのまま履歴に保存しない設計です。')">操作履歴の説明</button></div></div><section class="panel"><div class="ph"><h2>興行運用サマリー</h2><p>販売残数は、このブラウザ内の注文から自動集計しています。精算・受け渡しの数値は説明用サンプルです。</p></div><div class="pad"><div class="checklist"><div class="checkitem"><b>RS席：販売残数 ${remaining('rs')}枚</b><div class="sub">総数${stock.rs.total} / 興行確保${stock.rs.hold} / 注文済${sold('rs')}</div></div><div class="checkitem"><b>S席：販売残数 ${remaining('s')}枚</b><div class="sub">総数${stock.s.total} / 興行確保${stock.s.hold} / 注文済${sold('s')}</div></div><div class="checkitem"><b>A席：販売残数 ${remaining('a')}枚</b><div class="sub">総数${stock.a.total} / 興行確保${stock.a.hold} / 注文済${sold('a')}</div></div><div class="checkitem"><b>自由席：販売残数 ${remaining('free')}枚</b><div class="sub">総数${stock.free.total} / 興行確保${stock.free.hold} / 注文済${sold('free')}</div></div><div class="checkitem"><b>青空ジム精算</b><div class="sub">表示例：請求650,000円 / 入金500,000円 / 残150,000円</div></div><div class="checkitem"><b>受け渡し</b><div class="sub">表示例：25枚注文 / 15枚渡済 / 残10枚</div></div></div><div class="mini-actions"><button class="btn" onclick="showHelp('券種・価格・在庫の管理', 'TREASUREが券種ごとに価格・販売可能数・興行側確保数を設定します。この画面では表示例のみで、実際の在庫設定は変更しません。')">価格・在庫の説明</button><button class="btn" onclick="showHelp('チケット受け渡し', 'ジムごとに券種・枚数・座席・郵送/手渡しを記録します。注文枚数を超える受け渡しはできません。')">受け渡しの説明</button><button class="btn" onclick="showHelp('ジム別精算', '注文締切後、ジム単位で最終請求を確定します。入金状況は未入金・一部入金・入金済みで確認します。このデモでは請求書を発行しません。')">ジム精算の説明</button><button class="btn" onclick="showHelp('プライバシーと利用規約', '正式版では利用開始時にプライバシーポリシーと利用規約の確認・同意を記録します。実データや機密情報はこのデモに入力しないでください。')">規約・個人情報の説明</button></div></div></section><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('未発送',a.filter(o=>o.ship!=='発送済み').length+'件')}</div><section class="panel"><div class="ph"><h2>検索・絞り込み</h2><p>選手名・注文番号・ジム・発送状態で確認できます。</p></div><div class="pad"><div class="filters"><div class="field"><label>選手名・注文番号</label><input id="q" class="input" value="${esc(st.q)}" oncompositionstart="st.composing=true" oncompositionend="st.composing=false;searchAdmin(this)" oninput="if(!st.composing)searchAdmin(this)" type="search" aria-label="注文を検索" placeholder="例：青木、DEMO-"></div><div class="field"><label>ジム</label><select id="gf" class="input" onchange="st.gf=this.value;admin()"><option value="all">すべて</option><option value="aozora" ${st.gf==='aozora'?'selected':''}>青空</option><option value="toto" ${st.gf==='toto'?'selected':''}>東都</option></select></div><div class="field"><label>発送</label><select id="sf" class="input" onchange="st.sf=this.value;admin()"><option value="all">すべて</option><option ${st.sf==='未発送'?'selected':''}>未発送</option><option ${st.sf==='発送準備中'?'selected':''}>発送準備中</option><option ${st.sf==='発送済み'?'selected':''}>発送済み</option></select></div></div><p class="note">表示中：<b id="cnt">${f.length}</b>件</p></div></section><section class="panel"><div class="ph"><h2>全注文</h2><p>管理者確認と発送状態を変更できます。請求済み注文の取消は再請求処理が必要、受け渡しは注文残数を超えられません。</p></div><div class="pad">${f.length?f.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.gym}</div></div><div><span class="pill ${o.gymOk?'green':'red'}">${o.gymOk?'ジム確認済':'ジム未確認'}</span> <span class="pill ${o.status==='確認済み'?'green':'gold'}">${o.status}</span></div></div><div class="meta"><span>合計 ${o.n}枚</span><b>${yen(o.m)}</b><span>注文：${o.kind}</span></div><div class="order-next">${o.ship==='発送済み'?'発送処理は完了しています。':!o.gymOk?'ジムの確認待ちです。ジム画面で確認後に進めます。':o.status!=='確認済み'?'次は「管理者確認」を「確認済み」にしてください。':'確認済みです。次は「発送状態」を更新できます。'}</div><div class="grid" style="margin-top:11px"><div class="field"><label>管理者確認</label><select class="input a-status" data-id="${o.id}" onchange="adminUpdate('${o.id}','status',this.value)" ${!o.gymOk||o.ship==='発送済み'?'disabled':''}><option ${o.status==='受付済み'?'selected':''}>受付済み</option><option ${o.status==='確認済み'?'selected':''}>確認済み</option></select></div><div class="field"><label>発送状態</label><select class="input a-ship" data-id="${o.id}" onchange="adminUpdate('${o.id}','ship',this.value)" ${!o.gymOk||o.status!=='確認済み'||o.ship==='発送済み'?'disabled':''}><option ${o.ship==='未発送'?'selected':''}>未発送</option><option ${o.ship==='発送準備中'?'selected':''}>発送準備中</option><option ${o.ship==='発送済み'?'selected':''}>発送済み</option></select></div></div></article>`).join(''):'<div class="empty">条件に一致する注文はありません。</div>'}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function adminUpdate(id,k,v){let a=orders(),o=a.find(x=>x.id===id);if(!o)return false;
+function head(a,b){return`<div class="pagehead"><h1>${a}</h1><p>${b}</p></div><div class="status"><span class="pill gold">TREASURE Vol.1</span><span class="pill green">受付中</span><span class="pill">後楽園ホール</span><span class="spacer"></span><span class="pill">確認用データ</span></div>`}function stat(a,b){return`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function render(){st.role==='player'?player():st.role==='gym'?gym():admin()}function summary(){let n=0,m=0;types.forEach(([k,l,p])=>{let v=Number(st.draft.c[k]||0);if(Number.isInteger(v)&&v>=0){n+=v;m+=v*p}});return{n,m}}function err(id,s){let e=document.getElementById(id);if(e){e.textContent=s;e.classList.add('show')}}function validate(){document.querySelectorAll('.error').forEach(e=>e.classList.remove('show'));let ok=true,n=0;if(!st.draft.kind){err('e-kind','注文区分を選択してください');ok=false}types.forEach(([k,l])=>{let r=st.draft.c[k],v=Number(r);if(r===''||!Number.isInteger(v)){err('e-'+k,l+'は整数で入力してください');ok=false}else if(v<0||v>100){err('e-'+k,l+'は0〜100枚で入力してください');ok=false}else if(v>remaining(k)){err('e-'+k,l+'は残り'+remaining(k)+'枚までです。枚数を減らしてください');ok=false}else n+=v});if(n===0){err('e-count','いずれかを1枚以上入力してください');ok=false}if(st.draft.memo.length>200){err('e-memo','備考は200文字以内で入力してください');ok=false}return ok}function hist(a){if(!a.length)return'<div class="empty">注文はまだありません。注文するとここに履歴が表示されます。</div>';return`<div class="tablewrap"><table class="tbl"><thead><tr><th>注文番号</th><th>選手 / ジム</th><th>区分</th><th>RS</th><th>S</th><th>A</th><th>自由</th><th>ジム</th><th>管理</th><th>発送</th><th>金額</th></tr></thead><tbody>${a.map(o=>`<tr><td data-label="注文番号"><b>${esc(o.id)}</b></td><td data-label="選手 / ジム"><b>${esc(o.player)}</b><div class="sub">${esc(o.gym)}</div></td><td data-label="区分">${esc(o.kind)}</td><td data-label="RS席">${o.t.rs.c}枚</td><td data-label="S席">${o.t.s.c}枚</td><td data-label="A席">${o.t.a.c}枚</td><td data-label="自由席">${o.t.free.c}枚</td><td data-label="ジム確認"><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'確認済':'未確認'}</span></td><td data-label="管理者確認">${esc(o.status)}</td><td data-label="発送">${esc(o.ship)}</td><td data-label="金額"><b>${yen(o.m)}</b></td></tr>`).join('')}</tbody></table></div>`}function player(){let a=orders().filter(o=>o.pid==='aoki'),s=summary(),x=head('選手用チケット注文','青木選手 / 青空ボクシングジム')+`<div class="steps"><div class="step ${st.step==='input'?'active':''}">1. 入力</div><div class="step ${st.step==='confirm'?'active':''}">2. 内容確認</div><div class="step ${st.step==='complete'?'active':''}">3. 注文完了</div></div>`;if(st.step==='input')x+=`<section class="panel"><div class="ph"><h2>新規注文</h2><p>確定後はジム・TREASURE管理画面へ反映されます。</p></div><div class="pad"><div class="grid"><div class="field"><label>選手名</label><input class="input" readonly value="青木選手"></div><div class="field"><label>所属ジム</label><input class="input" readonly value="青空ボクシングジム"></div><div class="field"><label>注文区分</label><select id="kind" class="input" onchange="st.draft.kind=this.value"><option value="">選択してください</option><option ${st.draft.kind==='初回注文'?'selected':''}>初回注文</option><option ${st.draft.kind==='追加注文'?'selected':''}>追加注文</option></select><div id="e-kind" class="error"></div></div><div></div>${types.map(([k,l,p])=>`<div class="field"><label>${l}（${yen(p)}）</label><input id="c-${k}" class="input" type="number" min="0" max="100" step="1" value="${st.draft.c[k]}" max="${Math.min(100,remaining(k))}" oninput="st.draft.c.${k}=this.value;totalNow()"><p class="remaining-info">残り ${remaining(k)}枚（興行側確保分を除く）</p><div id="e-${k}" class="error"></div></div>`).join('')}</div><div id="e-count" class="error"></div><div class="field" style="margin-top:13px"><label>備考（任意・200文字以内）</label><textarea id="memo" class="input" oninput="st.draft.memo=this.value">${esc(st.draft.memo)}</textarea><div id="e-memo" class="error"></div></div><div id="tot" class="total" role="status" aria-live="polite">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div></div><div class="actions"><button id="confirm" class="btn gold" onclick="if(validate()){st.step='confirm';player();scrollTo(0,0)}">注文内容を確認</button></div></section>`;else if(st.step==='confirm')x+=`<section class="panel"><div class="ph"><h2>注文内容の確認</h2><p>確定前に枚数と金額を確認してください。</p></div><div class="pad"><p><b>注文区分：</b>${st.draft.kind}</p>${types.map(([k,l,p])=>`<p>${l}：${Number(st.draft.c[k])}枚 / ${yen(Number(st.draft.c[k])*p)}</p>`).join('')}<div class="total">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div><p class="note">備考：${esc(st.draft.memo)||'なし'}</p></div><div class="actions"><button class="btn" onclick="st.step='input';player()">修正する</button><button id="submit" class="btn gold" onclick="submitOrder()">この内容で注文する</button></div></section>`;else x+=`<section class="panel"><div class="pad"><span class="pill green">注文完了</span><h2>確認用注文を受け付けました</h2><p>ジム画面とTREASURE管理画面にも反映されています。</p><button class="btn gold" onclick="st.step='input';st.draft={kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},memo:''};player()">続けて新しい注文</button></div></section>`;x+=`<section class="panel"><div class="ph"><h2>自分の注文履歴</h2><p>ほかの選手の注文は表示されません。</p></div>${hist(a)}</section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function totalNow(){let s=summary(),e=document.getElementById('tot');if(e)e.innerHTML=`合計 ${s.n}枚 / <strong>${yen(s.m)}</strong>`}function datePart(){let p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),m=Object.fromEntries(p.map(x=>[x.type,x.value]));return m.year+m.month+m.day}function nextId(a){let pre='DEMO-TRS-'+datePart()+'-',u=new Set(a.map(o=>o.id));for(let i=1;i<10000;i++){let id=pre+String(i).padStart(4,'0');if(!u.has(id))return id}return pre+Date.now()}function submitOrder(){if(st.step!=='confirm')return false;if(!validate()){st.step='input';player();validate();msg('注文できません。入力内容と残枚数を確認してください');return false}let a=orders(),now=new Date();a.unshift(enrich({id:nextId(a),at:now.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}),pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:st.draft.kind,c:Object.fromEntries(types.map(([k])=>[k,Number(st.draft.c[k])])),memo:st.draft.memo,status:'受付済み',ship:'未発送',gymOk:false}));save(a);st.step='complete';player();msg('注文を保存しました。次はジムで内容を確認します。');return true}
+function gym(){let a=orders().filter(o=>o.gid==='aozora'),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),u=a.filter(o=>!o.gymOk).length,x=head('ジム担当者画面','青空ボクシングジム / 担当者')+`<div class="security"><strong>ジム登録情報の表示例（サンプル）</strong><div class="kv" style="margin-top:8px"><span>チケット郵送先</span><b>〒112-0004 東京都文京区後楽1-3-61</b><span>精算口座</span><b>みずほ銀行 神田支店 / ****4567</b><span>登録状態</span><b>住所 ✓　担当者 ✓　口座 ✓</b></div><div class="mini-actions"><button class="btn" onclick="showHelp('郵便番号から住所を入力', '実運用では郵便番号を入力すると住所候補を補完します。ここでは表示例のみで、外部への検索送信は行いません。')">住所入力の説明</button><button class="btn" onclick="showHelp('銀行・支店の入力', '実運用では銀行・支店を候補から選べる設計です。この確認画面は表示例で、実際の口座情報を登録しません。')">銀行入力の説明</button><button class="btn" onclick="showHelp('所属選手を招待する', '本番ではジム担当者が選手名とメールアドレスを入力して招待メールを送ります。この確認画面ではメール送信は行いません。')">選手招待の流れを見る</button></div></div><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('ジム未確認',u+'件')}</div><section class="panel"><div class="ph"><h2>担当ジムの注文</h2><p>ジム確認のみ変更できます。発送・管理者確認はTREASURE側の権限です。</p></div><div class="pad">${a.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.at}</div></div><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'ジム確認済み':'ジム未確認'}</span></div><div class="meta"><span>RS ${o.t.rs.c}枚</span><span>S ${o.t.s.c}枚</span><span>A ${o.t.a.c}枚</span><span>自由 ${o.t.free.c}枚</span><span>管理：${o.status}</span><span>発送：${o.ship}</span></div><div class="order-next">${o.ship==='発送済み'?'発送済みの注文です。':o.status==='確認済み'?'TREASUREが確認済みです。次の案内をお待ちください。':o.gymOk?'TREASUREの管理者確認待ちです。':'枚数と内容を確認して「この注文を確認済みにする」を押してください。'}</div><button class="btn ${o.gymOk?'':'gold'}" style="margin-top:11px" onclick="gymToggle('${o.id}')" ${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'disabled title="TREASUREで処理済みのため変更できません"':''}>${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'確認完了（変更不可）':o.gymOk?'未確認に戻す':'この注文を確認済みにする'}</button></article>`).join('')}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function gymToggle(id){let a=orders(),o=a.find(x=>x.id===id&&x.gid==='aozora');if(!o)return false;if(o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')){msg('TREASUREで管理者確認または発送処理済みのため、ジム側では戻せません');return false}o.gymOk=!o.gymOk;save(a);gym();msg(o.gymOk?'ジム確認済みにしました。次はTREASUREで管理者確認します。':'ジム未確認に戻しました');return true}
+function searchAdmin(field){st.q=field.value;const start=field.selectionStart??field.value.length;admin();const next=document.getElementById("q");if(next){next.focus();next.setSelectionRange(start,start)}}function admin(){let a=orders(),f=a.filter(o=>(st.gf==='all'||o.gid===st.gf)&&(st.sf==='all'||o.ship===st.sf)&&(!st.q||[o.id,o.player,o.gym].join(' ').toLowerCase().includes(st.q.toLowerCase()))),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),x=head('TREASURE管理画面','TREASURE BOXING PROMOTION / 管理者')+`<div class="security"><strong>管理者セキュリティ：MFA必須</strong><p class="note">本番ではAAL2（Authenticator等）を通過したTREASURE管理者だけがこの画面へ入れます。</p><div class="mini-actions"><button class="btn" onclick="showHelp('管理者の2段階認証', '正式版では管理者がログイン後、Authenticatorアプリの確認コードで2段階認証します。この画面では認証処理を行いません。')">MFAの説明を見る</button><button class="btn" onclick="showHelp('ジム担当者の招待', 'TREASUREがジム名・担当者名・メールアドレスを登録し、担当者に招待メールを送ります。このデモでは送信しません。')">ジム招待の流れを見る</button><button class="btn" onclick="showHelp('操作履歴', '正式版では誰が・いつ・何を変更したかを確認できます。口座番号などの機密情報をそのまま履歴に保存しない設計です。')">操作履歴の説明</button></div></div><section class="panel"><div class="ph"><h2>興行運用サマリー</h2><p>販売残数は、このブラウザ内の注文から自動集計しています。精算・受け渡しの数値は説明用サンプルです。</p></div><div class="pad"><div class="checklist"><div class="checkitem"><b>RS席：販売残数 ${remaining('rs')}枚</b><div class="sub">総数${stock.rs.total} / 興行確保${stock.rs.hold} / 注文済${sold('rs')}</div></div><div class="checkitem"><b>S席：販売残数 ${remaining('s')}枚</b><div class="sub">総数${stock.s.total} / 興行確保${stock.s.hold} / 注文済${sold('s')}</div></div><div class="checkitem"><b>A席：販売残数 ${remaining('a')}枚</b><div class="sub">総数${stock.a.total} / 興行確保${stock.a.hold} / 注文済${sold('a')}</div></div><div class="checkitem"><b>自由席：販売残数 ${remaining('free')}枚</b><div class="sub">総数${stock.free.total} / 興行確保${stock.free.hold} / 注文済${sold('free')}</div></div><div class="checkitem"><b>青空ジム精算</b><div class="sub">表示例：請求650,000円 / 入金500,000円 / 残150,000円</div></div><div class="checkitem"><b>受け渡し</b><div class="sub">表示例：25枚注文 / 15枚渡済 / 残10枚</div></div></div><div class="mini-actions"><button class="btn" onclick="showHelp('券種・価格・在庫の管理', 'TREASUREが券種ごとに価格・販売可能数・興行側確保数を設定します。この画面では表示例のみで、実際の在庫設定は変更しません。')">価格・在庫の説明</button><button class="btn" onclick="showHelp('チケット受け渡し', 'ジムごとに券種・枚数・座席・郵送/手渡しを記録します。注文枚数を超える受け渡しはできません。')">受け渡しの説明</button><button class="btn" onclick="showHelp('ジム別精算', '注文締切後、ジム単位で最終請求を確定します。入金状況は未入金・一部入金・入金済みで確認します。このデモでは請求書を発行しません。')">ジム精算の説明</button><button class="btn" onclick="showHelp('プライバシーと利用規約', '正式版では利用開始時にプライバシーポリシーと利用規約の確認・同意を記録します。実データや機密情報はこのデモに入力しないでください。')">規約・個人情報の説明</button></div></div></section><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('未発送',a.filter(o=>o.ship!=='発送済み').length+'件')}</div><section class="panel"><div class="ph"><h2>検索・絞り込み</h2><p>選手名・注文番号・ジム・発送状態で確認できます。</p></div><div class="pad"><div class="filters"><div class="field"><label>選手名・注文番号</label><input id="q" class="input" value="${esc(st.q)}" oncompositionstart="st.composing=true" oncompositionend="st.composing=false;searchAdmin(this)" oninput="if(!st.composing)searchAdmin(this)" type="search" aria-label="注文を検索" placeholder="例：青木、DEMO-"></div><div class="field"><label>ジム</label><select id="gf" class="input" onchange="st.gf=this.value;admin()"><option value="all">すべて</option><option value="aozora" ${st.gf==='aozora'?'selected':''}>青空</option><option value="toto" ${st.gf==='toto'?'selected':''}>東都</option></select></div><div class="field"><label>発送</label><select id="sf" class="input" onchange="st.sf=this.value;admin()"><option value="all">すべて</option><option ${st.sf==='未発送'?'selected':''}>未発送</option><option ${st.sf==='発送準備中'?'selected':''}>発送準備中</option><option ${st.sf==='発送済み'?'selected':''}>発送済み</option></select></div></div><p class="note">表示中：<b id="cnt">${f.length}</b>件</p></div></section><section class="panel"><div class="ph"><h2>全注文</h2><p>管理者確認と発送状態を変更できます。請求済み注文の取消は再請求処理が必要、受け渡しは注文残数を超えられません。</p></div><div class="pad">${f.length?f.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.gym}</div></div><div><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'ジム確認済':'ジム未確認'}</span> <span class="pill ${o.status==='確認済み'?'green':'gold'}">${o.status}</span></div></div><div class="meta"><span>合計 ${o.n}枚</span><b>${yen(o.m)}</b><span>注文：${o.kind}</span></div><div class="order-next">${o.ship==='発送済み'?'発送処理は完了しています。':!o.gymOk?'ジムの確認待ちです。ジム画面で確認後に進めます。':o.status!=='確認済み'?'次は「管理者確認」を「確認済み」にしてください。':'確認済みです。次は「発送状態」を更新できます。'}</div><div class="grid" style="margin-top:11px"><div class="field"><label>管理者確認</label><select class="input a-status" data-id="${o.id}" onchange="adminUpdate('${o.id}','status',this.value)" ${!o.gymOk||o.ship==='発送済み'?'disabled':''}><option ${o.status==='受付済み'?'selected':''}>受付済み</option><option ${o.status==='確認済み'?'selected':''}>確認済み</option></select></div><div class="field"><label>発送状態</label><select class="input a-ship" data-id="${o.id}" onchange="adminUpdate('${o.id}','ship',this.value)" ${!o.gymOk||o.status!=='確認済み'||o.ship==='発送済み'?'disabled':''}><option ${o.ship==='未発送'?'selected':''}>未発送</option><option ${o.ship==='発送準備中'?'selected':''}>発送準備中</option><option ${o.ship==='発送済み'?'selected':''}>発送済み</option></select></div></div></article>`).join(''):'<div class="empty">条件に一致する注文はありません。</div>'}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function adminUpdate(id,k,v){let a=orders(),o=a.find(x=>x.id===id);if(!o)return false;
 if(k==='status'&&v==='確認済み'&&!o.gymOk){admin();msg('ジムがまだ確認していません。先にジム画面で確認してください');return false}
 if(k==='ship'&&v!=='未発送'&&(!o.gymOk||o.status!=='確認済み')){admin();msg('発送には、ジム確認とTREASURE管理者確認の両方が必要です');return false}
 if(o.ship==='発送済み'&&(k==='ship'&&v!=='発送済み'||k==='status'&&v!=='確認済み')){admin();msg('発送済みの注文は、ここでは状態を戻せません');return false}
