@@ -231,8 +231,159 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
  .tbl td{border-color:#e8eeea;color:#24343b}
  .tbl td::before{color:#51616a}
 }
+
+/* APP LIGHT DESIGN v3 — preview only; blue for actions, semantic state colours.
+   Brandmark is a typographic placeholder, not an official TREASURE logo. */
+:root{
+  --bg:#f8fafc;
+  --gold:#2563eb;
+  --gold2:#1d4ed8;
+  --ink:#0f172a;
+  --paper:#f8fafc;
+  --line:#e2e8f0;
+  --muted:#475569;
+  --green:#166534;
+  --red:#b91c1c;
+}
+html,body{background:#f8fafc;color:#0f172a}
+body{font-size:15px;line-height:1.7}
+.eyebrow{color:#2563eb;font-size:12px;letter-spacing:.09em}
+.brandline{display:flex;align-items:center;gap:12px;margin-bottom:17px}
+.brandline-note{margin-top:1px;color:#64748b;font-size:11px;font-weight:800;letter-spacing:.13em}
+.brandmark{
+  display:inline-grid;place-items:center;flex-shrink:0;
+  width:48px;height:48px;
+  border-radius:14px;
+  color:#fff;background:#2563eb;
+  font-family:ui-sans-serif,system-ui,-apple-system,sans-serif;
+  font-size:26px;font-weight:900;letter-spacing:-.06em;
+  line-height:1;box-shadow:0 2px 8px #2563eb22
+}
+.brandmark-sm{width:36px;height:36px;border-radius:11px;font-size:21px;box-shadow:none}
+.home{max-width:1050px;padding-top:28px}
+.hero{background:#fff;border:1px solid #e2e8f0;border-radius:24px;box-shadow:0 10px 30px #0f172a09}
+.hero::before{background:linear-gradient(90deg,#2563eb,#60a5fa,#dbeafe);height:3px}
+.hero h1{color:#0f172a;font-size:clamp(26px,4vw,40px);max-width:850px}
+.hero p{color:#475569;font-size:15px;line-height:1.85}
+.badges{margin-top:18px}
+.badge,.badge.ok{border:1px solid #dbeafe;background:#eff6ff;color:#1d4ed8;font-size:12px}
+.badge:not(.ok){border-color:#e2e8f0;background:#f8fafc;color:#475569}
+.demo-notice{background:#f1f5f9;border:1px solid #cbd5e1;color:#334155;box-shadow:none}
+.demo-notice strong{color:#0f172a}
+.quicklinks{margin-top:20px}
+.quicklinks a{background:#fff;border:1px solid #cbd5e1;color:#1d4ed8;font-weight:800}
+.quicklinks a:hover{background:#eff6ff;border-color:#93c5fd}
+.inviteflow{
+  background:#fff;border:1px solid #dbeafe;border-left:4px solid #2563eb;
+  box-shadow:0 5px 20px #0f172a08;
+}
+.inviteflow h2,.guidebox h2,.faq h2{color:#0f172a}
+.inviteflow>p,.guidebox>p{color:#475569!important;font-size:15px!important}
+.flowrow{gap:12px}
+.flowstep{background:#f8fafc;border:1px solid #e2e8f0;box-shadow:none;min-height:130px}
+.flowstep small{color:#2563eb}
+.flowstep b{color:#0f172a;font-size:16px}
+.flowstep .sub{color:#475569;font-size:13px}
+.arrow{color:#94a3b8}
+.help,.inviteflow .help,.guidebox .help{color:#475569;border-color:#e2e8f0;font-size:14px}
+.help b[style]{color:#0f172a!important}
+.roles{margin-top:20px}
+.role{background:#fff;border:1px solid #dce4ef;box-shadow:0 5px 16px #0f172a0a;min-height:190px}
+.role:hover{background:#f8fbff;border-color:#93c5fd;transform:translateY(-2px);box-shadow:0 8px 20px #2563eb13}
+.role:focus-visible{outline:3px solid #60a5fa;outline-offset:3px}
+.role small{color:#2563eb}
+.role h2{color:#0f172a}
+.role p{color:#475569}
+.role b{color:#1d4ed8}
+.guidebox{background:#fff;border-color:#e2e8f0}
+.guidecard{background:#f8fafc;border:1px solid #e2e8f0}
+.guidecard b{color:#0f172a}
+.guidecard ol{color:#475569;font-size:14px}
+.featuregrid{gap:12px}
+.feature{background:#fff;border:1px solid #e2e8f0}
+.feature small{color:#2563eb}
+.feature strong{color:#0f172a}
+.feature p{color:#475569}
+.faq{background:#fff;border-color:#e2e8f0}
+.faq summary{color:#0f172a}
+.faq details{border-color:#e2e8f0}
+.faq details p{color:#475569}
+.resetbox{background:#fff;border-color:#e2e8f0}
+.resetbox strong{color:#0f172a}
+.resetbox p{color:#475569}
+.home .btn:not(.gold):not(.red){background:#fff;border-color:#cbd5e1;color:#334155}
+.home .btn:hover:not(:disabled){background:#eff6ff;border-color:#93c5fd}
+.app{background:#f8fafc;color:#0f172a}
+.top{background:#fff;color:#0f172a;border-bottom:1px solid #e2e8f0;box-shadow:0 1px 6px #0f172a0a}
+.brand{display:flex;align-items:center;gap:9px;font-size:13px;font-weight:900;letter-spacing:-.015em;color:#0f172a}
+.brand strong{font-size:14px;color:#2563eb}
+.event{color:#64748b}
+.switch button{background:#f8fafc;color:#475569;border:1px solid #e2e8f0}
+.switch button.active{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:none}
+.switch button:hover{border-color:#93c5fd}
+.main{background:#f8fafc}
+.crumb{color:#475569}
+.pagehead h1,.ph h2{color:#0f172a}
+.pagehead p,.ph p,.note{color:#475569}
+.status{border:1px solid #e2e8f0;border-left:4px solid #2563eb;background:#fff}
+.stat,.panel,.order{background:#fff;border-color:#e2e8f0;box-shadow:0 3px 14px #0f172a08}
+.stat strong,.checkitem b{color:#0f172a}
+.ph,.actions{background:#fff;border-color:#e2e8f0}
+.pad{background:#fff}
+.field label{color:#334155}
+.input{border-color:#94a3b8;border-radius:11px;color:#0f172a}
+.input:focus{border-color:#2563eb;box-shadow:0 0 0 3px #2563eb20}
+.error{color:#991b1b;background:#fef2f2;border-color:#fecaca}
+.step{background:#f1f5f9;border-color:#e2e8f0;color:#475569}
+.step.active{background:#2563eb;border-color:#2563eb;color:#fff;box-shadow:none}
+.total{background:#eff6ff;border-color:#bfdbfe;color:#1e3a8a}
+.total strong{color:#0f172a}
+.actions{background:#f8fafc}
+.btn{background:#fff;border-color:#cbd5e1;color:#334155;border-radius:11px}
+.btn:hover:not(:disabled){background:#eff6ff;border-color:#93c5fd}
+.btn.gold,.help-dialog .btn.gold{
+  background:#2563eb;border:1px solid #2563eb;color:#fff;
+  box-shadow:0 3px 8px #2563eb22
+}
+.btn.gold:hover:not(:disabled),.help-dialog .btn.gold:hover:not(:disabled){background:#1d4ed8;border-color:#1d4ed8}
+.btn.red{background:#fff;color:#b91c1c;border-color:#fecaca;box-shadow:none}
+.btn.red:hover:not(:disabled){background:#fef2f2;border-color:#f87171}
+.pill{background:#f1f5f9;border-color:#cbd5e1;color:#334155}
+.pill.gold{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.pill.warn{background:#fffbeb;border-color:#fcd34d;color:#92400e}
+.pill.green{background:#f0fdf4;border-color:#bbf7d0;color:#166534}
+.pill.red{background:#fef2f2;border-color:#fecaca;color:#b91c1c}
+.security{background:#eff6ff;border-color:#bfdbfe}
+.security strong{color:#1e40af}
+.role-banner{background:#eff6ff;border-color:#bfdbfe;border-left:4px solid #2563eb}
+.role-banner small{color:#2563eb}
+.role-banner strong{color:#0f172a}
+.role-banner p{color:#475569}
+.role-banner .btn{color:#1d4ed8;border-color:#93c5fd}
+.order-next{background:#eff6ff;color:#1e40af;border-left-color:#2563eb}
+.checkitem,.empty{background:#f8fafc;border-color:#e2e8f0}
+.checkitem .sub,.empty{color:#475569}
+.tbl th{background:#f1f5f9;border-color:#e2e8f0;color:#334155}
+.tbl td{color:#0f172a}
+.remaining-info{color:#166534}
+.help-dialog{border-color:#cbd5e1}
+.toast{background:#0f172a;border-color:#334155;color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:3px solid #2563eb;outline-offset:3px}
+@media(max-width:800px){.flowstep{min-height:auto}.role{min-height:auto}.top{gap:9px}.hero{box-shadow:0 5px 18px #0f172a09}}
+@media(max-width:480px){
+  .hero h1{font-size:clamp(25px,7vw,34px)}
+  .brandmark{width:43px;height:43px;font-size:23px}
+  .brandmark-sm{width:32px;height:32px;font-size:19px}
+  .brandline{gap:10px}
+  .brand{font-size:11px;flex:1}
+  .brand strong{font-size:12px}
+  .switch button{font-size:13px}
+  .quicklinks a{flex:1}
+  .tbl tr{background:#fff;border-color:#e2e8f0}
+  .tbl td::before{color:#64748b}
+}
 </style></head><body>
-<div id="home" class="home"><header class="hero"><div class="eyebrow">TREASURE BOXING PROMOTION</div><h1>チケット管理システム 確認用</h1><p>まずは利用開始の流れを確認してください。この画面では、選手の注文からジム確認・TREASUREの管理まで、サンプルデータで操作を体験できます。</p><div class="badges"><span class="badge ok">使い方を確認できるデモ</span><span class="badge">スマホ対応</span><span class="badge">サンプルデータのみ</span></div><div class="demo-notice"><strong>このURLは画面確認用です。</strong> 本物のログイン認証・招待メール送信・口座登録・ジム請求は行いません。注文や確認の変更はこのブラウザ内だけに保存されます。</div><nav class="quicklinks" aria-label="確認ページの案内"><a href="#invite-flow">① 利用開始の流れ</a><a href="#role-select">② 画面を試す</a><a href="#beginner-guide">③ 操作の説明</a></nav></header><section id="invite-flow" class="inviteflow">
+<div id="home" class="home"><header class="hero"><div class="brandline"><span class="brandmark" aria-hidden="true">T</span><div><div class="eyebrow">TREASURE BOXING PROMOTION</div><div class="brandline-note">TICKET MANAGEMENT</div></div></div><h1>チケット管理システム 確認用</h1><p>まずは利用開始の流れを確認してください。この画面では、選手の注文からジム確認・TREASUREの管理まで、サンプルデータで操作を体験できます。</p><div class="badges"><span class="badge ok">使い方を確認できるデモ</span><span class="badge">スマホ対応</span><span class="badge">サンプルデータのみ</span></div><div class="demo-notice"><strong>このURLは画面確認用です。</strong> 本物のログイン認証・招待メール送信・口座登録・ジム請求は行いません。注文や確認の変更はこのブラウザ内だけに保存されます。</div><nav class="quicklinks" aria-label="確認ページの案内"><a href="#invite-flow">① 利用開始の流れ</a><a href="#role-select">② 画面を試す</a><a href="#beginner-guide">③ 操作の説明</a></nav></header><section id="invite-flow" class="inviteflow">
   <div class="eyebrow">HOW TO START</div>
   <h2>このサービスは招待制です</h2>
   <p style="margin:0;color:#d6cec2;font-size:13px;line-height:1.8">
@@ -272,7 +423,7 @@ button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,te
   <details><summary>チケットの注文を間違えたら？</summary><p>このデモでは確定前の確認画面で「修正する」を押してください。実運用で確定後の変更が必要な場合はジム担当者へ相談します。請求済み注文は直接取り消せません。</p></details>
   <details><summary>入力した内容は他の端末でも見られる？</summary><p>この確認ページはブラウザ内のサンプルデータのみ保存します。スマホとパソコンの同期はされません。本番システムではデータベースに保存する設計です。</p></details>
 </section><section class="resetbox"><div><strong>テストをやり直すとき</strong><p>追加注文・ジム確認・発送状態を初期サンプルへ戻します。</p></div><button class="btn" onclick="resetAll()">確認用データを初期状態に戻す</button></section></div>
-<section id="app" class="app hidden"><header class="top"><div class="brand">TREASURE TICKET</div><div class="event">TREASURE BOXING PROMOTION Vol.1 · 後楽園ホール</div><div class="spacer"></div><div class="switch"><button data-r="player" onclick="openRole('player')">選手 <span>レビュー</span></button><button data-r="gym" onclick="openRole('gym')">ジム <span>レビュー</span></button><button data-r="admin" onclick="openRole('admin')">管理 <span>レビュー</span></button></div></header><main class="main"><div class="toolbar"><span class="crumb">確認用デモ · 実際の招待・決済は行いません</span><span class="spacer"></span><button class="btn" onclick="roleHelp()">使い方・困ったとき</button><button class="btn" onclick="backHome()">トップに戻る</button><button class="btn red" onclick="resetAll()">初期化</button></div><div id="screen"></div></main></section><div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div><dialog id="help-dialog" aria-labelledby="help-title" class="help-dialog"><h2 id="help-title"></h2><p id="help-body"></p><div class="help-actions"><button class="btn gold" onclick="closeHelp()">閉じる</button></div></dialog>
+<section id="app" class="app hidden"><header class="top"><div class="brand"><span class="brandmark brandmark-sm" aria-hidden="true">T</span><span>TREASURE <strong>Ticket</strong></span></div><div class="event">TREASURE BOXING PROMOTION Vol.1 · 後楽園ホール</div><div class="spacer"></div><div class="switch"><button data-r="player" onclick="openRole('player')">選手 <span>レビュー</span></button><button data-r="gym" onclick="openRole('gym')">ジム <span>レビュー</span></button><button data-r="admin" onclick="openRole('admin')">管理 <span>レビュー</span></button></div></header><main class="main"><div class="toolbar"><span class="crumb">確認用デモ · 実際の招待・決済は行いません</span><span class="spacer"></span><button class="btn" onclick="roleHelp()">使い方・困ったとき</button><button class="btn" onclick="backHome()">トップに戻る</button><button class="btn red" onclick="resetAll()">初期化</button></div><div id="screen"></div></main></section><div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div><dialog id="help-dialog" aria-labelledby="help-title" class="help-dialog"><h2 id="help-title"></h2><p id="help-body"></p><div class="help-actions"><button class="btn gold" onclick="closeHelp()">閉じる</button></div></dialog>
 <script>
 const KEY='treasure-review-final-v1',types=[['rs','RS席',20000],['s','S席',15000],['a','A席',10000],['free','先着自由席',5000]],seed=[{id:'DEMO-TRS-20260917-0001',at:'2026/09/17 10:15',pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:'初回注文',c:{rs:2,s:4,a:3,free:0},memo:'確認用サンプル注文',status:'確認済み',ship:'発送準備中',gymOk:true},{id:'DEMO-TRS-20260917-1001',at:'2026/09/17 11:20',pid:'takahashi',player:'高橋選手',gid:'aozora',gym:'青空ボクシングジム',kind:'追加注文',c:{rs:0,s:2,a:5,free:1},memo:'追加分の確認用データ',status:'受付済み',ship:'未発送',gymOk:false},{id:'DEMO-TRS-20260917-2001',at:'2026/09/17 12:05',pid:'sasaki',player:'佐々木選手',gid:'toto',gym:'東都ファイトジム',kind:'初回注文',c:{rs:1,s:0,a:4,free:2},memo:'',status:'確認済み',ship:'発送済み',gymOk:true}];
 const stock={rs:{total:100,hold:10},s:{total:150,hold:10},a:{total:250,hold:20},free:{total:100,hold:0}};
