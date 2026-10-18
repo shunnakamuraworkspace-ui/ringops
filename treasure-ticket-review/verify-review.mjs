@@ -35,12 +35,17 @@ assert.ok(html.indexOf('id="invite-flow"') < html.indexOf('id="role-select"'), "
 assert.ok(html.includes('id="beginner-guide"'), "Beginner guide is present");
 assert.ok(html.includes('id="faq"'), "Help FAQ is present");
 assert.ok(html.includes('data-label="注文番号"'), "Order history is mobile friendly");
+for (const label of ["選手の画面を開く", "ジムの画面を開く", "興行の画面を開く"]) {
+  assert.ok(html.includes(label), `Role-specific action present: ${label}`);
+}
+assert.ok(html.includes('data-r="admin" onclick="openRole(\'admin\')">興行'), "Promoter tab should be labelled 興行");
 assert.equal(demo.orders().length, 3);
 assert.equal(demo.remaining("rs"), 87);
 assert.equal(demo.remaining("s"), 134);
 
 demo.openRole("player");
 assert.match(demo.get("screen").innerHTML, /次にすること/);
+assert.match(demo.get("screen").innerHTML, /選手｜チケット注文/);
 demo.st.draft = { kind: "追加注文", c: { rs: "88", s: "0", a: "0", free: "0" }, memo: "" };
 assert.equal(demo.validate(), false, "Overselling is blocked");
 demo.st.draft.c.rs = "1.5";
@@ -62,10 +67,12 @@ assert.equal(demo.submitOrder(), false, "Double submission is blocked");
 assert.equal(demo.orders().length, 4);
 
 demo.openRole("admin");
+assert.match(demo.get("screen").innerHTML, /興行｜注文・在庫・精算の管理/);
 assert.match(demo.get("screen").innerHTML, /RS席：販売残数 85枚/);
 assert.equal(demo.adminUpdate(order.id, "ship", "発送済み"), false, "Shipping before confirmation is blocked");
 assert.equal(demo.adminUpdate(order.id, "status", "確認済み"), false, "Admin cannot bypass gym confirmation");
 demo.openRole("gym");
+assert.match(demo.get("screen").innerHTML, /ジム｜所属選手の注文確認/);
 assert.match(demo.get("screen").innerHTML, /次にすること/);
 assert.match(demo.get("screen").innerHTML, new RegExp(order.id));
 assert.equal(demo.gymToggle(order.id), true);
