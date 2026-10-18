@@ -42,9 +42,9 @@ assert.ok(html.includes('data-label="注文番号"'), "Order history is mobile f
 for (const [id, label] of [["open-player", "選手"], ["open-gym", "ジム"], ["open-admin", "興行"]]) {
   assert.ok(html.includes(`id="${id}"`), `Role entry present: ${label}`);
 }
-assert.ok(html.includes("もっとかんたんに。") && html.includes("さっそく試してみましょう。"), "Hero copy must stay short and welcoming");
-assert.ok(html.includes('class="role role-modern-card role-player"'), "Role cards keep modern layout");
-assert.ok(html.includes('class="disclosure disclosure-faq"'), "FAQ starts collapsed");
+assert.ok(html.includes("ご利用の立場を選択してください。"), "Hero copy must stay short and functional");
+assert.ok(html.includes('class="role"') && html.includes('class="home-head"'), "Role cards and restrained home layout are present");
+assert.ok(html.includes('<details class="disclosure" id="faq">'), "FAQ starts collapsed");
 assert.ok(html.includes('data-r="admin" onclick="openRole(\'admin\')">興行'), "Promoter tab should be labelled 興行");
 assert.equal(demo.orders().length, 3);
 assert.equal(demo.remaining("rs"), 87);
