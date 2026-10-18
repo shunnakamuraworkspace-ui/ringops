@@ -31,7 +31,11 @@ function createDemo() {
 }
 
 const demo = createDemo();
-assert.ok(html.indexOf('id="invite-flow"') < html.indexOf('id="role-select"'), "Invitation guidance comes first");
+assert.ok(html.indexOf('id="role-select"') < html.indexOf('id="invite-flow"'), "Role selection appears before lengthy onboarding");
+assert.ok(html.includes('<details class="disclosure" id="invite-flow">'), "Invitation guide is tap-to-expand");
+assert.ok(html.includes('<details class="disclosure" id="beginner-guide">'), "Role guide is tap-to-expand");
+assert.ok(html.includes('<details class="disclosure" id="feature-guide">'), "Feature details are hidden by default");
+assert.ok(!html.includes("このサービスを使うのは「選手・ジム・興行」の3つの立場です。"), "Verbose hero copy removed");
 assert.ok(html.includes('id="beginner-guide"'), "Beginner guide is present");
 assert.ok(html.includes('id="faq"'), "Help FAQ is present");
 assert.ok(html.includes('data-label="注文番号"'), "Order history is mobile friendly");
