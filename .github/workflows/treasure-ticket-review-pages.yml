@@ -24,6 +24,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Validate TREASURE review interactions
+        run: node treasure-ticket-review/verify-review.mjs
       - name: Configure Pages
         uses: actions/configure-pages@v5
         with:
