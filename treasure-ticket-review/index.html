@@ -401,69 +401,101 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,te
 .role-section .role:hover .role-cta{background:#dbeafe}
 @media(max-width:800px){.role-section .role{min-height:auto;padding:18px}.role-tasks{margin:12px 0}.role-cta{margin-top:10px}}
 @media(max-width:480px){.role-section .role h3{font-size:18px}.role-tasks{gap:7px}}
+
+/* Short-first mobile home. Explanations are opt-in native disclosure panels. */
+.home{max-width:900px;padding-top:22px}
+.hero-compact{padding:23px 25px}
+.hero-compact .brandline{margin-bottom:12px}
+.hero-compact .brandmark{width:42px;height:42px;font-size:23px;border-radius:12px}
+.hero-compact h1{font-size:clamp(24px,4vw,32px);margin:0;font-weight:900}
+.title-tag{vertical-align:middle;display:inline-flex;align-items:center;border-radius:999px;background:#eff6ff;color:#1d4ed8;border:1px solid #bfdbfe;padding:4px 10px;font-size:12px;letter-spacing:.02em}
+.hero-compact .hero-short{margin:8px 0 0;font-size:15px;color:#475569;line-height:1.5}
+.role-section-compact{margin-top:22px}
+.role-section-compact h2{font-size:clamp(21px,3.5vw,26px)}
+.role-section-compact .roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;margin-top:13px}
+.role-section-compact .role-compact{position:relative;min-height:134px;padding:17px;border-radius:16px;gap:6px;box-shadow:0 2px 12px #0f172a08}
+.role-compact .role-id span{font-size:19px}
+.role-compact .role-purpose{font-size:14px;line-height:1.5;color:#475569;text-align:left;max-width:190px}
+.role-compact .role-chevron{margin-top:auto;align-self:flex-end;display:inline-grid;place-items:center;background:#eff6ff;color:#1d4ed8;width:32px;height:32px;border-radius:9px;font-weight:900;font-size:19px}
+.role-short-note{margin:10px 2px 0;color:#64748b;font-size:12px;line-height:1.6}
+.onboarding-disclosures{display:grid;gap:10px;margin-top:24px}
+.disclosure{background:#fff;border:1px solid #e2e8f0;border-radius:15px;overflow:hidden}
+.disclosure[open]{border-color:#bfdbfe}
+.disclosure summary{list-style:none;display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:70px;padding:13px 17px;cursor:pointer}
+.disclosure summary::-webkit-details-marker{display:none}
+.disclosure summary strong{display:block;color:#0f172a;font-size:15px}
+.disclosure summary small{display:block;color:#64748b;font-size:13px;margin-top:2px;line-height:1.5}
+.disclosure-toggle{display:grid;place-items:center;flex:0 0 32px;width:32px;height:32px;border-radius:9px;background:#eff6ff;color:#2563eb;font-size:23px;font-weight:500;line-height:1}
+.disclosure[open] .disclosure-toggle{transform:rotate(45deg)}
+.disclosure-content{padding:16px 18px 20px;border-top:1px solid #e2e8f0;font-size:14px;line-height:1.85;color:#334155}
+.disclosure-content>p{margin:0 0 13px}
+.disclosure-foot{margin:15px 0 0!important;color:#475569;font-size:13px}
+.disclosure-content .flowrow{margin-top:15px}
+.disclosure-content .flowstep{min-height:115px}
+.disclosure-content .guidegrid{margin:0}
+.disclosure-content .featuregrid{margin:0;gap:10px}
+.disclosure-content .feature{box-shadow:none}
+@media(max-width:700px){.role-section-compact .roles{grid-template-columns:1fr}.role-section-compact .role-compact{min-height:0;display:grid;grid-template-columns:1fr auto;align-items:center;gap:1px 12px;padding:15px 16px}.role-compact .role-purpose{grid-column:1;max-width:none}.role-compact .role-chevron{grid-column:2;grid-row:1/3;align-self:center}.home{padding:12px 13px 54px}.hero-compact{padding:19px 18px}.onboarding-disclosures{margin-top:20px}}
 </style></head><body>
-<div id="home" class="home"><header class="hero"><div class="brandline"><span class="brandmark" aria-hidden="true">T</span><div><div class="eyebrow">TREASURE BOXING PROMOTION</div><div class="brandline-note">TICKET MANAGEMENT</div></div></div><h1>チケット管理システム 確認用</h1><p>このサービスを使うのは「選手・ジム・興行」の3つの立場です。招待の流れを確認したら、自分の立場の画面を開いて操作を体験してください。</p><div class="badges"><span class="badge ok">使い方を確認できるデモ</span><span class="badge">スマホ対応</span><span class="badge">サンプルデータのみ</span></div><div class="demo-notice"><strong>このURLは画面確認用です。</strong> 本物のログイン認証・招待メール送信・口座登録・ジム請求は行いません。注文や確認の変更はこのブラウザ内だけに保存されます。</div><nav class="quicklinks" aria-label="確認ページの案内"><a href="#invite-flow">① 利用開始の流れ</a><a href="#role-select">② 画面を試す</a><a href="#beginner-guide">③ 操作の説明</a></nav></header><section id="invite-flow" class="inviteflow">
-  <div class="eyebrow">HOW TO START</div>
-  <h2>このサービスは招待制です</h2>
-  <p style="margin:0;color:#d6cec2;font-size:13px;line-height:1.8">
-    正式運用は招待制です。興行担当者（TREASURE）がジム担当者を招待し、ジム担当者が所属選手を招待します。一般公開URLから勝手に登録することはできません。
-  </p>
-  <div class="flowrow">
-    <div class="flowstep"><small>STEP 1</small><b>興行担当者（TREASURE）</b><span class="sub">ジム名・担当者メールを登録して招待</span></div>
-    <div class="arrow">→</div>
-    <div class="flowstep"><small>STEP 2</small><b>ジム担当者</b><span class="sub">招待メールから登録・住所/口座を設定</span></div>
-    <div class="arrow">→</div>
-    <div class="flowstep"><small>STEP 3</small><b>所属選手</b><span class="sub">ジムから招待メールを受け取り登録</span></div>
-  </div>
-  <div class="help">
-    <b style="color:#fff">重要：</b>
-    選手が自分で新規登録したり、ジムが勝手にTREASURE管理者になることはできません。本番システムでは各役割の専用ログイン入口から、付与された権限だけ利用できます。この画面の役割切り替えは説明用です。
-  </div>
-</section><section id="role-select" class="role-section" aria-labelledby="role-select-title">
-  <p class="role-section-kicker">まずは自分の立場を選ぶ</p>
-  <h2 id="role-select-title">あなたはどの立場で使いますか？</h2>
-  <p class="role-section-desc">自分に関係する画面だけ確認してください。ここでの切り替えはデモ用で、実際のアカウント権限は変更されません。</p>
+<div id="home" class="home">
+<header class="hero hero-compact">
+  <div class="brandline"><span class="brandmark" aria-hidden="true">T</span><div><div class="eyebrow">TREASURE BOXING PROMOTION</div><div class="brandline-note">TICKET MANAGEMENT</div></div></div>
+  <h1>チケット管理 <span class="title-tag">確認用</span></h1>
+  <p class="hero-short">使う立場を選んでください。</p>
+</header>
+<section id="role-select" class="role-section role-section-compact" aria-labelledby="role-select-title">
+  <h2 id="role-select-title">どの画面を開きますか？</h2>
   <div class="roles">
-    <button id="open-player" class="role" onclick="openRole('player')">
-      <span class="role-id">01 <span>選手</span></span>
-      <h3>チケットを注文する</h3>
-      <p class="role-for">対象：ジムに所属する選手</p>
-      <div class="role-tasks"><span>① ジムから招待を受ける</span><span>② 席種・枚数を入力する</span><span>③ 注文・発送状況を見る</span></div>
-      <strong class="role-cta">選手の画面を開く <span aria-hidden="true">→</span></strong>
-    </button>
-    <button id="open-gym" class="role" onclick="openRole('gym')">
-      <span class="role-id">02 <span>ジム</span></span>
-      <h3>所属選手の注文を確認する</h3>
-      <p class="role-for">対象：ジムの担当者・責任者</p>
-      <div class="role-tasks"><span>① 興行から招待を受ける</span><span>② 所属選手を招待する</span><span>③ 注文・発送・精算を確認</span></div>
-      <strong class="role-cta">ジムの画面を開く <span aria-hidden="true">→</span></strong>
-    </button>
-    <button id="open-admin" class="role" onclick="openRole('admin')">
-      <span class="role-id">03 <span>興行</span></span>
-      <h3>注文・在庫・精算を管理する</h3>
-      <p class="role-for">対象：TREASUREの運営担当者</p>
-      <div class="role-tasks"><span>① ジム担当者を招待する</span><span>② 注文・在庫・発送を管理</span><span>③ ジム別の請求・入金を確認</span></div>
-      <strong class="role-cta">興行の画面を開く <span aria-hidden="true">→</span></strong>
-    </button>
+    <button id="open-player" class="role role-compact" onclick="openRole('player')"><span class="role-id"><span>選手</span></span><span class="role-purpose">チケットを注文する</span><span class="role-chevron" aria-hidden="true">→</span></button>
+    <button id="open-gym" class="role role-compact" onclick="openRole('gym')"><span class="role-id"><span>ジム</span></span><span class="role-purpose">所属選手の注文を確認する</span><span class="role-chevron" aria-hidden="true">→</span></button>
+    <button id="open-admin" class="role role-compact" onclick="openRole('admin')"><span class="role-id"><span>興行</span></span><span class="role-purpose">注文・在庫・精算を管理する</span><span class="role-chevron" aria-hidden="true">→</span></button>
   </div>
-</section><section id="beginner-guide" class="guidebox">
-  <div class="eyebrow">FIRST TIME GUIDE</div>
-  <h2>役割ごとの操作手順</h2>
-  <p style="margin:0;color:#cfc7bd;font-size:13px;line-height:1.8">①招待を受け取る → ②登録する → ③専用画面で操作する。下の順に確認してください。</p>
-  <div class="guidegrid">
-    <div class="guidecard"><b>選手</b><ol><li>所属ジムから招待メールを受け取る</li><li>招待リンクから登録</li><li>選手専用入口でログイン</li><li>券種と枚数を入力・確認</li><li>注文後、ジム確認・発送状況を見る</li></ol></div>
-    <div class="guidecard"><b>ジム担当者</b><ol><li>TREASUREから招待メールを受け取る</li><li>招待リンクから登録</li><li>住所・担当者・精算口座を登録</li><li>所属選手を招待する</li><li>注文確認・発送・精算を管理する</li></ol></div>
-    <div class="guidecard"><b>興行（TREASURE）</b><ol><li>管理者専用入口＋MFAでログイン</li><li>ジム名・担当者メールを登録して招待</li><li>価格・在庫を設定</li><li>注文・受け渡しを確認</li><li>注文締切後にジム別請求</li></ol></div>
-  </div>
-  <div class="help"><b style="color:#fff">困った時：</b>ボタンを押すと「保存中…」「更新中…」になり、完了後に画面へ反映します。残枚数以上の注文、注文数以上の受け渡し、請求済み注文の直接取消など、事故につながる操作は止める設計です。</div>
-</section><section class="featuregrid" aria-label="提供予定の主な機能">
+  <p class="role-short-note">※ これはサンプル操作画面です。招待・請求などは実行されません。</p>
+</section>
+<section class="onboarding-disclosures" aria-label="必要なときに読む説明">
+  <details class="disclosure" id="invite-flow">
+    <summary><span><strong>初めての方へ</strong><small>招待制・登録方法を見る</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+    <div class="disclosure-content">
+      <p>正式運用は招待制です。興行（TREASURE）がジムを招待し、ジムが選手を招待します。URLだけで新規登録はできません。</p>
+      <div class="flowrow">
+        <div class="flowstep"><small>① 興行</small><b>ジムを招待</b><span class="sub">TREASUREが担当者へ招待メールを送信</span></div>
+        <div class="arrow">→</div>
+        <div class="flowstep"><small>② ジム</small><b>登録・選手を招待</b><span class="sub">住所・口座を登録し、所属選手を招待</span></div>
+        <div class="arrow">→</div>
+        <div class="flowstep"><small>③ 選手</small><b>登録・注文</b><span class="sub">所属ジムからの招待で利用開始</span></div>
+      </div>
+      <p class="disclosure-foot">選手とジムはそれぞれ招待された役割でログインし、興行管理者は2段階認証が必要です。</p>
+    </div>
+  </details>
+  <details class="disclosure" id="beginner-guide">
+    <summary><span><strong>詳しい使い方</strong><small>選手・ジム・興行の操作手順</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+    <div class="disclosure-content">
+      <div class="guidegrid">
+        <div class="guidecard"><b>選手</b><ol><li>ジムから招待メールを受け取る</li><li>招待リンクから登録する</li><li>席種と枚数を入力して注文する</li><li>注文・発送状況を確認する</li></ol></div>
+        <div class="guidecard"><b>ジム</b><ol><li>興行から招待メールを受け取る</li><li>住所・精算口座を登録する</li><li>所属選手を招待する</li><li>選手の注文を確認し、精算状況を見る</li></ol></div>
+        <div class="guidecard"><b>興行（TREASURE）</b><ol><li>2段階認証でログインする</li><li>ジムを招待する</li><li>券種・価格・在庫を設定する</li><li>注文・受け渡し・ジム精算を管理する</li></ol></div>
+      </div>
+    </div>
+  </details>
+  <details class="disclosure" id="feature-guide">
+    <summary><span><strong>機能一覧</strong><small>在庫・受け渡し・精算・セキュリティ</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+    <div class="disclosure-content"><section class="featuregrid" aria-label="提供予定の主な機能">
     <article class="feature"><small>AUTH</small><strong>役割別ログイン＋管理者MFA</strong><p>選手・ジム・興行を分離。興行の管理者は2段階認証必須の設計。</p></article>
     <article class="feature"><small>GYM PROFILE</small><strong>住所・精算口座登録</strong><p>郵便番号→住所候補、銀行→支店候補。口座番号は通常画面でマスク。</p></article>
     <article class="feature"><small>INVENTORY</small><strong>価格・在庫・受け渡し</strong><p>券種別在庫、興行側確保、ジムへの受け渡し枚数上限を管理。</p></article>
     <article class="feature"><small>SETTLEMENT</small><strong>ジム単位の精算</strong><p>注文締切後に最終請求。一部入金→入金済みまで管理。</p></article>
     <article class="feature"><small>PRIVACY</small><strong>規約・監査ログ</strong><p>プライバシーポリシー、利用規約、操作変更履歴を確認。</p></article>
     <article class="feature"><small>INVITE</small><strong>TREASURE→ジム→選手</strong><p>一般登録ではなく招待制。完成時は各役割専用入口だけ利用。</p></article>
-  </section><section id="faq" class="faq">
+  </section></div>
+  </details>
+  <details class="disclosure" id="demo-about">
+    <summary><span><strong>この確認画面について</strong><small>データの保存先・本番との違い</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+    <div class="disclosure-content">
+      <p>このURLは操作確認用のデモです。本物の認証・招待メール送信・口座登録・ジム請求は行いません。注文・確認の変更はこのブラウザ内だけに保存されます。ほかの端末とは同期されません。</p>
+      <p class="disclosure-foot">実際の名前・住所・口座番号などは入力しないでください。</p>
+    </div>
+  </details>
+</section><section id="faq" class="faq">
   <div class="eyebrow">よくある質問</div><h2>困ったときは</h2>
   <details><summary>招待メールが届かないときは？</summary><p>迷惑メールを確認し、メールアドレスが正しいかを招待元に問い合わせます。ジム担当者はTREASUREに、選手は所属ジムに連絡します。</p></details>
   <details><summary>チケットの注文を間違えたら？</summary><p>このデモでは確定前の確認画面で「修正する」を押してください。実運用で確定後の変更が必要な場合はジム担当者へ相談します。請求済み注文は直接取り消せません。</p></details>
