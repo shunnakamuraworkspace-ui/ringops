@@ -1,102 +1,75 @@
 <!doctype html>
 <html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex,nofollow"><link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2264%22%20height%3D%2264%22%20viewBox%3D%220%200%2064%2064%22%3E%3Crect%20width%3D%2264%22%20height%3D%2264%22%20rx%3D%2216%22%20fill%3D%22%232563EB%22%2F%3E%3Cpath%20d%3D%22M14%2019H50V27H36V49H28V27H14V19Z%22%20fill%3D%22white%22%2F%3E%3C%2Fsvg%3E"><title>TREASURE BOXING PROMOTION / チケット管理 確認用</title>
 <style>
-:root {
-  color-scheme: light;
-  --page: #f6f7fa; --surface: #fff; --surface-soft: #f9fafc;
-  --text: #17233a; --muted: #617084; --border: #e1e6ee;
-  --brand: #2856c5; --brand-hover: #2047a8; --brand-pale: #edf3ff;
-  --success: #21754a; --warning: #956218; --danger: #a73542;
-  --radius: 18px;
-  font-synthesis: none;
-}
+:root{--page:#f7f8fa;--surface:#fff;--text:#1e293b;--muted:#64748b;--border:#dce2ea;--brand:#2856c5;--brand-hover:#1e45a4;--brand-pale:#edf3ff;--success:#21754a;--warning:#956218;--danger:#a73542;font-synthesis:none}
 *{box-sizing:border-box}
 html{scroll-behavior:smooth;background:var(--page)}
-body{margin:0;min-width:320px;background:var(--page);color:var(--text);
-  font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Hiragino Sans","Yu Gothic",Meiryo,system-ui,sans-serif;
-  font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{margin:0;min-width:320px;background:var(--page);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;font-size:15px;line-height:1.65;-webkit-font-smoothing:antialiased}
 button,input,select,textarea{font:inherit}
 button{cursor:pointer}
 button:disabled{cursor:not-allowed;opacity:.59}
 button,a,summary{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{
-  outline:3px solid #8aaff8;outline-offset:3px
-}
+button:focus-visible,a:focus-visible,summary:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #8aaff8;outline-offset:3px}
 h1,h2,h3,p{overflow-wrap:break-word}
-h1,h2,h3{letter-spacing:-.035em;line-height:1.4}
+h1,h2,h3{letter-spacing:-.025em;line-height:1.45}
 .hidden{display:none!important}
+.visually-hidden{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .spacer{flex:1}
-.home{width:min(950px,100%);margin:0 auto;padding:32px 24px 72px}
-.home-head{display:flex;align-items:center;justify-content:space-between;gap:18px;padding-bottom:27px;border-bottom:1px solid var(--border)}
-.home-logo{display:flex;align-items:center;gap:12px}
-.brandmark{display:grid;place-items:center;flex-shrink:0;width:44px;height:44px;border-radius:13px;background:var(--brand);color:#fff;font-size:24px;font-weight:900;line-height:1;letter-spacing:-.08em}
-.brandmark-sm{width:35px;height:35px;border-radius:10px;font-size:20px}
-.home-logo strong{display:block;font-size:18px;letter-spacing:-.035em;font-weight:800;color:var(--text)}
-.home-logo small{display:block;margin-top:1px;font-size:11px;font-weight:650;letter-spacing:.04em;color:var(--muted)}
-.top-demo{display:inline-flex;align-items:center;gap:7px;padding:6px 11px;background:#fff;border:1px solid var(--border);border-radius:999px;color:#5d6c7d;font-size:12px;font-weight:750;white-space:nowrap}
-.top-demo::before{content:"";width:6px;height:6px;border-radius:50%;background:#6ba68a}
-.welcome{padding:54px 0 30px}
-.welcome-kicker{color:var(--brand);font-size:12px;font-weight:750;letter-spacing:.12em}
-.welcome h1{font-size:clamp(30px,5vw,43px);font-weight:850;line-height:1.4;margin:9px 0 9px;color:var(--text)}
-.welcome p{font-size:15px;color:var(--muted);margin:0}
-.choose-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:0 0 18px}
-.choose-header h2{margin:0;font-size:19px;font-weight:780}
-.choose-header span{font-size:12px;color:#8390a1;font-weight:650;white-space:nowrap}
-.roles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-.role{--role-border:var(--border);border:1px solid var(--role-border);border-radius:19px;background:var(--surface);padding:23px 23px 20px;
-  display:flex;flex-direction:column;align-items:stretch;gap:0;min-width:0;min-height:224px;text-align:left;
-  box-shadow:0 4px 18px rgba(17,35,62,.035);
-  transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease}
-.role:hover{--role-border:#a9bceb;transform:translateY(-2px);box-shadow:0 13px 30px rgba(25,51,107,.095)}
-.role-label{color:var(--muted);font-size:12px;font-weight:730;letter-spacing:.02em}
-.role h3{margin:17px 0 5px;font-size:24px;color:var(--text);font-weight:820}
-.role p{margin:0;font-size:14px;line-height:1.65;color:var(--muted)}
-.role-action{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:auto;padding-top:29px;color:var(--brand);font-size:13px;font-weight:760}
-.role-arrow{font-size:20px;font-weight:500;line-height:1}
-.role:hover .role-arrow{transform:translateX(3px)}
-.note-inline{display:flex;align-items:flex-start;gap:8px;margin:15px 0 0;font-size:12px;color:#718094}
-.note-inline::before{content:"i";display:grid;place-items:center;width:16px;height:16px;flex-shrink:0;border:1px solid #b9c4d3;border-radius:50%;font-family:Georgia,serif;font-size:11px;font-style:italic;line-height:1}
-.help-block{margin-top:56px}
-.help-heading{margin-bottom:13px;font-size:15px;letter-spacing:-.01em;font-weight:760;color:#46556b}
+.home{width:min(900px,100%);margin:0 auto;padding:0 26px}
+.site-header{height:84px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid var(--border)}
+.wordmark{display:flex;align-items:baseline;gap:10px;white-space:nowrap}
+.wordmark strong{font-size:20px;letter-spacing:.055em;font-weight:850;color:#1b2940}
+.wordmark span{font-size:14px;font-weight:600;color:#66768d}
+.site-mode{font-size:12px;color:#8390a1}
+.home-main{max-width:680px;margin:0 auto;padding-top:64px}
+.intro-eyebrow{margin:0 0 5px!important;font-size:13px;color:var(--muted);font-weight:600}
+.intro h1{margin:0;font-size:33px;font-weight:760;letter-spacing:-.04em}
+.intro-description{margin:9px 0 0;color:var(--muted);font-size:15px}
+.role-section{margin-top:37px}
+.role-list{background:#fff;border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 4px 13px rgba(33,52,81,.027)}
+.role-link{width:100%;min-height:94px;padding:20px 25px;display:flex;align-items:center;justify-content:space-between;gap:24px;
+ border:0;border-radius:0;border-bottom:1px solid #e9edf2;background:transparent;text-align:left;color:var(--text);
+ transition:background .16s ease}
+.role-link:last-child{border-bottom:0}
+.role-link:hover:not(:disabled){background:#f6f9ff}
+.role-link:active{background:#ebf2ff}
+.role-copy{display:flex;flex-direction:column;gap:3px}
+.role-copy strong{font-size:19px;line-height:1.4;font-weight:760;color:#182a45}
+.role-copy>span{color:#66788e;font-size:13px;line-height:1.5}
+.role-chevron{flex-shrink:0;color:#7c91b6;font-size:29px;line-height:1;font-weight:300}
+.role-link:hover .role-chevron{color:var(--brand)}
+.sample-note{margin:14px 2px 0;color:#8793a4;font-size:12px;line-height:1.6}
+.help-block{margin-top:42px}
 .onboarding-disclosures{border-top:1px solid var(--border)}
-.disclosure{margin:0;border-bottom:1px solid var(--border)}
-.disclosure summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:16px;min-height:72px;padding:16px 1px;cursor:pointer}
+.disclosure{border-bottom:1px solid var(--border)}
+.disclosure summary{list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;cursor:pointer;min-height:59px;padding:12px 4px;font-size:14px;font-weight:600;color:#56657c}
 .disclosure summary::-webkit-details-marker{display:none}
-.disclosure summary strong{display:block;font-size:15px;letter-spacing:-.02em;font-weight:740;color:var(--text)}
-.disclosure summary small{display:block;margin-top:2px;font-size:12px;color:#758397}
-.disclosure-toggle{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;color:#62758d;
-  background:#e9edf4;border-radius:50%;font-size:19px;font-weight:400;transition:transform .17s ease}
-.disclosure[open] .disclosure-toggle{transform:rotate(45deg);background:#e6edff;color:var(--brand)}
-.disclosure-content{padding:1px 0 22px;color:#4d5f75;font-size:14px;line-height:1.85}
-.disclosure-content>p{margin:0 0 14px}
+.disclosure summary:hover{color:var(--brand)}
+.disclosure-chevron{font-size:18px;color:#97a3b4;line-height:1.1;transition:transform .15s}
+.disclosure[open]>.disclosure-chevron,.disclosure[open]>summary .disclosure-chevron{transform:rotate(180deg)}
+.disclosure-content{padding:0 4px 22px;color:#53667c;font-size:14px;line-height:1.85}
+.disclosure-content>p{margin:3px 0 15px}
+.disclosure-content strong{color:#34445c}
 .disclosure-foot{font-size:13px;color:var(--muted)}
-.flowrow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:9px;margin:15px 0}
-.flowstep{padding:15px;background:#fff;border:1px solid var(--border);border-radius:13px;text-align:center}
-.flowstep small{display:block;color:var(--brand);font-size:12px;font-weight:730}
-.flowstep b{display:block;margin-top:3px;font-size:14px;color:var(--text)}
-.flowstep .sub{font-size:12px;line-height:1.55}
-.arrow{font-size:18px;color:#a0adbc}
-.guidegrid,.featuregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-.guidecard,.feature{background:#fff;border:1px solid var(--border);border-radius:13px;padding:15px}
-.guidecard b,.feature strong{display:block;color:var(--text);font-size:14px}
-.guidecard ol{padding-left:19px;margin:7px 0 0;font-size:13px;line-height:1.8}
-.feature small{display:block;font-size:11px;font-weight:750;color:var(--brand)}
-.feature strong{margin:5px 0 4px}
-.feature p{font-size:12px;color:var(--muted);margin:0}
-.faq{padding:0;margin:0;background:none;border:0}
-.faq>.eyebrow,.faq>h2{display:none}
-.faq details{border-bottom:1px solid var(--border)}
+.flowrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;margin:14px 0}
+.flowstep,.guidecard,.feature{border:1px solid var(--border);border-radius:8px;background:#fff;padding:13px}
+.flowstep small{display:block;font-size:12px;font-weight:650;color:var(--brand)}
+.flowstep b{display:block;font-size:14px;margin-top:4px;color:var(--text)}
+.guidegrid,.featuregrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px}
+.guidecard b,.feature strong{font-size:14px;display:block;color:var(--text)}
+.guidecard ol{margin:7px 0 0;padding-left:17px;font-size:13px;line-height:1.8}
+.feature p{margin:5px 0 0;font-size:12px;color:var(--muted)}
+.faq{margin:14px 0 0}
+.faq details{border-bottom:1px solid #e9edf2}
 .faq details:last-child{border-bottom:0}
-.faq details summary{min-height:48px;font-weight:720;font-size:14px;color:var(--text);padding:9px 0}
-.faq details p{margin:0 0 12px;color:var(--muted);font-size:13px}
-.resetbox{display:flex;justify-content:space-between;gap:14px;align-items:center}
-.resetbox strong{color:var(--text)}
-.resetbox p{font-size:13px;color:var(--muted);margin:3px 0 0}
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:45px;border:1px solid #cbd4e1;border-radius:10px;
-  background:#fff;color:#2e405a;padding:10px 15px;font-size:14px;font-weight:720;
-  transition:background .14s ease, border-color .14s ease}
-.btn:hover:not(:disabled){background:#f1f5fc;border-color:#a9bbd9}
-.btn.gold{background:var(--brand);border-color:var(--brand);color:white}
+.faq details summary{color:#4d5d73;min-height:46px;font-size:13px}
+.faq details p{margin:0 0 14px;font-size:13px}
+.resetbox{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.resetbox span{color:var(--muted);font-size:13px}
+.site-footer{max-width:680px;margin:72px auto 0;padding:19px 0 28px;border-top:1px solid var(--border);color:#98a2b1;font-size:11px;letter-spacing:.01em;display:flex;justify-content:space-between;gap:10px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:45px;border:1px solid #cbd4e1;border-radius:8px;background:#fff;color:#2e405a;padding:10px 15px;font-size:14px;font-weight:680;transition:background .14s,border-color .14s}
+.btn:hover:not(:disabled){background:#f2f5fa;border-color:#a9bbd9}
+.btn.gold{background:var(--brand);border-color:var(--brand);color:#fff}
 .btn.gold:hover:not(:disabled){background:var(--brand-hover);border-color:var(--brand-hover)}
 .btn.red{border-color:#efc7cc;color:var(--danger);background:#fff}
 .btn.red:hover:not(:disabled){background:#fff4f5;border-color:#dba2a8}
@@ -242,91 +215,115 @@ textarea.input{min-height:94px;resize:vertical}
  html{scroll-behavior:auto}
  *,*::before,*::after{transition-duration:.01ms!important;animation-duration:.01ms!important}
 }
+
+.brand{gap:7px}.brand>span{font-weight:850;letter-spacing:.055em}.brand strong{font-size:13px;font-weight:600;letter-spacing:0;color:#62748e}
+.role-banner{align-items:center;padding:11px 15px;border-radius:10px;margin-bottom:20px;background:#f4f7fc;border-color:#e1e9f7}
+.role-banner small{font-size:11px;font-weight:700;color:#496ba8}
+.role-banner p{margin:1px 0 0;font-size:13px;color:#4e6179}
+.role-banner .btn{font-size:13px;min-height:39px}
+@media(max-width:800px){
+ .site-header{height:70px}
+ .home{padding:0 20px}
+ .home-main{padding-top:39px}
+ .role-section{margin-top:28px}
+ .role-link{min-height:82px;padding:17px 21px}
+ .site-footer{margin-top:54px}
+}
+@media(max-width:540px){
+ .home{padding:0 18px}
+ .home-main{padding-top:34px}
+ .intro h1{font-size:29px}
+ .wordmark strong{font-size:19px}
+ .role-link{min-height:82px}
+ .role-copy strong{font-size:18px}
+ .flowrow,.guidegrid,.featuregrid{grid-template-columns:1fr}
+ .resetbox{flex-direction:column;align-items:stretch}
+ .site-footer{font-size:10px;flex-wrap:wrap}
+}
 </style></head><body>
 <div id="home" class="home">
-  <header class="home-head">
-    <div class="home-logo"><span class="brandmark" aria-hidden="true">T</span><span><strong>TREASURE Ticket</strong><small>チケット管理システム</small></span></div>
-    <span class="top-demo">体験版</span>
+  <header class="site-header">
+    <div class="wordmark" aria-label="TREASURE Ticket"><strong>TREASURE</strong><span>Ticket</span></div>
+    <span class="site-mode">確認用</span>
   </header>
-  <section class="welcome" aria-label="はじめに">
-    <div class="welcome-kicker">TREASURE TICKET</div>
-    <h1>ようこそ、<br>TREASURE Ticketへ。</h1>
-    <p>ご利用の立場を選択してください。</p>
-  </section>
-  <section id="role-select" aria-labelledby="role-select-title">
-    <div class="choose-header"><h2 id="role-select-title">どちらの画面を使いますか？</h2><span>3つの入口</span></div>
-    <div class="roles">
-      <button id="open-player" class="role" onclick="openRole('player')" aria-label="選手：チケットを注文する">
-        <span class="role-label">01 / 選手の方</span><h3>選手</h3><p>チケットを注文する</p>
-        <span class="role-action"><span>選手の画面を開く</span><span class="role-arrow" aria-hidden="true">→</span></span>
-      </button>
-      <button id="open-gym" class="role" onclick="openRole('gym')" aria-label="ジム：選手の注文を確認する">
-        <span class="role-label">02 / ジムの方</span><h3>ジム</h3><p>所属選手の注文を確認する</p>
-        <span class="role-action"><span>ジムの画面を開く</span><span class="role-arrow" aria-hidden="true">→</span></span>
-      </button>
-      <button id="open-admin" class="role" onclick="openRole('admin')" aria-label="興行：注文・在庫・精算を管理する">
-        <span class="role-label">03 / 興行担当の方</span><h3>興行</h3><p>注文・在庫・精算を管理する</p>
-        <span class="role-action"><span>興行の画面を開く</span><span class="role-arrow" aria-hidden="true">→</span></span>
-      </button>
+  <main class="home-main">
+    <div class="intro">
+      <p class="intro-eyebrow">チケット管理システム</p>
+      <h1>画面を選ぶ</h1>
+      <p class="intro-description">あなたの立場を選んでください。</p>
     </div>
-    <p class="note-inline">ここではサンプルデータを使って操作を体験できます。実際の招待・請求は行いません。</p>
-  </section>
-  <section class="help-block" aria-label="使い方">
-    <h2 class="help-heading">はじめて使う方へ</h2>
-    <div class="onboarding-disclosures">
+    <section id="role-select" class="role-section" aria-labelledby="role-select-title">
+      <h2 id="role-select-title" class="visually-hidden">立場を選んで画面を開く</h2>
+      <div class="role-list">
+        <button class="role-link" id="open-player" onclick="openRole('player')">
+          <span class="role-copy"><strong>選手</strong><span>チケットの注文・確認</span></span>
+          <span class="role-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="role-link" id="open-gym" onclick="openRole('gym')">
+          <span class="role-copy"><strong>ジム</strong><span>所属選手の注文確認</span></span>
+          <span class="role-chevron" aria-hidden="true">›</span>
+        </button>
+        <button class="role-link" id="open-admin" onclick="openRole('admin')">
+          <span class="role-copy"><strong>興行</strong><span>注文・在庫・精算の管理</span></span>
+          <span class="role-chevron" aria-hidden="true">›</span>
+        </button>
+      </div>
+      <p class="sample-note">この画面は操作確認用です。実際の招待・請求は行いません。</p>
+    </section>
+
+    <section class="help-block" aria-label="ヘルプ">
       <details class="disclosure" id="invite-flow">
-        <summary><span><strong>招待・登録の流れ</strong><small>このシステムは招待制です</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+        <summary>はじめて利用する方へ <span class="disclosure-chevron" aria-hidden="true">⌄</span></summary>
         <div class="disclosure-content">
-          <p>興行（TREASURE）がジム担当者を招待し、ジムが選手を招待します。URLを知っているだけでは登録できません。</p>
+          <p><strong>このシステムは招待制です。</strong> 興行（TREASURE）がジムを招待し、ジムが選手を招待します。招待を受けた方のみ利用できます。</p>
           <div class="flowrow">
-            <div class="flowstep"><small>STEP 1 / 興行</small><b>ジムを招待</b><span class="sub">TREASUREからジム担当者へ招待メール</span></div>
-            <div class="arrow">→</div>
-            <div class="flowstep"><small>STEP 2 / ジム</small><b>登録・選手を招待</b><span class="sub">住所・口座を設定して所属選手を招待</span></div>
-            <div class="arrow">→</div>
-            <div class="flowstep"><small>STEP 3 / 選手</small><b>登録・注文</b><span class="sub">ジムの招待を受けてチケットを注文</span></div>
+            <div class="flowstep"><small>1. 興行</small><b>ジムを招待</b></div>
+            <div class="flowstep"><small>2. ジム</small><b>選手を招待</b></div>
+            <div class="flowstep"><small>3. 選手</small><b>チケットを注文</b></div>
           </div>
-          <p class="disclosure-foot">正式版では、興行管理者は2段階認証が必要です。この画面での役割切り替えは確認用です。</p>
+          <p class="disclosure-foot">正式版では、興行管理者は2段階認証が必要です。</p>
         </div>
       </details>
+
       <details class="disclosure" id="beginner-guide">
-        <summary><span><strong>役割別の使い方</strong><small>選手・ジム・興行の操作手順</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+        <summary>操作方法を確認する <span class="disclosure-chevron" aria-hidden="true">⌄</span></summary>
         <div class="disclosure-content">
           <div class="guidegrid">
-            <div class="guidecard"><b>選手</b><ol><li>ジムから招待を受ける</li><li>券種と枚数を選んで注文する</li><li>注文・発送状況を確認する</li></ol></div>
-            <div class="guidecard"><b>ジム</b><ol><li>興行から招待を受ける</li><li>所属選手を招待する</li><li>注文を確認し、発送・精算を管理する</li></ol></div>
-            <div class="guidecard"><b>興行（TREASURE）</b><ol><li>ジムを招待する</li><li>価格・在庫・発送を管理する</li><li>ジム別の請求・入金を管理する</li></ol></div>
+            <div class="guidecard"><b>選手</b><ol><li>ジムから招待を受ける</li><li>席種と枚数を入力して注文</li><li>注文・発送状況を確認</li></ol></div>
+            <div class="guidecard"><b>ジム</b><ol><li>興行から招待を受ける</li><li>所属選手を招待</li><li>注文を確認し精算状況を見る</li></ol></div>
+            <div class="guidecard"><b>興行</b><ol><li>ジムを招待</li><li>注文・在庫・発送を管理</li><li>ジム別の請求・入金を確認</li></ol></div>
           </div>
         </div>
       </details>
+
       <details class="disclosure" id="feature-guide">
-        <summary><span><strong>管理できること</strong><small>注文・在庫・発送・精算など</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
-        <div class="disclosure-content"><div class="featuregrid">
-          <article class="feature"><small>注文</small><strong>チケット注文</strong><p>席種・枚数の入力、注文履歴の確認</p></article>
-          <article class="feature"><small>管理</small><strong>在庫・受け渡し</strong><p>券種別在庫やジムへの受け渡しの管理</p></article>
-          <article class="feature"><small>精算</small><strong>ジム別の請求</strong><p>請求額・入金状況の確認</p></article>
-          <article class="feature"><small>登録</small><strong>招待制ログイン</strong><p>TREASURE → ジム → 選手の招待フロー</p></article>
-          <article class="feature"><small>設定</small><strong>ジム情報</strong><p>住所・精算口座の登録と管理</p></article>
-          <article class="feature"><small>安全</small><strong>監査・権限管理</strong><p>役割の分離、管理者の2段階認証</p></article>
-        </div></div>
-      </details>
-      <details class="disclosure" id="faq">
-        <summary><span><strong>よくある質問</strong><small>招待・注文の修正・データ保存</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
+        <summary>機能とよくある質問 <span class="disclosure-chevron" aria-hidden="true">⌄</span></summary>
         <div class="disclosure-content">
-          <div class="faq">
-            <details><summary>招待メールが届かない場合は？</summary><p>迷惑メールをご確認ください。ジム担当者はTREASUREへ、選手は所属ジムへご連絡ください。</p></details>
-            <details><summary>注文を間違えたら？</summary><p>デモでは注文確定前に「修正する」を押してください。本番では確定後の変更を所属ジムにご相談ください。</p></details>
-            <details><summary>スマホとパソコンで同期されますか？</summary><p>この確認画面はブラウザ内のサンプルデータだけを保存します。他の端末とは同期されません。</p></details>
+          <div class="featuregrid">
+            <div class="feature"><strong>注文・在庫</strong><p>席種別の注文・在庫・受け渡しを確認</p></div>
+            <div class="feature"><strong>ジム精算</strong><p>請求金額・入金状況を管理</p></div>
+            <div class="feature"><strong>役割別の権限</strong><p>選手・ジム・興行の操作を分離</p></div>
+          </div>
+          <div id="faq" class="faq">
+            <details><summary>招待メールが届かない場合は？</summary><p>選手は所属ジムへ、ジム担当者はTREASUREへご確認ください。</p></details>
+            <details><summary>注文を間違えたら？</summary><p>確定前の確認画面から修正できます。確定後の変更は所属ジムにご相談ください。</p></details>
+            <details><summary>スマホとパソコンでデータを共有できますか？</summary><p>このデモでは共有できません。各ブラウザ内のサンプルデータだけを使用します。</p></details>
           </div>
         </div>
       </details>
+
       <details class="disclosure" id="demo-about">
-        <summary><span><strong>体験版について</strong><small>実際のデータは使用しません</small></span><span class="disclosure-toggle" aria-hidden="true">＋</span></summary>
-        <div class="disclosure-content"><p>このURLでは本物の認証・招待メール送信・口座登録・請求書発行は行いません。名前・住所・口座番号などの実データは入力しないでください。</p><div class="resetbox"><div><strong>サンプルデータを初期化</strong><p>注文・確認・発送状態を最初に戻します。</p></div><button class="btn" onclick="resetAll()">デモをやり直す</button></div></div>
+        <summary>デモについて <span class="disclosure-chevron" aria-hidden="true">⌄</span></summary>
+        <div class="disclosure-content">
+          <p>本物の認証・招待メール・口座登録・請求書発行は行いません。実際の氏名・口座番号などは入力しないでください。</p>
+          <div class="resetbox"><span>サンプル注文を最初の状態に戻す</span><button class="btn" onclick="resetAll()">データを初期化</button></div>
+        </div>
       </details>
-    </div>
-  </section>
+    </section>
+  </main>
+  <footer class="site-footer">TREASURE BOXING PROMOTION <span>© TREASURE</span></footer>
 </div>
-<section id="app" class="app hidden"><header class="top"><div class="brand"><span class="brandmark brandmark-sm" aria-hidden="true">T</span><span>TREASURE <strong>Ticket</strong></span></div><div class="event">TREASURE BOXING PROMOTION Vol.1 · 後楽園ホール</div><div class="spacer"></div><div class="switch"><button data-r="player" onclick="openRole('player')">選手 <span>レビュー</span></button><button data-r="gym" onclick="openRole('gym')">ジム <span>レビュー</span></button><button data-r="admin" onclick="openRole('admin')">興行 <span>レビュー</span></button></div></header><main class="main"><div class="toolbar"><span class="crumb">確認用デモ · 実際の招待・決済は行いません</span><span class="spacer"></span><button class="btn" onclick="roleHelp()">使い方・困ったとき</button><button class="btn" onclick="backHome()">トップに戻る</button><button class="btn red" onclick="resetAll()">初期化</button></div><div id="screen"></div></main></section><div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div><dialog id="help-dialog" aria-labelledby="help-title" class="help-dialog"><h2 id="help-title"></h2><p id="help-body"></p><div class="help-actions"><button class="btn gold" onclick="closeHelp()">閉じる</button></div></dialog>
+<section id="app" class="app hidden"><header class="top"><div class="brand" aria-label="TREASURE Ticket"><span>TREASURE</span><strong>Ticket</strong></div><div class="event">TREASURE BOXING PROMOTION Vol.1 · 後楽園ホール</div><div class="spacer"></div><div class="switch"><button data-r="player" onclick="openRole('player')">選手 <span>レビュー</span></button><button data-r="gym" onclick="openRole('gym')">ジム <span>レビュー</span></button><button data-r="admin" onclick="openRole('admin')">興行 <span>レビュー</span></button></div></header><main class="main"><div class="toolbar"><button class="btn" onclick="backHome()">← 画面を選び直す</button><span class="spacer"></span><span class="crumb">操作確認用デモ</span><button class="btn" onclick="roleHelp()">ヘルプ</button><button class="btn red" onclick="resetAll()">初期化</button></div><div id="screen"></div></main></section><div id="toast" class="toast" role="status" aria-live="polite" aria-atomic="true"></div><dialog id="help-dialog" aria-labelledby="help-title" class="help-dialog"><h2 id="help-title"></h2><p id="help-body"></p><div class="help-actions"><button class="btn gold" onclick="closeHelp()">閉じる</button></div></dialog>
 <script>
 const KEY='treasure-review-final-v1',types=[['rs','RS席',20000],['s','S席',15000],['a','A席',10000],['free','先着自由席',5000]],seed=[{id:'DEMO-TRS-20260917-0001',at:'2026/09/17 10:15',pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:'初回注文',c:{rs:2,s:4,a:3,free:0},memo:'確認用サンプル注文',status:'確認済み',ship:'発送準備中',gymOk:true},{id:'DEMO-TRS-20260917-1001',at:'2026/09/17 11:20',pid:'takahashi',player:'高橋選手',gid:'aozora',gym:'青空ボクシングジム',kind:'追加注文',c:{rs:0,s:2,a:5,free:1},memo:'追加分の確認用データ',status:'受付済み',ship:'未発送',gymOk:false},{id:'DEMO-TRS-20260917-2001',at:'2026/09/17 12:05',pid:'sasaki',player:'佐々木選手',gid:'toto',gym:'東都ファイトジム',kind:'初回注文',c:{rs:1,s:0,a:4,free:2},memo:'',status:'確認済み',ship:'発送済み',gymOk:true}];
 const stock={rs:{total:100,hold:10},s:{total:150,hold:10},a:{total:250,hold:20},free:{total:100,hold:0}};
@@ -335,7 +332,7 @@ function remaining(k){const s=stock[k];return Math.max(0,s.total-s.hold-sold(k))
 let st={role:null,step:'input',draft:{kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},memo:''},q:'',gf:'all',sf:'all'};const clone=x=>JSON.parse(JSON.stringify(x)),yen=n=>new Intl.NumberFormat('ja-JP').format(n)+'円';function enrich(o){let n=0,m=0,t={};types.forEach(([k,l,p])=>{let c=Number(o.c[k]||0);t[k]={l,p,c,sub:c*p};n+=c;m+=c*p});return{...o,t,n,m}}function orders(){try{let r=localStorage.getItem(KEY);return(r?JSON.parse(r):clone(seed)).map(enrich)}catch{return clone(seed).map(enrich)}}function save(a){localStorage.setItem(KEY,JSON.stringify(a))}function msg(s){let e=document.getElementById('toast');e.textContent=s;e.classList.add('show');clearTimeout(window.tt);window.tt=setTimeout(()=>e.classList.remove('show'),4000)}function resetAll(){if(!window.confirm('このブラウザ内の確認用注文・確認状態を初期化します。よろしいですか？'))return;localStorage.removeItem(KEY);st.step='input';st.draft={kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},memo:''};msg('確認用データを初期状態に戻しました');if(st.role)render()}function openRole(r){st.role=r;st.step='input';document.getElementById('home').classList.add('hidden');document.getElementById('app').classList.remove('hidden');document.querySelectorAll('.switch button').forEach(b=>b.classList.toggle('active',b.dataset.r===r));render();scrollTo(0,0)}function backHome(){st.role=null;document.getElementById('app').classList.add('hidden');document.getElementById('home').classList.remove('hidden');scrollTo(0,0)}function showHelp(title,body){const d=document.getElementById('help-dialog');document.getElementById('help-title').textContent=title;document.getElementById('help-body').textContent=body;if(d.showModal)d.showModal();else d.setAttribute('open','')}
 function closeHelp(){const d=document.getElementById('help-dialog');if(d.close)d.close();else d.removeAttribute('open')}
 function roleHelp(){const x={player:['選手の使い方','1. ジムから招待され登録します。2. 選手用画面で注文区分と券種・枚数を入力します。3. 内容を確認して注文します。4. ジムが確認し、TREASUREが発送管理します。注文をやり直す際は「修正する」を押してください。'],gym:['ジム担当者の使い方','1. TREASUREから招待を受けます。2. 郵送先と精算口座を登録します。3. 選手を招待します。4. 所属選手の注文を確認し、問題なければ「確認済み」にします。精算はジム単位で行います。'],admin:['興行（TREASURE）の使い方','1. 専用画面へ2段階認証でログインします。2. ジム担当者を招待します。3. 券種と在庫を設定します。4. 注文・受け渡しを管理し、締切後にジムごとの請求と入金を確認します。']};const item=x[st.role]||['この画面について','先に利用開始の流れを確認してください。'];showHelp(item[0],item[1]+' ※このURLはサンプル画面で、招待メール送信・本物の口座登録・請求書発行は行われません。')}
-function roleBanner(){const role={player:['選手｜自分のチケットを注文','① 注文区分を選ぶ → ② 席種と枚数を入れる → ③ 金額を確認して注文'],gym:['ジム｜所属選手の注文を確認','① 所属選手の注文を見る → ② 内容を確認 → ③「ジム確認済み」にする'],admin:['興行（TREASURE）｜注文・在庫を管理','① ジムの確認を待つ → ② 管理者が確認 → ③ 発送を管理']}[st.role]||['確認画面',''];return '<div class="role-banner"><div><small>次にすること</small><strong>'+role[0]+'</strong><p>'+role[1]+'</p></div><button class="btn" onclick="roleHelp()">操作方法を見る</button></div>'}
+function roleBanner(){const role={player:'席種と枚数を選んで、注文内容を確認してください。',gym:'選手の注文内容を確認し、確認済みにしてください。',admin:'ジムの確認後、管理者確認と発送を進めてください。'}[st.role]||'';return '<div class="role-banner"><div><small>次にすること</small><p>'+role+'</p></div><button class="btn" onclick="roleHelp()">使い方</button></div>'}
 function head(a,b){return`<div class="pagehead"><h1>${a}</h1><p>${b}</p></div><div class="status"><span class="pill gold">TREASURE Vol.1</span><span class="pill green">受付中</span><span class="pill">後楽園ホール</span><span class="spacer"></span><span class="pill">確認用データ</span></div>`}function stat(a,b){return`<div class="stat"><small>${a}</small><strong>${b}</strong></div>`}function esc(s){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}function render(){st.role==='player'?player():st.role==='gym'?gym():admin()}function summary(){let n=0,m=0;types.forEach(([k,l,p])=>{let v=Number(st.draft.c[k]||0);if(Number.isInteger(v)&&v>=0){n+=v;m+=v*p}});return{n,m}}function err(id,s){let e=document.getElementById(id);if(e){e.textContent=s;e.classList.add('show')}}function validate(){document.querySelectorAll('.error').forEach(e=>e.classList.remove('show'));let ok=true,n=0;if(!st.draft.kind){err('e-kind','注文区分を選択してください');ok=false}types.forEach(([k,l])=>{let r=st.draft.c[k],v=Number(r);if(r===''||!Number.isInteger(v)){err('e-'+k,l+'は整数で入力してください');ok=false}else if(v<0||v>100){err('e-'+k,l+'は0〜100枚で入力してください');ok=false}else if(v>remaining(k)){err('e-'+k,l+'は残り'+remaining(k)+'枚までです。枚数を減らしてください');ok=false}else n+=v});if(n===0){err('e-count','いずれかを1枚以上入力してください');ok=false}if(st.draft.memo.length>200){err('e-memo','備考は200文字以内で入力してください');ok=false}return ok}function hist(a){if(!a.length)return'<div class="empty">注文はまだありません。注文するとここに履歴が表示されます。</div>';return`<div class="tablewrap"><table class="tbl"><thead><tr><th>注文番号</th><th>選手 / ジム</th><th>区分</th><th>RS</th><th>S</th><th>A</th><th>自由</th><th>ジム</th><th>管理</th><th>発送</th><th>金額</th></tr></thead><tbody>${a.map(o=>`<tr><td data-label="注文番号"><b>${esc(o.id)}</b></td><td data-label="選手 / ジム"><b>${esc(o.player)}</b><div class="sub">${esc(o.gym)}</div></td><td data-label="区分">${esc(o.kind)}</td><td data-label="RS席">${o.t.rs.c}枚</td><td data-label="S席">${o.t.s.c}枚</td><td data-label="A席">${o.t.a.c}枚</td><td data-label="自由席">${o.t.free.c}枚</td><td data-label="ジム確認"><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'確認済':'未確認'}</span></td><td data-label="管理者確認">${esc(o.status)}</td><td data-label="発送">${esc(o.ship)}</td><td data-label="金額"><b>${yen(o.m)}</b></td></tr>`).join('')}</tbody></table></div>`}function player(){let a=orders().filter(o=>o.pid==='aoki'),s=summary(),x=head('選手｜チケット注文','青木選手 / 青空ボクシングジム')+`<div class="steps"><div class="step ${st.step==='input'?'active':''}">1. 入力</div><div class="step ${st.step==='confirm'?'active':''}">2. 内容確認</div><div class="step ${st.step==='complete'?'active':''}">3. 注文完了</div></div>`;if(st.step==='input')x+=`<section class="panel"><div class="ph"><h2>新規注文</h2><p>確定後はジム・TREASURE管理画面へ反映されます。</p></div><div class="pad"><div class="grid"><div class="field"><label>選手名</label><input class="input" readonly value="青木選手"></div><div class="field"><label>所属ジム</label><input class="input" readonly value="青空ボクシングジム"></div><div class="field"><label>注文区分</label><select id="kind" class="input" onchange="st.draft.kind=this.value"><option value="">選択してください</option><option ${st.draft.kind==='初回注文'?'selected':''}>初回注文</option><option ${st.draft.kind==='追加注文'?'selected':''}>追加注文</option></select><div id="e-kind" class="error"></div></div><div></div>${types.map(([k,l,p])=>`<div class="field"><label>${l}（${yen(p)}）</label><input id="c-${k}" class="input" type="number" min="0" max="100" step="1" value="${st.draft.c[k]}" max="${Math.min(100,remaining(k))}" oninput="st.draft.c.${k}=this.value;totalNow()"><p class="remaining-info">残り ${remaining(k)}枚（興行側確保分を除く）</p><div id="e-${k}" class="error"></div></div>`).join('')}</div><div id="e-count" class="error"></div><div class="field" style="margin-top:13px"><label>備考（任意・200文字以内）</label><textarea id="memo" class="input" oninput="st.draft.memo=this.value">${esc(st.draft.memo)}</textarea><div id="e-memo" class="error"></div></div><div id="tot" class="total" role="status" aria-live="polite">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div></div><div class="actions"><button id="confirm" class="btn gold" onclick="if(validate()){st.step='confirm';player();scrollTo(0,0)}">注文内容を確認</button></div></section>`;else if(st.step==='confirm')x+=`<section class="panel"><div class="ph"><h2>注文内容の確認</h2><p>確定前に枚数と金額を確認してください。</p></div><div class="pad"><p><b>注文区分：</b>${st.draft.kind}</p>${types.map(([k,l,p])=>`<p>${l}：${Number(st.draft.c[k])}枚 / ${yen(Number(st.draft.c[k])*p)}</p>`).join('')}<div class="total">合計 ${s.n}枚 / <strong>${yen(s.m)}</strong></div><p class="note">備考：${esc(st.draft.memo)||'なし'}</p></div><div class="actions"><button class="btn" onclick="st.step='input';player()">修正する</button><button id="submit" class="btn gold" onclick="submitOrder()">この内容で注文する</button></div></section>`;else x+=`<section class="panel"><div class="pad"><span class="pill green">注文完了</span><h2>確認用注文を受け付けました</h2><p>ジム画面とTREASURE管理画面にも反映されています。</p><button class="btn gold" onclick="st.step='input';st.draft={kind:'',c:{rs:'0',s:'0',a:'0',free:'0'},memo:''};player()">続けて新しい注文</button></div></section>`;x+=`<section class="panel"><div class="ph"><h2>自分の注文履歴</h2><p>ほかの選手の注文は表示されません。</p></div>${hist(a)}</section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function totalNow(){let s=summary(),e=document.getElementById('tot');if(e)e.innerHTML=`合計 ${s.n}枚 / <strong>${yen(s.m)}</strong>`}function datePart(){let p=new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Tokyo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date()),m=Object.fromEntries(p.map(x=>[x.type,x.value]));return m.year+m.month+m.day}function nextId(a){let pre='DEMO-TRS-'+datePart()+'-',u=new Set(a.map(o=>o.id));for(let i=1;i<10000;i++){let id=pre+String(i).padStart(4,'0');if(!u.has(id))return id}return pre+Date.now()}function submitOrder(){if(st.step!=='confirm')return false;if(!validate()){st.step='input';player();validate();msg('注文できません。入力内容と残枚数を確認してください');return false}let a=orders(),now=new Date();a.unshift(enrich({id:nextId(a),at:now.toLocaleString('ja-JP',{timeZone:'Asia/Tokyo'}),pid:'aoki',player:'青木選手',gid:'aozora',gym:'青空ボクシングジム',kind:st.draft.kind,c:Object.fromEntries(types.map(([k])=>[k,Number(st.draft.c[k])])),memo:st.draft.memo,status:'受付済み',ship:'未発送',gymOk:false}));save(a);st.step='complete';player();msg('注文を保存しました。次はジムで内容を確認します。');return true}
 function gym(){let a=orders().filter(o=>o.gid==='aozora'),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),u=a.filter(o=>!o.gymOk).length,x=head('ジム｜所属選手の注文確認','青空ボクシングジム / 担当者')+`<div class="security"><strong>ジム登録情報の表示例（サンプル）</strong><div class="kv" style="margin-top:8px"><span>チケット郵送先</span><b>〒112-0004 東京都文京区後楽1-3-61</b><span>精算口座</span><b>みずほ銀行 神田支店 / ****4567</b><span>登録状態</span><b>住所 ✓　担当者 ✓　口座 ✓</b></div><div class="mini-actions"><button class="btn" onclick="showHelp('郵便番号から住所を入力', '実運用では郵便番号を入力すると住所候補を補完します。ここでは表示例のみで、外部への検索送信は行いません。')">住所入力の説明</button><button class="btn" onclick="showHelp('銀行・支店の入力', '実運用では銀行・支店を候補から選べる設計です。この確認画面は表示例で、実際の口座情報を登録しません。')">銀行入力の説明</button><button class="btn" onclick="showHelp('所属選手を招待する', '本番ではジム担当者が選手名とメールアドレスを入力して招待メールを送ります。この確認画面ではメール送信は行いません。')">選手招待の流れを見る</button></div></div><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('ジム未確認',u+'件')}</div><section class="panel"><div class="ph"><h2>担当ジムの注文</h2><p>ジム確認のみ変更できます。発送・管理者確認はTREASURE側の権限です。</p></div><div class="pad">${a.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.at}</div></div><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'ジム確認済み':'ジム未確認'}</span></div><div class="meta"><span>RS ${o.t.rs.c}枚</span><span>S ${o.t.s.c}枚</span><span>A ${o.t.a.c}枚</span><span>自由 ${o.t.free.c}枚</span><span>管理：${o.status}</span><span>発送：${o.ship}</span></div><div class="order-next">${o.ship==='発送済み'?'発送済みの注文です。':o.status==='確認済み'?'TREASUREが確認済みです。次の案内をお待ちください。':o.gymOk?'TREASUREの管理者確認待ちです。':'枚数と内容を確認して「この注文を確認済みにする」を押してください。'}</div><button class="btn ${o.gymOk?'':'gold'}" style="margin-top:11px" onclick="gymToggle('${o.id}')" ${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'disabled title="TREASUREで処理済みのため変更できません"':''}>${o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')?'確認完了（変更不可）':o.gymOk?'未確認に戻す':'この注文を確認済みにする'}</button></article>`).join('')}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function gymToggle(id){let a=orders(),o=a.find(x=>x.id===id&&x.gid==='aozora');if(!o)return false;if(o.gymOk&&(o.status==='確認済み'||o.ship!=='未発送')){msg('TREASUREで管理者確認または発送処理済みのため、ジム側では戻せません');return false}o.gymOk=!o.gymOk;save(a);gym();msg(o.gymOk?'ジム確認済みにしました。次はTREASUREで管理者確認します。':'ジム未確認に戻しました');return true}
 function searchAdmin(field){st.q=field.value;const start=field.selectionStart??field.value.length;admin();const next=document.getElementById("q");if(next){next.focus();next.setSelectionRange(start,start)}}function admin(){let a=orders(),f=a.filter(o=>(st.gf==='all'||o.gid===st.gf)&&(st.sf==='all'||o.ship===st.sf)&&(!st.q||[o.id,o.player,o.gym].join(' ').toLowerCase().includes(st.q.toLowerCase()))),n=a.reduce((s,o)=>s+o.n,0),m=a.reduce((s,o)=>s+o.m,0),x=head('興行｜注文・在庫・精算の管理','TREASURE BOXING PROMOTION / 管理者')+`<div class="security"><strong>管理者セキュリティ：MFA必須</strong><p class="note">本番ではAAL2（Authenticator等）を通過したTREASURE管理者だけがこの画面へ入れます。</p><div class="mini-actions"><button class="btn" onclick="showHelp('管理者の2段階認証', '正式版では管理者がログイン後、Authenticatorアプリの確認コードで2段階認証します。この画面では認証処理を行いません。')">MFAの説明を見る</button><button class="btn" onclick="showHelp('ジム担当者の招待', 'TREASUREがジム名・担当者名・メールアドレスを登録し、担当者に招待メールを送ります。このデモでは送信しません。')">ジム招待の流れを見る</button><button class="btn" onclick="showHelp('操作履歴', '正式版では誰が・いつ・何を変更したかを確認できます。口座番号などの機密情報をそのまま履歴に保存しない設計です。')">操作履歴の説明</button></div></div><section class="panel"><div class="ph"><h2>興行運用サマリー</h2><p>販売残数は、このブラウザ内の注文から自動集計しています。精算・受け渡しの数値は説明用サンプルです。</p></div><div class="pad"><div class="checklist"><div class="checkitem"><b>RS席：販売残数 ${remaining('rs')}枚</b><div class="sub">総数${stock.rs.total} / 興行確保${stock.rs.hold} / 注文済${sold('rs')}</div></div><div class="checkitem"><b>S席：販売残数 ${remaining('s')}枚</b><div class="sub">総数${stock.s.total} / 興行確保${stock.s.hold} / 注文済${sold('s')}</div></div><div class="checkitem"><b>A席：販売残数 ${remaining('a')}枚</b><div class="sub">総数${stock.a.total} / 興行確保${stock.a.hold} / 注文済${sold('a')}</div></div><div class="checkitem"><b>自由席：販売残数 ${remaining('free')}枚</b><div class="sub">総数${stock.free.total} / 興行確保${stock.free.hold} / 注文済${sold('free')}</div></div><div class="checkitem"><b>青空ジム精算</b><div class="sub">表示例：請求650,000円 / 入金500,000円 / 残150,000円</div></div><div class="checkitem"><b>受け渡し</b><div class="sub">表示例：25枚注文 / 15枚渡済 / 残10枚</div></div></div><div class="mini-actions"><button class="btn" onclick="showHelp('券種・価格・在庫の管理', 'TREASUREが券種ごとに価格・販売可能数・興行側確保数を設定します。この画面では表示例のみで、実際の在庫設定は変更しません。')">価格・在庫の説明</button><button class="btn" onclick="showHelp('チケット受け渡し', 'ジムごとに券種・枚数・座席・郵送/手渡しを記録します。注文枚数を超える受け渡しはできません。')">受け渡しの説明</button><button class="btn" onclick="showHelp('ジム別精算', '注文締切後、ジム単位で最終請求を確定します。入金状況は未入金・一部入金・入金済みで確認します。このデモでは請求書を発行しません。')">ジム精算の説明</button><button class="btn" onclick="showHelp('プライバシーと利用規約', '正式版では利用開始時にプライバシーポリシーと利用規約の確認・同意を記録します。実データや機密情報はこのデモに入力しないでください。')">規約・個人情報の説明</button></div></div></section><div class="stats">${stat('注文件数',a.length+'件')}${stat('合計枚数',n+'枚')}${stat('合計金額',yen(m))}${stat('未発送',a.filter(o=>o.ship!=='発送済み').length+'件')}</div><section class="panel"><div class="ph"><h2>検索・絞り込み</h2><p>選手名・注文番号・ジム・発送状態で確認できます。</p></div><div class="pad"><div class="filters"><div class="field"><label>選手名・注文番号</label><input id="q" class="input" value="${esc(st.q)}" oncompositionstart="st.composing=true" oncompositionend="st.composing=false;searchAdmin(this)" oninput="if(!st.composing)searchAdmin(this)" type="search" aria-label="注文を検索" placeholder="例：青木、DEMO-"></div><div class="field"><label>ジム</label><select id="gf" class="input" onchange="st.gf=this.value;admin()"><option value="all">すべて</option><option value="aozora" ${st.gf==='aozora'?'selected':''}>青空</option><option value="toto" ${st.gf==='toto'?'selected':''}>東都</option></select></div><div class="field"><label>発送</label><select id="sf" class="input" onchange="st.sf=this.value;admin()"><option value="all">すべて</option><option ${st.sf==='未発送'?'selected':''}>未発送</option><option ${st.sf==='発送準備中'?'selected':''}>発送準備中</option><option ${st.sf==='発送済み'?'selected':''}>発送済み</option></select></div></div><p class="note">表示中：<b id="cnt">${f.length}</b>件</p></div></section><section class="panel"><div class="ph"><h2>全注文</h2><p>管理者確認と発送状態を変更できます。請求済み注文の取消は再請求処理が必要、受け渡しは注文残数を超えられません。</p></div><div class="pad">${f.length?f.map(o=>`<article class="order" data-order="${o.id}"><div class="line"><div><b>${o.id}</b><div class="sub">${o.player} / ${o.gym}</div></div><div><span class="pill ${o.gymOk?'green':'warn'}">${o.gymOk?'ジム確認済':'ジム未確認'}</span> <span class="pill ${o.status==='確認済み'?'green':'gold'}">${o.status}</span></div></div><div class="meta"><span>合計 ${o.n}枚</span><b>${yen(o.m)}</b><span>注文：${o.kind}</span></div><div class="order-next">${o.ship==='発送済み'?'発送処理は完了しています。':!o.gymOk?'ジムの確認待ちです。ジム画面で確認後に進めます。':o.status!=='確認済み'?'次は「管理者確認」を「確認済み」にしてください。':'確認済みです。次は「発送状態」を更新できます。'}</div><div class="grid" style="margin-top:11px"><div class="field"><label>管理者確認</label><select class="input a-status" data-id="${o.id}" onchange="adminUpdate('${o.id}','status',this.value)" ${!o.gymOk||o.ship==='発送済み'?'disabled':''}><option ${o.status==='受付済み'?'selected':''}>受付済み</option><option ${o.status==='確認済み'?'selected':''}>確認済み</option></select></div><div class="field"><label>発送状態</label><select class="input a-ship" data-id="${o.id}" onchange="adminUpdate('${o.id}','ship',this.value)" ${!o.gymOk||o.status!=='確認済み'||o.ship==='発送済み'?'disabled':''}><option ${o.ship==='未発送'?'selected':''}>未発送</option><option ${o.ship==='発送準備中'?'selected':''}>発送準備中</option><option ${o.ship==='発送済み'?'selected':''}>発送済み</option></select></div></div></article>`).join(''):'<div class="empty">条件に一致する注文はありません。</div>'}</div></section>`;document.getElementById('screen').innerHTML=roleBanner()+x}function adminUpdate(id,k,v){let a=orders(),o=a.find(x=>x.id===id);if(!o)return false;
